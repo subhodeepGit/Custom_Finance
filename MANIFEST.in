@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include custom_finance *.css
+recursive-include custom_finance *.csv
+recursive-include custom_finance *.html
+recursive-include custom_finance *.ico
+recursive-include custom_finance *.js
+recursive-include custom_finance *.json
+recursive-include custom_finance *.md
+recursive-include custom_finance *.png
+recursive-include custom_finance *.py
+recursive-include custom_finance *.svg
+recursive-include custom_finance *.txt
+recursive-exclude custom_finance *.pyc
