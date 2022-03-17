@@ -81,9 +81,11 @@ app_license = "MIT"
 # ---------------
 # Override standard doctype classes
 
-# override_doctype_class = {
-# 	"ToDo": "custom_app.overrides.CustomToDo"
-# }
+override_doctype_class = {
+	# "ToDo": "custom_app.overrides.CustomToDo"
+	"Fees":"custom_finance.custom_finance.validation.fees.Fees",
+	"Payment Entry":"custom_finance.custom_finance.validation.payment_entry.PaymentEntry"
+}
 
 # Document Events
 # ---------------
@@ -126,9 +128,11 @@ app_license = "MIT"
 # Overriding Methods
 # ------------------------------
 #
-# override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "custom_finance.event.get_events"
-# }
+override_whitelisted_methods = {
+	# "frappe.desk.doctype.event.event.get_events": "custom_finance.event.get_events"
+	"erpnext.accounts.doctype.payment_entry.get_payment_entry":"custom_finance.custom_finance.validation.payment_entry.get_payment_entry",
+	
+}
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
