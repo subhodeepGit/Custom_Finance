@@ -32,6 +32,11 @@ app_license = "MIT"
 
 # include js in doctype views
 # doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {
+	"Fees" : "public/js/fees.js",
+	"Fee Schedule":"public/js/fee_schedule.js",
+	"Fee Structure" : "public/js/fee_structure.js",
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -83,8 +88,8 @@ app_license = "MIT"
 
 override_doctype_class = {
 	# "ToDo": "custom_app.overrides.CustomToDo"
-	"Fees":"custom_finance.custom_finance.validation.fees.Fees",
-	"Payment Entry":"custom_finance.custom_finance.validation.payment_entry.PaymentEntry"
+	"Fees":"custom_finance.custom_finance.validations.fees.Fees",
+	"Payment Entry":"custom_finance.custom_finance.validations.payment_entry.PaymentEntry"
 }
 
 # Document Events
@@ -98,6 +103,19 @@ override_doctype_class = {
 # 		"on_trash": "method"
 #	}
 # }
+doc_events = {
+	"Fees":{
+        "on_submit":"custom_finance.custom_finance.doctype.fees.on_submit",
+        "validate":"custom_finance.custom_finance.doctype.fees.validate",
+        "on_cancel":"custom_finance.custom_finance.doctype.fees.on_cancel"
+    },
+	"Fee Structure":{
+	"validate":"custom_finance.custom_finance.validations.fee_structure.validate"
+    },
+	"Fee Schedule":{
+	"validate":"custom_finance.custom_finance.validations.fee_schedule.validate"
+    },
+}
 
 # Scheduled Tasks
 # ---------------
