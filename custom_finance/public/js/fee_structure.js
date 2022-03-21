@@ -50,17 +50,8 @@ frappe.ui.form.on("Fee Component", "fees_category", function(frm, cdt, cdn) {
     }
 });
 
-// Calculate grand Total
-frappe.ui.form.on("Fee Component",{
-    amount: function(frm, cdt, cdn) {
-       var ed_details = locals[cdt][cdn];
-       alert(ed_details[i].amount);
-       if (ed_details[i].amount="") {
-           ed_details[i].total_fee_amount=ed_details[i].amount;
-           }
-           cur_frm.refresh_field ("components");
-           }
-});	
+// Custom finance
+// Calculate grand Total	
 frappe.ui.form.on("Fee Component", "amount", function(frm, cdt, cdn) {
    
     var ed_details = frm.doc.components;
