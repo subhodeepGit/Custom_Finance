@@ -60,11 +60,7 @@ frappe.ui.form.on("Fee Component", "amount", function(frm, cdt, cdn) {
     if (ed_details[i].amount) {
         // ed_details[i].total_fee_amount="15";
         ed_details[i].grand_fee_amount=ed_details[i].amount;
-    }
-    else {
-        frappe.throw("Wrong Entry")
-    }	 
-        
+    } 
    }
         cur_frm.refresh_field ("components");
     
@@ -77,9 +73,6 @@ frappe.ui.form.on("Fee Component", "amount", function(frm, cdt, cdn) {
     if (ed_details[i].amount) {
         // ed_details[i].total_fee_amount="15";
         ed_details[i].outstanding_fees=ed_details[i].amount;
-    }
-    else {
-        frappe.throw("Wrong Entry")
     }	 
         
 }

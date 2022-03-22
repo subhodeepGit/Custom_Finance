@@ -34,6 +34,8 @@ class InvalidPaymentEntry(ValidationError):
 
 
 class PaymentEntry(AccountsController):
+	print("\n\n\n\n")
+	print("custom finance")
 	def __init__(self, *args, **kwargs):
 		super(PaymentEntry, self).__init__(*args, **kwargs)
 		if not self.is_new():
@@ -81,6 +83,8 @@ class PaymentEntry(AccountsController):
 		self.set_status()
 
 	def on_submit(self):
+		print("\n\n\n\n")
+		print("custom finance on submit")
 		if self.difference_amount:
 			frappe.throw(_("Difference Amount must be zero"))
 		self.make_gl_entries()###
@@ -1543,6 +1547,8 @@ def get_bill_no_and_update_amounts(reference_doctype, ref_doc, total_amount, exc
 
 @frappe.whitelist()
 def get_payment_entry(dt, dn, party_amount=None, bank_account=None, bank_amount=None):
+	print("\n\n\n\n\n")
+	print("123456")
 	reference_doc = None
 	doc = frappe.get_doc(dt, dn)
 	

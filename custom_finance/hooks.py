@@ -89,7 +89,9 @@ doctype_js = {
 override_doctype_class = {
 	# "ToDo": "custom_app.overrides.CustomToDo"
 	"Fees":"custom_finance.custom_finance.validations.fees.Fees",
-	"Payment Entry":"custom_finance.custom_finance.validations.payment_entry.PaymentEntry"
+	"Payment Entry":"custom_finance.custom_finance.validations.payment_entry.PaymentEntry",
+	# "Payment Entry":"custom_finance.custom_finance.validations.payment_entry.PaymentEntry"
+	
 }
 
 # Document Events
@@ -148,7 +150,14 @@ doc_events = {
 #
 override_whitelisted_methods = {
 	# "frappe.desk.doctype.event.event.get_events": "custom_finance.event.get_events"
-	"erpnext.accounts.doctype.payment_entry.get_payment_entry":"custom_finance.custom_finance.validation.payment_entry.get_payment_entry",
+	# "erpnext.accounts.doctype.payment_entry.get_payment_entry":"custom_finance.custom_finance.validations.payment_entry.get_payment_entry",
+	"erpnext.accounts.doctype.payment_entry.payment_entry.get_payment_entry":"custom_finance.custom_finance.validations.payment_entry.get_payment_entry",	
+	"erpnext.accounts.doctype.payment_entry.payment_entry.get_party_details":"custom_finance.custom_finance.validations.payment_entry.get_party_details",
+	"erpnext.accounts.doctype.payment_entry.payment_entry.get_account_details":"custom_finance.custom_finance.validations.payment_entry.get_account_details",
+	"erpnext.accounts.doctype.payment_entry.payment_entry.get_outstanding_reference_documents":"custom_finance.custom_finance.validations.payment_entry.get_outstanding_reference_documents",
+	"erpnext.accounts.doctype.payment_entry.payment_entry.get_company_defaults":"custom_finance.custom_finance.validations.payment_entry.get_company_defaults",
+	"erpnext.accounts.doctype.payment_entry.payment_entry.get_reference_details":"custom_finance.custom_finance.validations.payment_entry.get_reference_details",
+	"erpnext.accounts.doctype.payment_entry.payment_entry.get_party_and_account_balance":"custom_finance.custom_finance.validations.payment_entry.get_party_and_account_balance",
 	
 }
 #
