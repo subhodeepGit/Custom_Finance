@@ -117,6 +117,9 @@ doc_events = {
 	"Fee Schedule":{
 	"validate":"custom_finance.custom_finance.validations.fee_schedule.validate"
     },
+	"Payment Entry":{
+		"on_submit":"custom_finance.custom_finance.doctype.Fees_extention.on_submit"
+		}
 }
 
 # Scheduled Tasks

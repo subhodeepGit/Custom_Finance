@@ -9,6 +9,32 @@ frappe.ui.form.on('Fees', {
     //         };
     //     });
     // },
+
+    /////////////// My Code for Filter of table/////
+    onload: function(frm) {
+		frm.set_query("receivable_account","components", function(_doc, cdt, cdn) {
+			var d = locals[cdt][cdn];
+			return {
+				filters: {
+					'company': d.company,
+					'account_type': d.account_type = 'Receivable',
+					'is_group': d.is_group = 0
+				}
+			};
+		});
+		frm.set_query("income_account","components", function(_doc, cdt, cdn) {
+			var d = locals[cdt][cdn];
+			return {
+				filters: {
+					'company': d.company,
+					'account_type': d.account_type = 'Income Account',
+					'is_group': d.is_group = 0
+				}
+			};
+		});
+		erpnext.accounts.dimensions.setup_dimension_filters(frm, frm.doctype);
+	},
+	//////////////////////////// end of my Code //////////////////////////
     refresh(frm){
         if(frm.doc.docstatus===1 && frm.doc.outstanding_amount==0) {
 			frm.add_custom_button(__("Return/Refund"), function() {
@@ -161,3 +187,34 @@ frappe.ui.form.on("Fee Component", "percentage", function(frm, cdt, cdn) {
         frappe.throw("Please add Amount first");
     }
 });
+
+
+/////////////// My Code for Filter of table/////
+frappe.ui.form.on("Fee Component", "amount", function(frm, cdt, cdn) {
+   
+    var ed_details = frm.doc.components;
+    for(var i in ed_details) {
+            
+    if (ed_details[i].amount) {
+        // ed_details[i].total_fee_amount="15";
+        ed_details[i].grand_fee_amount=ed_details[i].amount;
+    } 
+   }
+        cur_frm.refresh_field ("components");
+    
+});
+frappe.ui.form.on("Fee Component", "amount", function(frm, cdt, cdn) {
+
+    var ed_details = frm.doc.components;
+    for(var i in ed_details) {
+            
+    if (ed_details[i].amount) {
+        // ed_details[i].total_fee_amount="15";
+        ed_details[i].outstanding_fees=ed_details[i].amount;
+    }	 
+        
+}
+    cur_frm.refresh_field ("components");
+
+});
+////// End of my code//////

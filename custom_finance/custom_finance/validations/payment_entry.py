@@ -34,8 +34,6 @@ class InvalidPaymentEntry(ValidationError):
 
 
 class PaymentEntry(AccountsController):
-	print("\n\n\n\n")
-	print("custom finance")
 	def __init__(self, *args, **kwargs):
 		super(PaymentEntry, self).__init__(*args, **kwargs)
 		if not self.is_new():
@@ -83,8 +81,6 @@ class PaymentEntry(AccountsController):
 		self.set_status()
 
 	def on_submit(self):
-		print("\n\n\n\n")
-		print("custom finance on submit")
 		if self.difference_amount:
 			frappe.throw(_("Difference Amount must be zero"))
 		self.make_gl_entries()###
@@ -117,7 +113,9 @@ class PaymentEntry(AccountsController):
 		self.set_missing_ref_details_table(force=True)
 		
 	def set_missing_ref_details_table(self, force=False):
+		###########################
 		s=self.get("references")[0]
+		############################
 		ref_details=frappe.get_all("Fee Component",{"parent":s.reference_name},["grand_fee_amount","outstanding_fees","fees_category"])
 		due_date=frappe.get_all("Fees",{"name":s.reference_name},["due_date"])[0]
 		list_final=[]
@@ -145,6 +143,9 @@ class PaymentEntry(AccountsController):
 
 							if field == 'exchange_rate' or not d.get(field) or force :
 								if field != 'fees_category':
+
+									if field=="outstanding_amount":
+										value=d.outstanding_amount-d.allocated_amount
 									d.db_set(field, value)
 
 	def validate_duplicate_entry(self):
@@ -1547,8 +1548,6 @@ def get_bill_no_and_update_amounts(reference_doctype, ref_doc, total_amount, exc
 
 @frappe.whitelist()
 def get_payment_entry(dt, dn, party_amount=None, bank_account=None, bank_amount=None):
-	print("\n\n\n\n\n")
-	print("123456")
 	reference_doc = None
 	doc = frappe.get_doc(dt, dn)
 	

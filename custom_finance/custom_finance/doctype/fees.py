@@ -6,7 +6,7 @@ def on_submit(doc,method):
     if doc.exam_application:
         ex=frappe.get_doc("Exam Application",doc.exam_application)
         ex.status="Paid"
-        ex.flags.ignore_validate_update_after_submit = True
+        ex.flags._validate_update_after_submit = True
         ex.submit()
         
     if doc.program_enrollment and not doc.programs:

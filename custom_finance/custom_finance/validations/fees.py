@@ -33,6 +33,7 @@ class Fees(AccountsController):
 			accounts_details = frappe.get_all("Company",
 				fields=["default_receivable_account", "default_income_account", "cost_center"],
 				filters={"name": self.company})[0]
+
 		if not self.receivable_account:
 			self.receivable_account = accounts_details.default_receivable_account
 		if not self.income_account:
@@ -69,7 +70,6 @@ class Fees(AccountsController):
 		self.grand_total_in_words = money_in_words(self.grand_total)
 
 	def on_submit(self):
-
 		self.make_gl_entries()
 
 		if self.send_payment_request and self.student_email:
@@ -77,6 +77,10 @@ class Fees(AccountsController):
 					dn=self.name, recipient_id=self.student_email,
 					submit_doc=True, use_dummy_message=True)
 			frappe.msgprint(_("Payment request {0} created").format(getlink("Payment Request", pr.name)))
+		#############################	
+		frappe.db.set_value("Fees", self.name, "outstanding_amount",self.outstanding_amount)
+		####################################
+
 
 	def on_cancel(self):
 		self.ignore_linked_doctypes = ('GL Entry', 'Stock Ledger Entry')
