@@ -26,12 +26,12 @@ def on_cancel(doc,method):
 def validate(doc,method):
     validate_amount(doc)
     duplicate_row_validation(doc, "components", ['fees_category', 'amount'])
-    doc.calculate_amount()
+    # doc.calculate_amount()
 
-def calculate_amount(self):
-		for events in self.get("components"):
-			events.grand_fee_amount=events.amount
-			events.outstanding_fees=events.amount
+# def calculate_amount(self):
+# 		for events in self.get("components"):
+# 			events.grand_fee_amount=events.amount
+# 			events.outstanding_fees=events.amount
 
 def validate_amount(doc):
     if doc.is_return:
