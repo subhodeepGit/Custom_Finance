@@ -90,6 +90,7 @@ override_doctype_class = {
 	# "ToDo": "custom_app.overrides.CustomToDo"
 	"Fees":"custom_finance.custom_finance.validations.fees.Fees",
 	"Payment Entry":"custom_finance.custom_finance.validations.payment_entry.PaymentEntry",
+	"Fee Structure":"custom_finance.custom_finance.doctype.fee_structure.FeeStructure",
 	# "Payment Entry":"custom_finance.custom_finance.validations.payment_entry.PaymentEntry"
 	
 }
@@ -161,7 +162,8 @@ override_whitelisted_methods = {
 	"erpnext.accounts.doctype.payment_entry.payment_entry.get_company_defaults":"custom_finance.custom_finance.validations.payment_entry.get_company_defaults",
 	"erpnext.accounts.doctype.payment_entry.payment_entry.get_reference_details":"custom_finance.custom_finance.validations.payment_entry.get_reference_details",
 	"erpnext.accounts.doctype.payment_entry.payment_entry.get_party_and_account_balance":"custom_finance.custom_finance.validations.payment_entry.get_party_and_account_balance",
-	
+	"erpnext.education.api.get_fee_components":"custom_finance.custom_finance.validations.api.get_fee_components",
+	"erpnext.education.doctype.fee_structure.fee_structure.make_fee_schedule":"custom_finance.custom_finance.doctype.fee_structure.make_fee_schedule",
 }
 #
 # each overriding function accepts a `data` argument;

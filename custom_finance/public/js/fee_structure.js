@@ -52,33 +52,33 @@ frappe.ui.form.on("Fee Component", "fees_category", function(frm, cdt, cdn) {
 
 // Custom finance
 // Calculate grand Total	
-frappe.ui.form.on("Fee Component", "amount", function(frm, cdt, cdn) {
+// frappe.ui.form.on("Fee Component", "amount", function(frm, cdt, cdn) {
    
-    var ed_details = frm.doc.components;
-    for(var i in ed_details) {
+//     var ed_details = frm.doc.components;
+//     for(var i in ed_details) {
             
-    if (ed_details[i].amount) {
-        // ed_details[i].total_fee_amount="15";
-        ed_details[i].grand_fee_amount=ed_details[i].amount;
-    } 
-   }
-        cur_frm.refresh_field ("components");
+//     if (ed_details[i].amount) {
+//         // ed_details[i].total_fee_amount="15";
+//         ed_details[i].grand_fee_amount=ed_details[i].amount;
+//     } 
+//    }
+//         cur_frm.refresh_field ("components");
     
-});
-frappe.ui.form.on("Fee Component", "amount", function(frm, cdt, cdn) {
+// });
+// frappe.ui.form.on("Fee Component", "amount", function(frm, cdt, cdn) {
 
-    var ed_details = frm.doc.components;
-    for(var i in ed_details) {
+//     var ed_details = frm.doc.components;
+//     for(var i in ed_details) {
             
-    if (ed_details[i].amount) {
-        // ed_details[i].total_fee_amount="15";
-        ed_details[i].outstanding_fees=ed_details[i].amount;
-    }	 
+//     if (ed_details[i].amount) {
+//         // ed_details[i].total_fee_amount="15";
+//         ed_details[i].outstanding_fees=ed_details[i].amount;
+//     }	 
         
-}
-    cur_frm.refresh_field ("components");
+// }
+//     cur_frm.refresh_field ("components");
 
-});
+// });
 
 // filter income account receivable account
 frappe.ui.form.on('Fee Structure', {
