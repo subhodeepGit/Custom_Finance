@@ -99,7 +99,6 @@ class PaymentEntry(AccountsController):
 		self.update_expense_claim()
 		# self.update_outstanding_amounts()
 		self.update_outstanding_amounts(cancel=1)
-		a.s
 		self.update_advance_paid()
 		self.update_donation(cancel=1)
 		self.delink_advance_entry_references()
@@ -114,9 +113,6 @@ class PaymentEntry(AccountsController):
 
 	def update_outstanding_amounts(self,cancel=0):
 		# self.set_missing_ref_details(force=True)
-		print("\n\n\n\n\n")
-		print(cancel)
-		
 		if cancel==0:
 			self.set_missing_ref_details_table(force=True)
 		else:

@@ -6,8 +6,7 @@ def on_submit(self,method):
     child_table_fees_outsatnding(self)
 
 def on_cancel(self,method):
-    a.s
-    child_table_fees_outsatnding(self)    
+    child_table_fees_outsatnding(self)  
 
 def child_table_fees_outsatnding(self):
     ### payment entry child doc

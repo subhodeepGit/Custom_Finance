@@ -166,6 +166,7 @@ override_whitelisted_methods = {
 	"erpnext.accounts.doctype.payment_entry.payment_entry.get_party_and_account_balance":"custom_finance.custom_finance.validations.payment_entry.get_party_and_account_balance",
 	"erpnext.education.api.get_fee_components":"custom_finance.custom_finance.validations.api.get_fee_components",
 	"erpnext.education.doctype.fee_structure.fee_structure.make_fee_schedule":"custom_finance.custom_finance.doctype.fee_structure.make_fee_schedule",
+	"ed_tec.ed_tec.doctype.fees.make_refund_fees":"custom_finance.custom_finance.doctype.fees.make_refund_fees",
 }
 #
 # each overriding function accepts a `data` argument;
