@@ -97,7 +97,9 @@ class PaymentEntry(AccountsController):
 		self.ignore_linked_doctypes = ('GL Entry', 'Stock Ledger Entry')
 		self.make_gl_entries(cancel=1)
 		self.update_expense_claim()
-		self.update_outstanding_amounts()
+		# self.update_outstanding_amounts()
+		self.update_outstanding_amounts(cancel=1)
+		a.s
 		self.update_advance_paid()
 		self.update_donation(cancel=1)
 		self.delink_advance_entry_references()
@@ -110,9 +112,15 @@ class PaymentEntry(AccountsController):
 		update_payment_req_status(self, None)
 
 
-	def update_outstanding_amounts(self):
+	def update_outstanding_amounts(self,cancel=0):
 		# self.set_missing_ref_details(force=True)
-		self.set_missing_ref_details_table(force=True)
+		print("\n\n\n\n\n")
+		print(cancel)
+		
+		if cancel==0:
+			self.set_missing_ref_details_table(force=True)
+		else:
+			self.set_missing_ref_details_table_on_cancel(force=True)	
 		
 	def set_missing_ref_details_table(self, force=False):
 		###########################
@@ -167,6 +175,45 @@ class PaymentEntry(AccountsController):
 										if field=="outstanding_amount":
 											value=d.outstanding_amount-d.allocated_amount
 										d.db_set(field, value)
+										
+	def set_missing_ref_details_table_on_cancel(self, force=False):
+		###########################
+		z=self.get("references")
+		reference_name=[]
+		for i in z:
+			reference_name.append(i.reference_name)
+		reference_name = list(set(reference_name))	
+		############################
+		for v in reference_name:
+			due_date=frappe.get_all("Fees",{"name":v},["due_date"])[0]
+			for d in self.get("references"):
+				if d.allocated_amount:
+					ref_details=frappe.get_all("Fee Component",{"parent":v,"fees_category":d.fees_category},["grand_fee_amount","outstanding_fees","fees_category"])
+					list_final=[]
+					ini_list = ['total_amount','outstanding_amount','fees_category', 'exchange_rate','bill_no','due_date']
+					for t in ref_details:
+						t['exchange_rate']=1
+						t["bill_no"]=None
+						t.update(due_date)
+						final_dict = dict(zip(ini_list, list(t.values())))
+						list_final.append(final_dict)
+					ref_details=list_final
+					for t in ref_details:
+						if t['fees_category']==d.fees_category:
+
+							for field, value in iteritems(t):
+								if d.exchange_gain_loss:
+									# for cases where gain/loss is booked into invoice
+									# exchange_gain_loss is calculated from invoice & populated
+									# and row.exchange_rate is already set to payment entry's exchange rate
+									# refer -> `update_reference_in_payment_entry()` in utils.py
+									continue
+								if field == 'exchange_rate' or not d.get(field) or force :
+									if field != 'fees_category':
+										
+										if field=="outstanding_amount":
+											value=d.outstanding_amount+d.allocated_amount	
+										d.db_set(field, value)									
 
 	def validate_duplicate_entry(self):
 		###################################################################################

@@ -36,6 +36,7 @@ doctype_js = {
 	"Fees" : "public/js/fees.js",
 	"Fee Schedule":"public/js/fee_schedule.js",
 	"Fee Structure" : "public/js/fee_structure.js",
+	"Payment Entry" : "public/js/payment_entry.js",
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -113,14 +114,15 @@ doc_events = {
         "on_cancel":"custom_finance.custom_finance.doctype.fees.on_cancel"
     },
 	"Fee Structure":{
-	"validate":"custom_finance.custom_finance.validations.fee_structure.validate"
+		"validate":"custom_finance.custom_finance.validations.fee_structure.validate"
     },
 	"Fee Schedule":{
-	"validate":"custom_finance.custom_finance.validations.fee_schedule.validate"
+		"validate":"custom_finance.custom_finance.validations.fee_schedule.validate"
     },
 	"Payment Entry":{
-		"on_submit":"custom_finance.custom_finance.doctype.Fees_extention.on_submit"
-		}
+		"on_submit":"custom_finance.custom_finance.doctype.Fees_extention.on_submit",
+		"on_cancel":"custom_finance.custom_finance.doctype.Fees_extention.on_cancel"
+	}
 }
 
 # Scheduled Tasks
