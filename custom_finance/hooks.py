@@ -121,7 +121,8 @@ doc_events = {
     },
 	"Payment Entry":{
 		"on_submit":"custom_finance.custom_finance.doctype.Fees_extention.on_submit",
-		"on_cancel":"custom_finance.custom_finance.doctype.Fees_extention.on_cancel"
+		"on_cancel":"custom_finance.custom_finance.doctype.Fees_extention.on_cancel",
+		"validate": "custom_finance.custom_finance.doctype.Fees_extention.validate",
 	}
 }
 

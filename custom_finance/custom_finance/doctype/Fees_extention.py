@@ -1,6 +1,11 @@
+from typing_extensions import Self
 import frappe
 from frappe.model.mapper import get_mapped_doc
 from ed_tec.ed_tec.utils import duplicate_row_validation
+from frappe.utils import flt
+
+def validate(self,method):
+    calucate_total(self)
 
 def on_submit(self,method):
     child_table_fees_outsatnding(self)
@@ -33,3 +38,9 @@ def child_table_fees_outsatnding(self):
         frappe.db.set_value("Fees",v, "outstanding_amount",sum(Outstanding_amount))
         Outstanding_amount=[]
 
+def calucate_total(self):
+    allocated_amount=[]
+    for d in self.get("references"):
+        # allocated_amount=flt(d.allocated_amount)
+        allocated_amount.append(d.allocated_amount)
+    self.paid_amount=sum(allocated_amount)
