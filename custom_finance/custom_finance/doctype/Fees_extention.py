@@ -27,9 +27,6 @@ def child_table_fees_outsatnding(self):
                     if t['fees_category']==d.fees_category:
                         Outstanding_amount.append(d.outstanding_amount)
                         frappe.db.set_value("Fee Component",t['name'], "outstanding_fees",d.outstanding_amount)
-        # Outstanding_amount=[100,200,250]
-        # print("\n\n\n\n\n\n\n")
-        # print(v)
-        # print(sum(Outstanding_amount))
-    # a.s
+        frappe.db.set_value("Fees",v, "outstanding_amount",sum(Outstanding_amount))
+        Outstanding_amount=[]
 
