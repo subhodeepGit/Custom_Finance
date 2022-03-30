@@ -12,15 +12,24 @@ def child_table_fees_outsatnding(self):
     reference_name=[]
     for i in z:
         reference_name.append(i.reference_name)
+    reference_name = list(set(reference_name))    
     #####
     ### fees child doc
+    Outstanding_amount=[]
     for v in reference_name:
         # ref_details=frappe.get_all("Fee Component",{"parent":s.reference_name},["name","grand_fee_amount","outstanding_fees","fees_category"])
-        ref_details=frappe.get_all("Fee Component",{"parent":v},["name","grand_fee_amount","outstanding_fees","fees_category"])
+        # ref_details=frappe.get_all("Fee Component",{"parent":v},["name","grand_fee_amount","outstanding_fees","fees_category"])
         #####
         for d in self.get("references"):
             if d.allocated_amount:
+                ref_details=frappe.get_all("Fee Component",{"parent":v,"fees_category":d.fees_category},["name","grand_fee_amount","outstanding_fees","fees_category"])
                 for t in ref_details:
                     if t['fees_category']==d.fees_category:
+                        Outstanding_amount.append(d.outstanding_amount)
                         frappe.db.set_value("Fee Component",t['name'], "outstanding_fees",d.outstanding_amount)
+        # Outstanding_amount=[100,200,250]
+        # print("\n\n\n\n\n\n\n")
+        # print(v)
+        # print(sum(Outstanding_amount))
+    # a.s
 

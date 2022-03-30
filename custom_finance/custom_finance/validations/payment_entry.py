@@ -85,11 +85,13 @@ class PaymentEntry(AccountsController):
 			frappe.throw(_("Difference Amount must be zero"))
 		self.make_gl_entries()###
 		self.update_expense_claim()
-		self.update_outstanding_amounts()###
+		self.update_outstanding_amounts()##
 		self.update_advance_paid()
 		self.update_donation()
 		self.update_payment_schedule()######################
 		self.set_status()
+		
+		
 
 	def on_cancel(self):
 		self.ignore_linked_doctypes = ('GL Entry', 'Stock Ledger Entry')
@@ -119,27 +121,39 @@ class PaymentEntry(AccountsController):
 		reference_name=[]
 		for i in z:
 			reference_name.append(i.reference_name)
+		reference_name = list(set(reference_name))	
 		############################
 		# ref_details=frappe.get_all("Fee Component",{"parent":s.reference_name},["grand_fee_amount","outstanding_fees","fees_category"])
 		# due_date=frappe.get_all("Fees",{"name":s.reference_name},["due_date"])[0]
 		for v in reference_name:
-			ref_details=frappe.get_all("Fee Component",{"parent":v},["grand_fee_amount","outstanding_fees","fees_category"])
+			# ref_details=frappe.get_all("Fee Component",{"parent":v},["grand_fee_amount","outstanding_fees","fees_category"])
 			due_date=frappe.get_all("Fees",{"name":v},["due_date"])[0]
-			list_final=[]
-			ini_list = ['total_amount','outstanding_amount','fees_category', 'exchange_rate','bill_no','due_date']
-			for t in ref_details:
-				t['exchange_rate']=1
-				t["bill_no"]=None
-				t.update(due_date)
-				final_dict = dict(zip(ini_list, list(t.values())))
-				list_final.append(final_dict)
-			ref_details=list_final
+			# list_final=[]
+			# ini_list = ['total_amount','outstanding_amount','fees_category', 'exchange_rate','bill_no','due_date']
+			# for t in ref_details:
+			# 	t['exchange_rate']=1
+			# 	t["bill_no"]=None
+			# 	t.update(due_date)
+			# 	final_dict = dict(zip(ini_list, list(t.values())))
+			# 	list_final.append(final_dict)
+			# ref_details=list_final
 			for d in self.get("references"):
 				if d.allocated_amount:
 					# ref_details = get_reference_details(d.reference_doctype,
 					# 	d.reference_name, self.party_account_currency)
+					ref_details=frappe.get_all("Fee Component",{"parent":v,"fees_category":d.fees_category},["grand_fee_amount","outstanding_fees","fees_category"])
+					list_final=[]
+					ini_list = ['total_amount','outstanding_amount','fees_category', 'exchange_rate','bill_no','due_date']
+					for t in ref_details:
+						t['exchange_rate']=1
+						t["bill_no"]=None
+						t.update(due_date)
+						final_dict = dict(zip(ini_list, list(t.values())))
+						list_final.append(final_dict)
+					ref_details=list_final
 					for t in ref_details:
 						if t['fees_category']==d.fees_category:
+
 							for field, value in iteritems(t):
 								if d.exchange_gain_loss:
 									# for cases where gain/loss is booked into invoice
@@ -147,10 +161,9 @@ class PaymentEntry(AccountsController):
 									# and row.exchange_rate is already set to payment entry's exchange rate
 									# refer -> `update_reference_in_payment_entry()` in utils.py
 									continue
-
 								if field == 'exchange_rate' or not d.get(field) or force :
 									if field != 'fees_category':
-
+										
 										if field=="outstanding_amount":
 											value=d.outstanding_amount-d.allocated_amount
 										d.db_set(field, value)
