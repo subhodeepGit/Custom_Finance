@@ -62,7 +62,7 @@ class PaymentEntry(AccountsController):
 		self.validate_bank_accounts()
 		self.set_exchange_rate()
 		self.validate_mandatory()
-		self.validate_reference_documents()
+		self.validate_reference_documents()###################
 		self.set_tax_withholding()
 		self.set_amounts()
 		self.validate_amounts()
@@ -1645,21 +1645,28 @@ def get_payment_entry(dt, dn, party_amount=None, bank_account=None, bank_amount=
 	#################################
 	pe.paid_from = party_account if payment_type=="Receive" else bank.account
 	################################
-	pe.paid_to = party_account if payment_type=="Pay" else bank.account
+	#refund problem
+	# pe.paid_to = party_account if payment_type=="Pay" else bank.account
+	pe.paid_to = party_account 
+	if payment_type=="Pay":
+		pe.paid_to = bank.account 
+	else:
+		pe.paid_to = bank.account
+	##################################################	
 	pe.paid_from_account_currency = party_account_currency \
 		if payment_type=="Receive" else bank.account_currency
 	pe.paid_to_account_currency = party_account_currency if payment_type=="Pay" else bank.account_currency
 	pe.paid_amount = paid_amount
 	pe.received_amount = received_amount
 	pe.letter_head = doc.get("letter_head")
-	pe.fee_structure = doc.fee_structure
+	pe.fee_structure = doc.fee_structure	
 
 
 	if pe.party_type in ["Customer", "Supplier"]:
 		bank_account = get_party_bank_account(pe.party_type, pe.party)
 		pe.set("bank_account", bank_account)
 		pe.set_bank_account_data()
-
+	
 	# only Purchase Invoice can be blocked individually
 	if doc.doctype == "Purchase Invoice" and doc.invoice_is_blocked():
 		frappe.msgprint(_('{0} is on hold till {1}').format(doc.name, doc.release_date))
@@ -1692,25 +1699,46 @@ def get_payment_entry(dt, dn, party_amount=None, bank_account=None, bank_amount=
 				})
 			else:
 				for t in party_account:
-					pe.append("references", {
-						'reference_doctype': dt,
-						'reference_name': dn,
-						"bill_no": doc.get("bill_no"),
-						"due_date": doc.get("due_date"),
-						# 'total_amount': grand_total,"grand_fee_amount"
-						'total_amount': t["grand_fee_amount"],
-						# 'outstanding_amount': outstanding_amount,'outstanding_fees'
-						# 'allocated_amount': outstanding_amount,
-						'outstanding_amount': t['outstanding_fees'],
-						'allocated_amount': t['outstanding_fees'],
-						'fees_category':t['fees_category'],
-						'account_paid_from':t['receivable_account'],
-					})
+					if payment_type=="Pay":
+						ref_details=frappe.get_all("Fee Component",{"parent":dn,"fees_category":t['fees_category']},["amount"])
+						outstanding_fees=ref_details[0]['amount']
+						pe.append("references", {
+							'reference_doctype': dt,
+							'reference_name': dn,
+							"bill_no": doc.get("bill_no"),
+							"due_date": doc.get("due_date"),
+							# 'total_amount': grand_total,"grand_fee_amount"
+							'total_amount': outstanding_fees,
+							# 'outstanding_amount': outstanding_amount,'outstanding_fees'
+							# 'allocated_amount': outstanding_amount,
+							'outstanding_amount': outstanding_fees,
+							'allocated_amount':outstanding_fees,
+							'fees_category':t['fees_category'],
+							# 'account_paid_from':t['receivable_account'],
+							'account_paid_to':t['receivable_account'],
+						})
+						
+					else: 
+						outstanding_fees=t['outstanding_fees']
+						pe.append("references", {
+							'reference_doctype': dt,
+							'reference_name': dn,
+							"bill_no": doc.get("bill_no"),
+							"due_date": doc.get("due_date"),
+							# 'total_amount': grand_total,"grand_fee_amount"
+							'total_amount': t["grand_fee_amount"],
+							# 'outstanding_amount': outstanding_amount,'outstanding_fees'
+							# 'allocated_amount': outstanding_amount,
+							'outstanding_amount': outstanding_fees,
+							'allocated_amount':outstanding_fees,
+							'fees_category':t['fees_category'],
+							'account_paid_from':t['receivable_account'],
+						})
 
 
 	pe.setup_party_account_field()
 	pe.set_missing_values()
-
+	
 	if party_account and bank:
 		if dt == "Employee Advance":
 			reference_doc = doc
@@ -1723,8 +1751,9 @@ def get_payment_entry(dt, dn, party_amount=None, bank_account=None, bank_amount=
 				'amount': discount_amount * (-1 if payment_type == "Pay" else 1)
 			})
 			pe.set_difference_amount()
-
-	pe.paid_from=doc.receivable_account		
+	
+	if payment_type=="Receive": 
+		pe.paid_from=doc.receivable_account	
 	return pe
 
 def get_bank_cash_account(doc, bank_account):

@@ -1,8 +1,5 @@
 from typing_extensions import Self
 import frappe
-from frappe.model.mapper import get_mapped_doc
-from ed_tec.ed_tec.utils import duplicate_row_validation
-from frappe.utils import flt
 
 def validate(self,method):
     calucate_total(self)
