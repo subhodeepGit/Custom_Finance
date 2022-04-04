@@ -40,4 +40,4 @@ def calucate_total(self):
     for d in self.get("references"):
         # allocated_amount=flt(d.allocated_amount)
         allocated_amount.append(d.allocated_amount)
-    self.paid_amount=sum(allocated_amount)
+    self.paid_amount=abs(sum(allocated_amount))

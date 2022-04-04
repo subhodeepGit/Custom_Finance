@@ -402,7 +402,6 @@ class PaymentEntry(AccountsController):
 			valid_reference_doctypes = ("Journal Entry")
 		elif self.party_type == "Donor":
 			valid_reference_doctypes = ("Donation")
-
 		for d in self.get("references"):
 			if not d.allocated_amount:
 				continue
@@ -415,7 +414,6 @@ class PaymentEntry(AccountsController):
 					frappe.throw(_("{0} {1} does not exist").format(d.reference_doctype, d.reference_name))
 				else:
 					ref_doc = frappe.get_doc(d.reference_doctype, d.reference_name)
-
 					if d.reference_doctype != "Journal Entry":
 						if self.party != ref_doc.get(scrub(self.party_type)):
 							frappe.throw(_("{0} {1} is not associated with {2} {3}")
@@ -432,7 +430,6 @@ class PaymentEntry(AccountsController):
 							ref_party_account = ref_doc.credit_to
 						elif self.party_type=="Employee":
 							ref_party_account = ref_doc.payable_account
-
 						if ref_party_account != self.party_account:
 								frappe.throw(_("{0} {1} is associated with {2}, but Party Account is {3}")
 									.format(d.reference_doctype, d.reference_name, ref_party_account, self.party_account))
@@ -786,7 +783,7 @@ class PaymentEntry(AccountsController):
 ###################################################################################################################
 	def make_gl_entries(self, cancel=0, adv_adj=0):
 		if self.payment_type in ("Receive", "Pay") and not self.get("party_account_field"):
-			self.setup_party_account_field()
+			self.setup_party_account_field()	
 		gl_entries = []
 		self.add_party_gl_entries(gl_entries)
 		self.add_bank_gl_entries(gl_entries)
@@ -806,18 +803,32 @@ class PaymentEntry(AccountsController):
 				against_account = self.paid_from
 			# self.party_account=account_paid_from
 			party_gl_list=[]
-			for t in frappe.db.get_all('Payment Entry Reference',{"parent":self.name},["account_paid_from","fees_category"]):
-				party_gl_dict = self.get_gl_dict({
-					# "account": self.party_account,
-					"account": t["account_paid_from"],
-					"party_type": self.party_type,
-					"party": self.party,
-					"against": against_account,
-					"account_currency": self.party_account_currency,
-					"cost_center": self.cost_center,
-					"fees_category":t["fees_category"]
-				}, item=self)
-				party_gl_list.append(party_gl_dict)
+			if self.payment_type=="Receive":
+				for t in frappe.db.get_all('Payment Entry Reference',{"parent":self.name},["account_paid_from","fees_category"]):
+					party_gl_dict = self.get_gl_dict({
+						# "account": self.party_account,
+						"account": t["account_paid_from"],
+						"party_type": self.party_type,
+						"party": self.party,
+						"against": against_account,
+						"account_currency": self.party_account_currency,
+						"cost_center": self.cost_center,
+						"fees_category":t["fees_category"]
+					}, item=self)
+					party_gl_list.append(party_gl_dict)
+			else:
+				for t in frappe.db.get_all('Payment Entry Reference',{"parent":self.name},["account_paid_to","fees_category"]):
+					party_gl_dict = self.get_gl_dict({
+						# "account": self.party_account,
+						"account": t["account_paid_to"],
+						"party_type": self.party_type,
+						"party": self.party,
+						"against": against_account,
+						"account_currency": self.party_account_currency,
+						"cost_center": self.cost_center,
+						"fees_category":t["fees_category"]
+					}, item=self)
+					party_gl_list.append(party_gl_dict)		
 			del party_gl_dict	
 			party_gl_dict=party_gl_list	
 
@@ -1754,6 +1765,8 @@ def get_payment_entry(dt, dn, party_amount=None, bank_account=None, bank_amount=
 	
 	if payment_type=="Receive": 
 		pe.paid_from=doc.receivable_account	
+	if payment_type=="Pay":
+		pe.paid_to=doc.receivable_account
 	return pe
 
 def get_bank_cash_account(doc, bank_account):
