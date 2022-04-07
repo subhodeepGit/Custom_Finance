@@ -455,7 +455,7 @@
    "insert_after": "party_name",
    "label": "Student Email",
    "length": 0,
-   "mandatory_depends_on": "eval:(doc.mode_of_payment == 'Online Payment')",
+   "mandatory_depends_on": "",
    "modified": "2022-04-06 16:39:29.445109",
    "modified_by": "Administrator",
    "name": "Payment Entry-student_email",
