@@ -134,7 +134,9 @@ def make_refund_fees(source_name, target_doc=None):
             target.append("components",{
 					"fees_category":d.fees_category,
 					"amount":-d.amount,
-					"description":d.description
+					"description":d.description,
+                    "income_account":d.income_account,
+                    "receivable_account":d.receivable_account
 				})
         target.grand_total=(-source.grand_total)
         target.is_return=1

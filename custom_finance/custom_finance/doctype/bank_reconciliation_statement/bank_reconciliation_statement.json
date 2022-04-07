@@ -33,7 +33,7 @@
   {
    "fieldname": "particulares",
    "fieldtype": "Data",
-   "label": "Particulares"
+   "label": "Particulars"
   },
   {
    "fieldname": "amount",
@@ -118,7 +118,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-04-05 12:06:24.058252",
+ "modified": "2022-04-07 12:39:47.350644",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Bank Reconciliation Statement",
