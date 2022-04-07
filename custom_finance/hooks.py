@@ -89,11 +89,10 @@ doctype_js = {
 
 override_doctype_class = {
 	# "ToDo": "custom_app.overrides.CustomToDo"
-	"Fees":"custom_finance.custom_finance.validations.fees.Fees",
-	"Payment Entry":"custom_finance.custom_finance.validations.payment_entry.PaymentEntry",
-	"Fee Structure":"custom_finance.custom_finance.doctype.fee_structure.FeeStructure",
-	# "Payment Entry":"custom_finance.custom_finance.validations.payment_entry.PaymentEntry"
 	
+	"Fees":"custom_finance.custom_finance.doctype.fees.Fees",
+	"Payment Entry":"custom_finance.custom_finance.doctype.payment_entry.PaymentEntry",
+	"Fee Structure":"custom_finance.custom_finance.doctype.fee_structure.FeeStructure",
 }
 
 # Document Events
@@ -107,11 +106,12 @@ override_doctype_class = {
 # 		"on_trash": "method"
 #	}
 # }
+
 doc_events = {
 	"Fees":{
-        "on_submit":"custom_finance.custom_finance.doctype.fees.on_submit",
-        "validate":"custom_finance.custom_finance.doctype.fees.validate",
-        "on_cancel":"custom_finance.custom_finance.doctype.fees.on_cancel"
+        "on_submit":"custom_finance.custom_finance.validations.fees.on_submit",
+        "validate":"custom_finance.custom_finance.validations.fees.validate",
+        "on_cancel":"custom_finance.custom_finance.validations.fees.on_cancel"
     },
 	"Fee Structure":{
 		"validate":"custom_finance.custom_finance.validations.fee_structure.validate"
@@ -120,9 +120,10 @@ doc_events = {
 		"validate":"custom_finance.custom_finance.validations.fee_schedule.validate"
     },
 	"Payment Entry":{
-		"on_submit":"custom_finance.custom_finance.doctype.Fees_extention.on_submit",
-		"on_cancel":"custom_finance.custom_finance.doctype.Fees_extention.on_cancel",
-		"validate": "custom_finance.custom_finance.doctype.Fees_extention.validate",
+		"on_submit":["custom_finance.custom_finance.validations.fees_extention.on_submit",
+					"custom_finance.custom_finance.validations.online_fees.on_submit"],
+		"on_cancel":"custom_finance.custom_finance.validations.fees_extention.on_cancel",
+		"validate": "custom_finance.custom_finance.validations.fees_extention.validate",
 	}
 }
 
@@ -157,17 +158,16 @@ doc_events = {
 #
 override_whitelisted_methods = {
 	# "frappe.desk.doctype.event.event.get_events": "custom_finance.event.get_events"
-	# "erpnext.accounts.doctype.payment_entry.get_payment_entry":"custom_finance.custom_finance.validations.payment_entry.get_payment_entry",
-	"erpnext.accounts.doctype.payment_entry.payment_entry.get_payment_entry":"custom_finance.custom_finance.validations.payment_entry.get_payment_entry",	
-	"erpnext.accounts.doctype.payment_entry.payment_entry.get_party_details":"custom_finance.custom_finance.validations.payment_entry.get_party_details",
-	"erpnext.accounts.doctype.payment_entry.payment_entry.get_account_details":"custom_finance.custom_finance.validations.payment_entry.get_account_details",
-	"erpnext.accounts.doctype.payment_entry.payment_entry.get_outstanding_reference_documents":"custom_finance.custom_finance.validations.payment_entry.get_outstanding_reference_documents",
-	"erpnext.accounts.doctype.payment_entry.payment_entry.get_company_defaults":"custom_finance.custom_finance.validations.payment_entry.get_company_defaults",
-	"erpnext.accounts.doctype.payment_entry.payment_entry.get_reference_details":"custom_finance.custom_finance.validations.payment_entry.get_reference_details",
-	"erpnext.accounts.doctype.payment_entry.payment_entry.get_party_and_account_balance":"custom_finance.custom_finance.validations.payment_entry.get_party_and_account_balance",
+	"erpnext.accounts.doctype.payment_entry.payment_entry.get_payment_entry":"custom_finance.custom_finance.doctype.payment_entry.get_payment_entry",	
+	"erpnext.accounts.doctype.payment_entry.payment_entry.get_party_details":"custom_finance.custom_finance.doctype.payment_entry.get_party_details",
+	"erpnext.accounts.doctype.payment_entry.payment_entry.get_account_details":"custom_finance.custom_finance.doctype.payment_entry.get_account_details",
+	"erpnext.accounts.doctype.payment_entry.payment_entry.get_outstanding_reference_documents":"custom_finance.custom_finance.doctype.payment_entry.get_outstanding_reference_documents",
+	"erpnext.accounts.doctype.payment_entry.payment_entry.get_company_defaults":"custom_finance.custom_finance.doctype.payment_entry.get_company_defaults",
+	"erpnext.accounts.doctype.payment_entry.payment_entry.get_reference_details":"custom_finance.custom_finance.doctype.payment_entry.get_reference_details",
+	"erpnext.accounts.doctype.payment_entry.payment_entry.get_party_and_account_balance":"custom_finance.custom_finance.doctype.payment_entry.get_party_and_account_balance",
 	"erpnext.education.api.get_fee_components":"custom_finance.custom_finance.validations.api.get_fee_components",
 	"erpnext.education.doctype.fee_structure.fee_structure.make_fee_schedule":"custom_finance.custom_finance.doctype.fee_structure.make_fee_schedule",
-	"ed_tec.ed_tec.doctype.fees.make_refund_fees":"custom_finance.custom_finance.doctype.fees.make_refund_fees",
+	"ed_tec.ed_tec.doctype.fees.make_refund_fees":"custom_finance.custom_finance.validations.fees.make_refund_fees",
 }
 #
 # each overriding function accepts a `data` argument;
