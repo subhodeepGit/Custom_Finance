@@ -30,7 +30,8 @@ def validate(self,method):
                 else:
                     frappe.throw("This UTR Belongs to other Student")            
             else:
-                frappe.throw("UTR not Found")               
+                frappe.throw("UTR not Found")     
+    allocation_amount(self)                      
 
 def on_submit(self,method):
     child_table_fees_outsatnding(self)
@@ -89,3 +90,23 @@ def calucate_total(self):
         # allocated_amount=flt(d.allocated_amount)
         allocated_amount.append(d.allocated_amount)
     self.paid_amount=abs(sum(allocated_amount))
+
+def allocation_amount(self):
+    role_profile_name = frappe.db.get_value("User",frappe.session.user, ["role_profile_name"], as_dict=True)
+    if role_profile_name["role_profile_name"]=="Student":
+        paid_amount=self.paid_amount
+        for d in self.get("references"):
+            # d.allocated_amount=300
+            if d.outstanding_amount==paid_amount:
+                d.allocated_amount=paid_amount
+                paid_amount=paid_amount-d.allocated_amount
+            elif d.outstanding_amount<paid_amount:
+                d.allocated_amount=d.outstanding_amount
+                paid_amount=paid_amount-d.outstanding_amount
+            elif d.outstanding_amount>paid_amount:
+                d.allocated_amount=paid_amount
+                paid_amount=paid_amount-paid_amount  
+            else:
+                 d.allocated_amount=0   
+    else:
+        pass    
