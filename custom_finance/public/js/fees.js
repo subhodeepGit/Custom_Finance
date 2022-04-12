@@ -191,8 +191,8 @@ frappe.ui.form.on("Fee Component", "amount", function(frm, cdt, cdn) {
 frappe.ui.form.on("Fee Component", "waiver_amount", function(frm, cdt, cdn) {
     var d = locals[cdt][cdn];
     if(d.waiver_amount && d.amount){
-        d.amount =  d.amount -d.waiver_amount
        d.total_waiver_amount  = d.waiver_amount
+       d.amount =  d.grand_fee_amount -d.waiver_amount
         refresh_field("amount", d.name, d.parentfield);
         refresh_field("total_waiver_amount", d.name, d.parentfield);
   
