@@ -23,5 +23,21 @@ frappe.ui.form.on('Fee Schedule',{
                 }
             };
         });
+        if (frm.doc.fee_creation_status === 'Successful') {
+			frm.add_custom_button(__('Accounting Ledger'), function() {
+				frappe.route_options = {
+					// voucher_no: frm.doc.name,
+                    voucher_no: frm.doc.name,
+					from_date: frm.doc.posting_date,
+					to_date: moment(frm.doc.modified).format('YYYY-MM-DD'),
+					company: frm.doc.company,
+					group_by: '',
+					show_cancelled_entries: frm.doc.docstatus === 2
+				};
+				frappe.set_route("query-report", "Fee structure General Ledger");
+                // frappe.set_route("query-report", "General Ledger");
+                
+			});
+		}
     }
 })
