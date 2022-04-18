@@ -47,7 +47,7 @@ frappe.query_reports["Fee structure General Ledger"] = {
 		},
 		{
 			"fieldname":"voucher_no",
-			"label": __("Fee Structure No"),
+			"label": __("Fee Schedule No"),
 			"fieldtype": "Data",
 			on_change: function() {
 				frappe.query_report.set_filter_value('group_by', "Group by Voucher (Consolidated)");
