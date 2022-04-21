@@ -1534,14 +1534,14 @@
    "_comments": null,
    "_liked_by": null,
    "_user_tags": null,
-   "creation": "2022-03-28 15:55:14.032985",
+   "creation": "2022-04-21 12:47:21.217596",
    "default_value": null,
    "doc_type": "Fees",
    "docstatus": 0,
    "doctype_or_field": "DocField",
    "field_name": "receivable_account",
    "idx": 0,
-   "modified": "2022-03-28 15:55:14.032985",
+   "modified": "2022-04-21 12:47:21.217596",
    "modified_by": "Administrator",
    "name": "Fees-receivable_account-default",
    "owner": "Administrator",
@@ -1551,7 +1551,7 @@
    "property": "default",
    "property_type": "Text",
    "row_name": null,
-   "value": "Cash - SOUL"
+   "value": "Cash - POLYTECHNIC"
   },
   {
    "_assign": null,
