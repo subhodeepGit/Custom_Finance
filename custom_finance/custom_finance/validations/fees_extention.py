@@ -1,4 +1,5 @@
 from typing_extensions import Self
+from unicodedata import name
 import frappe
 
 def validate(self,method):
@@ -35,6 +36,7 @@ def validate(self,method):
 
 def on_submit(self,method):
     child_table_fees_outsatnding(self)
+    refundable_fees_outsatnding(self,cancel=0)
     if self.mode_of_payment=="NEFT" or self.mode_of_payment=="RTGS" or self.mode_of_payment=="IMPS":
         
         Recon_info=frappe.get_all("Bank Reconciliation Statement",{"unique_transaction_reference_utr":self.reference_no,"type_of_transaction":self.mode_of_payment},
@@ -44,10 +46,11 @@ def on_submit(self,method):
         count=int(Recon_info["count"])+1
         frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"total_allocated_amount",Grant_total_amount)
         frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"party_name",self.party)
-        frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"count",count)   
+        frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"count",count)  
 
 def on_cancel(self,method):
     child_table_fees_outsatnding(self)
+    refundable_fees_outsatnding(self,cancel=1)
     if self.mode_of_payment=="NEFT" or self.mode_of_payment=="RTGS" or self.mode_of_payment=="IMPS":
         Recon_info=frappe.get_all("Bank Reconciliation Statement",{"unique_transaction_reference_utr":self.reference_no,"type_of_transaction":self.mode_of_payment},
                                 ["name","amount","total_allocated_amount","date","count"])
@@ -109,3 +112,14 @@ def allocation_amount(self):
                  d.allocated_amount=0   
     else:
         pass    
+
+
+def refundable_fees_outsatnding(self,cancel):
+    for d in self.get("references"):
+        if d.fees_category=="Fees Refundable / Adjustable":
+            if cancel==0:
+                frappe.db.set_value("Payment Entry Reference",d.name, "outstanding_amount",0.0) 
+                # d.outstanding_amount=0.0
+            elif cancel==1:  
+                # frappe.db.set_value("Payment Entry Reference",d.name, "outstanding_amount",d.total_amount) 
+                d.outstanding_amount=d.total_amount    

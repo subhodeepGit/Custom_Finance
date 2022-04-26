@@ -250,3 +250,54 @@ frappe.ui.form.on("Payment Entry","reference_no", function(frm){
 	}
 
 });
+
+frappe.ui.form.on('Payment Entry', {
+	onload: function(frm) {
+		frm.set_query("account_paid_from","references", function(_doc, cdt, cdn) {
+			var d = locals[cdt][cdn];
+			return {
+				filters: {
+					'name': "Fees Refundable / Adjustable - KP",
+					'company': frm.doc.company,
+					// 'account_type': d.account_type = 'Income Account',
+					'is_group': d.is_group = 0,
+				}
+			};
+		});
+		frm.set_query("fees_category","references", function(_doc, cdt, cdn) {
+			var d = locals[cdt][cdn];
+			return {
+				filters: {
+					'name': "Fees Refundable / Adjustable",
+				}
+			};
+		});
+		erpnext.accounts.dimensions.setup_dimension_filters(frm, frm.doctype);
+	},
+})
+
+frappe.ui.form.on('Payment Entry Reference',"reference_name",function(frm, cdt, cdn){
+	var d=locals[cdt][cdn];
+	if(d.fees_category=="Fees Refundable / Adjustable" && d.account_paid_from=="Fees Refundable / Adjustable - KP"){
+		d.total_amount=0
+		d.outstanding_amount=0
+		d.allocated_amount=0
+	}
+})
+
+
+// frappe.ui.form.on("Payment Entry Reference", "allocated_amount", function(frm, cdt, cdn) {
+//     var d = locals[cdt][cdn];
+//         frappe.db.get_value("Payment Entry Reference", {"allocated_amount": d.allocated_amount}, "total_amount", function(value) {
+//             d.total_amount = value.total_amount;
+//         });
+// });
+
+frappe.ui.form.on('Payment Entry Reference',"allocated_amount",function(frm, cdt, cdn){
+	var d=locals[cdt][cdn];
+	if(d.fees_category=="Fees Refundable / Adjustable" && d.account_paid_from=="Fees Refundable / Adjustable - KP"){
+		d.total_amount=d.allocated_amount
+		d.outstanding_amount=d.allocated_amount
+	}
+})
+
