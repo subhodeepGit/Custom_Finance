@@ -1248,6 +1248,7 @@ def get_outstanding_fees(args):
 	filter.append(["Student","=",args.get('party')])
 	filter.append(['posting_date', 'between',[args.get('from_posting_date'),args.get('to_posting_date')]])
 	filter.append(["outstanding_amount",">",0])	
+	filter.append(["docstatus","=",1])
 
 	if args.get('outstanding_amt_greater_than') > 0:
 		filter.append(["outstanding_amount",">",args.get('outstanding_amt_greater_than')])
@@ -1266,12 +1267,14 @@ def get_outstanding_fees(args):
 	for t in fees_info:
 		fee_component=frappe.db.get_all("Fee Component", {"parent":t['name']},
 									["name","fees_category","outstanding_fees","receivable_account","income_account","outstanding_fees","amount"])
-		if fee_component[0]["outstanding_fees"]	>0:			
-			fee_component[0]['posting_date']=t['posting_date']	
-			fee_component[0]['Type']='Fees'
-			fee_component[0]['reference_name']=t['name']	
-			fee_component_info.append(fee_component[0])
+		for j in fee_component:
+			if j["outstanding_fees"]>0:	
+				j['posting_date']=t['posting_date']
+				j['Type']='Fees'
+				j['reference_name']=t['name']
+				fee_component_info.append(j)	
 	data=fee_component_info
+	# fee_component_info [{'name': '46914acb77', 'fees_category': 'Development Fees', 'outstanding_fees': 5800.0, 'receivable_account': 'Development Fees - KP', 'income_account': 'Development Fees Income - KP', 'amount': 5800.0, 'posting_date': datetime.date(2022, 4, 27), 'Type': 'Fees', 'reference_name': 'EDU-FEE-2022-00051'}, {'name': '21f7da294d', 'fees_category': 'Development Fees', 'outstanding_fees': 5800.0, 'receivable_account': 'Development Fees - KP', 'income_account': 'Development Fees Income - KP', 'amount': 5800.0, 'posting_date': datetime.date(2022, 4, 21), 'Type': 'Fees', 'reference_name': 'EDU-FEE-2022-00010'}]
 	# frappe.db.get_all("Fee Component", {"parent":})
 
 	# if args.get('party_type') == 'Member':
