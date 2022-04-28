@@ -32,7 +32,9 @@ def validate(self,method):
                     frappe.throw("This UTR Belongs to other Student")            
             else:
                 frappe.throw("UTR not Found")     
-    allocation_amount(self)                      
+    allocation_amount(self)
+    if self.mode_of_payment=="Fees Refundable / Adjustable":   
+        refundable_amount(self)
 
 def on_submit(self,method):
     child_table_fees_outsatnding(self)
@@ -123,3 +125,43 @@ def refundable_fees_outsatnding(self,cancel):
             elif cancel==1:  
                 # frappe.db.set_value("Payment Entry Reference",d.name, "outstanding_amount",d.total_amount) 
                 d.outstanding_amount=d.total_amount    
+
+
+def refundable_amount(self):
+    student=self.party
+    gl_entry_fees=frappe.db.get_all("GL Entry",filters=[["party","=",student],["voucher_type","=",'Payment Entry'],['against_voucher_type','=','Fees'],['account','like','%Fees Refundable / Adjustable%']],
+                                 fields=["name","voucher_type","account","credit",'voucher_no'])
+                        
+    gl_entry_payment=frappe.db.get_all("GL Entry",filters=[["against","=",student],['voucher_type',"=","Payment Entry"],['account','like','%Fees Refundable / Adjustable %']],
+                            fields=["name","voucher_type","account","debit",'voucher_no'])
+                            
+    extra_amount_paid=0
+    for t in gl_entry_fees:
+        extra_amount_paid=extra_amount_paid+t['credit']
+
+    ref_amount_adjusted=0    
+    for t in gl_entry_payment:
+        ref_amount_adjusted=ref_amount_adjusted+t['debit']
+
+    total_ref_amount_adjusted=ref_amount_adjusted+self.paid_amount
+
+    adjusted_amount=extra_amount_paid-total_ref_amount_adjusted
+    if adjusted_amount>0:
+        if extra_amount_paid >= self.paid_amount:
+            pass
+        # elif extra_amount_paid <= self.paid_amount:
+        #     total_paid_amount=0
+        #     for d in self.get("references"):
+        #         total_paid_amount=total_paid_amount+d.allocated_amount
+        #     if extra_amount_paid >= total_paid_amount:
+        #         pass 
+        #     else:
+        #         frappe.throw("Fees Refundable / Adjustable amount is more than paid amount")      
+        else:
+            frappe.throw("Fees Refundable / Adjustable amount is more than paid amount")    
+    elif adjusted_amount ==0:
+        pass
+    else:
+        frappe.throw("Fees Refundable / Adjustable amount is more than paid amount")    
+
+

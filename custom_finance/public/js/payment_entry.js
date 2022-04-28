@@ -272,6 +272,35 @@ frappe.ui.form.on('Payment Entry', {
 				}
 			};
 		});
+		frm.set_query("reference_name", "references", function(doc, cdt, cdn) {
+			const child = locals[cdt][cdn];
+			let ost = doc.outstanding_amount;
+			alert(doc.company)
+			const filters = {"outstanding_amount": ost > 0, "docstatus": 1, "company": doc.company};
+			const party_type_doctypes = ['Sales Invoice', 'Sales Order', 'Purchase Invoice',
+				'Purchase Order', 'Expense Claim', 'Fees', 'Dunning', 'Donation'];
+
+			if (in_list(party_type_doctypes, child.reference_doctype)) {
+				filters[doc.party_type.toLowerCase()] = doc.party;
+			}
+
+			if(child.reference_doctype == "Expense Claim") {
+				filters["docstatus"] = 1;
+				filters["is_paid"] = 0;
+			}
+		});
+
+		frm.set_query("reference_name", "references", function (doc, cdt, cdn) {
+			return {
+				filters: [
+					["Fees", "student", "=", doc.party],
+					["Fees", "outstanding_amount", ">", 0],
+					["Fees", "docstatus", "=", 1],
+					["Fees", "company", "=", doc.company]
+				]
+			}
+		});
+		
 		erpnext.accounts.dimensions.setup_dimension_filters(frm, frm.doctype);
 	},
 })
