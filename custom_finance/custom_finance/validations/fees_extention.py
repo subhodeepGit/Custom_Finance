@@ -3,7 +3,7 @@ from unicodedata import name
 import frappe
 
 def validate(self,method):
-    calucate_total(self)
+    
     if self.mode_of_payment=="NEFT" or self.mode_of_payment=="RTGS" or self.mode_of_payment=="IMPS":
         if self.reference_no==None:
             frappe.throw("Reference UTR No. not maintaned")
@@ -15,7 +15,74 @@ def validate(self,method):
                 if Recon_info["party_name"]==None:
                     if Recon_info['total_allocated_amount']>0:
                         if Recon_info['total_allocated_amount']>=self.total_allocated_amount:
-                            self.reference_date=Recon_info['date'] 
+                            self.reference_date=Recon_info['date']
+                            ##################### i have to complete here code 
+                            # Account=frappe.db.get_all("Account",filters=[['name','like','%Fees Refundable / Adjustable%'],['account_type','=','Income Account']])
+                            flag="pass"
+                            for t in self.get('references'):
+                                if t.fees_category=="Fees Refundable / Adjustable":
+                                    flag="no_pass"
+                                    break 
+                            if Recon_info['total_allocated_amount']>self.total_allocated_amount and flag=="pass":
+                                Account=frappe.db.get_all("Account",filters=[['name','like','%Fees Refundable / Adjustable%'],['account_type','=','Income Account']],fields=['name'])
+                                reference_name=""
+                                allocated_excess_amount=0
+                                for t in self.get('references'):
+                                    allocated_excess_amount=allocated_excess_amount+t.allocated_amount   
+                                paid_amount=allocated_excess_amount      
+                                allocated_excess_amount=Recon_info['total_allocated_amount']-allocated_excess_amount  
+                                paid_amount=paid_amount+allocated_excess_amount
+                                self.total_allocated_amount=paid_amount
+                                self.difference_amount=paid_amount-self.total_allocated_amount
+                                for t in self.get('references'):
+                                    reference_name=t.reference_name
+                                    due_date=t.due_date
+                                    break
+                                if self.payment_type=="Receive":
+                                    self.append("references",{
+                                        "reference_doctype":"Fees",
+                                        "fees_category":"Fees Refundable / Adjustable",
+                                        "account_paid_from":Account[0]['name'],
+                                        "reference_name":reference_name,
+                                        "allocated_amount":allocated_excess_amount,
+                                        "total_amount":allocated_excess_amount,
+                                        "outstanding_amount":allocated_excess_amount,
+                                        "due_date":due_date,
+                                        "exchange_rate":1,
+                                    })
+                            elif Recon_info['total_allocated_amount']>self.total_allocated_amount and flag=="no_pass":
+                                Account=frappe.db.get_all("Account",filters=[['name','like','%Fees Refundable / Adjustable%'],['account_type','=','Income Account']],fields=['name'])
+                                reference_name=""
+                                allocated_excess_amount=0
+                                for t in self.get('references'):
+                                    if t.fees_category!="Fees Refundable / Adjustable":
+                                        allocated_excess_amount=allocated_excess_amount+t.allocated_amount  
+                                paid_amount=allocated_excess_amount      
+                                allocated_excess_amount=Recon_info['total_allocated_amount']-allocated_excess_amount  
+                                paid_amount=paid_amount+allocated_excess_amount
+                                self.total_allocated_amount=paid_amount
+                                self.difference_amount=paid_amount-self.total_allocated_amount 
+
+                                # allocated_excess_amount=Recon_info['total_allocated_amount']-allocated_excess_amount
+                                for t in self.get('references'):
+                                    reference_name=t.reference_name
+                                    break 
+                                count=0
+                                for j in self.get('references'):
+                                    count=count+j.allocated_amount  
+                                for t in self.get('references'):
+                                    # reference_name=t.reference_name
+                                    if t.fees_category=="Fees Refundable / Adjustable":
+                                        t.reference_doctype=t.reference_doctype
+                                        t.fees_category="Fees Refundable / Adjustable"
+                                        t.account_paid_from=Account[0]['name']
+                                        t.reference_name=reference_name
+                                        t.allocated_amount=allocated_excess_amount
+                                        t.total_amount=allocated_excess_amount
+                                        t.outstanding_amount=allocated_excess_amount
+
+                            elif Recon_info['total_allocated_amount']==self.total_allocated_amount:
+                                pass
                         else:
                             frappe.throw("Paid Amount is more than Reconciled Amount")
                     else:
@@ -31,14 +98,15 @@ def validate(self,method):
                 else:
                     frappe.throw("This UTR Belongs to other Student")            
             else:
-                frappe.throw("UTR not Found")     
+                frappe.throw("UTR not Found")   
+
     allocation_amount(self)
     if self.mode_of_payment=="Fees Refundable / Adjustable":   
         refundable_amount(self)
+    calucate_total(self)    
 
 def on_submit(self,method):
-    child_table_fees_outsatnding(self)
-    refundable_fees_outsatnding(self,cancel=0)
+
     if self.mode_of_payment=="NEFT" or self.mode_of_payment=="RTGS" or self.mode_of_payment=="IMPS":
         
         Recon_info=frappe.get_all("Bank Reconciliation Statement",{"unique_transaction_reference_utr":self.reference_no,"type_of_transaction":self.mode_of_payment},
@@ -49,6 +117,8 @@ def on_submit(self,method):
         frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"total_allocated_amount",Grant_total_amount)
         frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"party_name",self.party)
         frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"count",count)  
+    child_table_fees_outsatnding(self)
+    refundable_fees_outsatnding(self,cancel=0)    
 
 def on_cancel(self,method):
     child_table_fees_outsatnding(self)
@@ -56,13 +126,18 @@ def on_cancel(self,method):
     if self.mode_of_payment=="NEFT" or self.mode_of_payment=="RTGS" or self.mode_of_payment=="IMPS":
         Recon_info=frappe.get_all("Bank Reconciliation Statement",{"unique_transaction_reference_utr":self.reference_no,"type_of_transaction":self.mode_of_payment},
                                 ["name","amount","total_allocated_amount","date","count"])
-        Recon_info=Recon_info[0]  
-        if Recon_info["count"]==1:
-            frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"party_name","")
+        Recon_info=Recon_info[0]
+        print("\n\n\n\n\n")
+        print(Recon_info["count"])  
+        print(int(Recon_info["count"])==1)
+        print(type(Recon_info["count"]))
+        if int(Recon_info["count"])==1:
+            frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"party_name",None)
         Grant_total_amount=Recon_info['total_allocated_amount']+self.total_allocated_amount  
         frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"total_allocated_amount",Grant_total_amount) 
         count=int(Recon_info["count"])-1
         frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"count",count)  
+
 
 def child_table_fees_outsatnding(self):
     ### payment entry child doc
@@ -90,10 +165,10 @@ def child_table_fees_outsatnding(self):
         frappe.db.set_value("Fees",v, "outstanding_amount",sum(Outstanding_amount))
 
 def calucate_total(self):
-    allocated_amount=[]
+    allocated_amount1=[]
     for d in self.get("references"):
-        allocated_amount.append(d.allocated_amount)
-    self.paid_amount=abs(sum(allocated_amount))
+        allocated_amount1.append(d.allocated_amount)   
+    self.paid_amount=abs(sum(allocated_amount1))
 
 def allocation_amount(self):
     role_profile_name = frappe.db.get_value("User",frappe.session.user, ["role_profile_name"], as_dict=True)
