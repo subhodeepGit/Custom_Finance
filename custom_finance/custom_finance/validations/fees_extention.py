@@ -127,10 +127,6 @@ def on_cancel(self,method):
         Recon_info=frappe.get_all("Bank Reconciliation Statement",{"unique_transaction_reference_utr":self.reference_no,"type_of_transaction":self.mode_of_payment},
                                 ["name","amount","total_allocated_amount","date","count"])
         Recon_info=Recon_info[0]
-        print("\n\n\n\n\n")
-        print(Recon_info["count"])  
-        print(int(Recon_info["count"])==1)
-        print(type(Recon_info["count"]))
         if int(Recon_info["count"])==1:
             frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"party_name",None)
         Grant_total_amount=Recon_info['total_allocated_amount']+self.total_allocated_amount  
