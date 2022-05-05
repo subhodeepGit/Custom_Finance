@@ -83,6 +83,7 @@ frappe.ui.form.on('Fees', {
 
             }
      },
+
     percentage(frm){
         if(frm.doc.percentage){
             // outstanding_amount = frm.doc.grand_total - (frm.doc.grand_total*(frm.doc.percentage/100));
@@ -206,8 +207,8 @@ frappe.ui.form.on("Fee Component", "waiver_amount", function(frm, cdt, cdn) {
 frappe.ui.form.on("Fee Component", "percentage", function(frm, cdt, cdn) {
     var d = locals[cdt][cdn];
     if(d.percentage && d.amount){
+        d.total_waiver_amount  = ((d.percentage/100) * d.amount)
         d.amount =  d.amount - ((d.percentage/100) * d.amount)
-       d.total_waiver_amount  = ((d.percentage/100) * d.amount)
         refresh_field("amount", d.name, d.parentfield);
         refresh_field("total_waiver_amount", d.name, d.parentfield);
   
@@ -246,4 +247,17 @@ frappe.ui.form.on("Fee Component", "amount", function(frm, cdt, cdn) {
     cur_frm.refresh_field ("components");
 
 });
-////// End of my code//////
+frappe.ui.form.on("Fee Component", "waiver_amount", function(frm, cdt, cdn) {
+    var cal=locals[cdt][cdn];
+    if (cal.total_waiver_amount) {
+        cal.outstanding_fees=cal.amount;
+    }	 
+    cur_frm.refresh_field ("components");
+});
+frappe.ui.form.on("Fee Component", "percentage", function(frm, cdt, cdn) {
+    var cal=locals[cdt][cdn];
+    if (cal.total_waiver_amount) {
+        cal.outstanding_fees=cal.amount;
+    }	 
+    cur_frm.refresh_field ("components");
+});
