@@ -330,3 +330,14 @@ frappe.ui.form.on('Payment Entry Reference',"allocated_amount",function(frm, cdt
 	}
 })
 
+frappe.ui.form.on("Payment Entry","mode_of_payment", function(frm){
+	
+    var mop = frm.doc.mode_of_payment
+    if(mop == "Bank Draft"){
+        frm.doc.reference_no = "Bank Draft"
+        frm.set_value("reference_no",frm.doc.reference_no)
+        frm.set_value("reference_date", frappe.datetime.nowdate());
+        frm.refresh();
+    };
+});
+

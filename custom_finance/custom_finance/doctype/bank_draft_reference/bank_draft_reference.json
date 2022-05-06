@@ -1,0 +1,53 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-05-05 16:44:42.907090",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "chequereference_no",
+  "chequereference_date",
+  "bank_draft_amount",
+  "bank_name"
+ ],
+ "fields": [
+  {
+   "fieldname": "chequereference_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Cheque/Reference No",
+   "reqd": 1
+  },
+  {
+   "fieldname": "chequereference_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Cheque/Reference Date",
+   "oldfieldname": "Cheque/Reference Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "bank_draft_amount",
+   "fieldtype": "Currency",
+   "label": "Bank Draft Amount"
+  },
+  {
+   "fieldname": "bank_name",
+   "fieldtype": "Select",
+   "label": "Bank Name",
+   "options": "\nBank of Baroda\nBank of India\nBank of Maharashtra\nCanara Bank\nCentral Bank of India\nIndian Bank\nIndian Overseas Bank\nPunjab and Sind Bank\nPunjab National Bank\nState Bank of India\nUCO Bank\nUnion Bank of India\nAxis Bank\nBandhan Bank\nCSB Bank\nCity Union Bank\nDCB Bank\nDhanlaxmi Bank\nFederal Bank\nHDFC Bank\nICICI Bank\nIDBI Bank\nIDFC First Bank\nIndusInd Bank\nKarnataka Bank\nKarur Vysya Bank\nKotak Mahindra Bank\nNainital Bank\nRBL Bank\nSouth Indian Bank\nTamilnad Mercantile Bank\nYes Bank"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2022-05-05 17:35:43.307146",
+ "modified_by": "Administrator",
+ "module": "Custom Finance",
+ "name": "Bank Draft Reference",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}
