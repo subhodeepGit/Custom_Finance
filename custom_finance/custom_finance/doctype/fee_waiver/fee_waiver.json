@@ -1,0 +1,252 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2022-05-05 15:19:44.416030",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "student",
+  "student_name",
+  "company",
+  "posting_date",
+  "due_date",
+  "student_details_section",
+  "program_enrollment",
+  "programs",
+  "semester",
+  "student_batch",
+  "student_email",
+  "column_break_13",
+  "student_category",
+  "academic_term",
+  "academic_year",
+  "section_break_17",
+  "currency",
+  "grand_total",
+  "waiver_amount",
+  "waiver_amount_in_words",
+  "fees_voucher_column",
+  "get_fees_voucher",
+  "fee_componemts",
+  "printing_settings_section",
+  "letter_head",
+  "print_heading",
+  "accounting_dimensions_section",
+  "cost_center"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "EDU-FEE-WAV-.YYYY.-"
+  },
+  {
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Student",
+   "options": "Student",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "student.title",
+   "fieldname": "student_name",
+   "fieldtype": "Data",
+   "label": "Student Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Institution",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "due_date",
+   "fieldtype": "Date",
+   "label": "Due Date"
+  },
+  {
+   "fieldname": "student_details_section",
+   "fieldtype": "Section Break",
+   "label": "Student Details"
+  },
+  {
+   "fieldname": "program_enrollment",
+   "fieldtype": "Link",
+   "label": "Program Enrollment",
+   "options": "Program Enrollment",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "program_enrollment.programs",
+   "fieldname": "programs",
+   "fieldtype": "Link",
+   "label": "Programs",
+   "options": "Programs",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fetch_from": "program_enrollment.program",
+   "fieldname": "semester",
+   "fieldtype": "Link",
+   "label": "Semester",
+   "options": "Program",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fetch_from": "program_enrollment.student_batch_name",
+   "fieldname": "student_batch",
+   "fieldtype": "Link",
+   "label": "Student Batch",
+   "options": "Student Batch Name",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "student.student_email_id",
+   "fieldname": "student_email",
+   "fieldtype": "Data",
+   "label": "Student Email",
+   "options": "Email",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_13",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "program_enrollment.student_category",
+   "fieldname": "student_category",
+   "fieldtype": "Link",
+   "label": "Student Category",
+   "options": "Student Category",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "program_enrollment.academic_term",
+   "fieldname": "academic_term",
+   "fieldtype": "Link",
+   "label": "Academic Term",
+   "options": "Academic Term",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "program_enrollment.academic_year",
+   "fieldname": "academic_year",
+   "fieldtype": "Link",
+   "label": "Academic Year",
+   "options": "Academic Year"
+  },
+  {
+   "fieldname": "section_break_17",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Currency",
+   "options": "Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "label": "Grand Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "waiver_amount",
+   "fieldtype": "Currency",
+   "label": "Waiver Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "waiver_amount_in_words",
+   "fieldtype": "Data",
+   "label": "Waiver Amount In Words",
+   "read_only": 1
+  },
+  {
+   "fieldname": "printing_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Printing Settings"
+  },
+  {
+   "fieldname": "letter_head",
+   "fieldtype": "Link",
+   "label": "Letter Head",
+   "options": "Letter Head"
+  },
+  {
+   "fieldname": "print_heading",
+   "fieldtype": "Link",
+   "label": "Print Heading",
+   "options": "Print Heading"
+  },
+  {
+   "fieldname": "accounting_dimensions_section",
+   "fieldtype": "Section Break",
+   "label": "Accounting Dimensions"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center"
+  },
+  {
+   "fieldname": "fees_voucher_column",
+   "fieldtype": "Section Break",
+   "label": "Fees Voucher"
+  },
+  {
+   "fieldname": "get_fees_voucher",
+   "fieldtype": "Button",
+   "label": "Get Fees Voucher"
+  },
+  {
+   "fieldname": "fee_componemts",
+   "fieldtype": "Table",
+   "label": "Fee Componemts",
+   "options": "Fee Waiver Components"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2022-05-09 11:48:51.068165",
+ "modified_by": "Administrator",
+ "module": "Custom Finance",
+ "name": "Fee Waiver",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}
