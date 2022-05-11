@@ -74,24 +74,24 @@ frappe.ui.form.on('Fees', {
 			});
 		}
     },
-    amount(frm){
-            if(frm.doc.amount){
-                // frm.doc.outstanding_amount = frm.doc.grand_total - frm.doc.amount;
-                // frm.doc.waiver_amount = frm.doc.amount
-                frm.set_value("outstanding_amount",frm.doc.grand_total - frm.doc.amount);
-                frm.set_value("waiver_amount",frm.doc.amount);
+    // amount(frm){
+    //         if(frm.doc.amount){
+    //             // frm.doc.outstanding_amount = frm.doc.grand_total - frm.doc.amount;
+    //             // frm.doc.waiver_amount = frm.doc.amount
+    //             frm.set_value("outstanding_amount",frm.doc.grand_total - frm.doc.amount);
+    //             frm.set_value("waiver_amount",frm.doc.amount);
 
-            }
-     },
+    //         }
+    //  },
 
-    percentage(frm){
-        if(frm.doc.percentage){
-            // outstanding_amount = frm.doc.grand_total - (frm.doc.grand_total*(frm.doc.percentage/100));
-            // waiver_amount = (frm.doc.grand_total*(frm.doc.percentage/100))
-            frm.set_value("outstanding_amount",frm.doc.grand_total - (frm.doc.grand_total*(frm.doc.percentage/100)));
-            frm.set_value("waiver_amount",(frm.doc.grand_total*(frm.doc.percentage/100)));
-        }
-    },
+    // percentage(frm){
+    //     if(frm.doc.percentage){
+    //         // outstanding_amount = frm.doc.grand_total - (frm.doc.grand_total*(frm.doc.percentage/100));
+    //         // waiver_amount = (frm.doc.grand_total*(frm.doc.percentage/100))
+    //         frm.set_value("outstanding_amount",frm.doc.grand_total - (frm.doc.grand_total*(frm.doc.percentage/100)));
+    //         frm.set_value("waiver_amount",(frm.doc.grand_total*(frm.doc.percentage/100)));
+    //     }
+    // },
     student(frm){
         if (frm.doc.student){
             frm.trigger("set_program_enrollment");

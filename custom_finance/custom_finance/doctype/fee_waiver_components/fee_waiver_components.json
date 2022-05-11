@@ -19,7 +19,8 @@
   "income_account",
   "company",
   "grand_fee_amount",
-  "outstanding_fees"
+  "outstanding_fees",
+  "waiver_account"
  ],
  "fields": [
   {
@@ -53,17 +54,22 @@
    "fieldname": "waiver_type",
    "fieldtype": "Select",
    "label": "Waiver Type",
-   "options": "\nAmount\nPercentage"
+   "options": "Amount\nPercentage",
+   "reqd": 1
   },
   {
+   "depends_on": "eval:doc.waiver_type == 'Percentage'",
    "fieldname": "percentage",
    "fieldtype": "Float",
-   "label": "Percentage"
+   "label": "Percentage",
+   "mandatory_depends_on": "eval:doc.waiver_type == 'Percentage'"
   },
   {
+   "depends_on": "eval:doc.waiver_type == 'Amount'",
    "fieldname": "waiver_amount",
    "fieldtype": "Currency",
-   "label": "Waiver Amount"
+   "label": "Waiver Amount",
+   "mandatory_depends_on": "eval:doc.waiver_type == 'Amount'"
   },
   {
    "fieldname": "total_waiver_amount",
@@ -74,19 +80,22 @@
    "fieldname": "receivable_account",
    "fieldtype": "Link",
    "label": "Receivable Account",
-   "options": "Account"
+   "options": "Account",
+   "read_only": 1
   },
   {
    "fieldname": "income_account",
    "fieldtype": "Link",
    "label": "Income Account",
-   "options": "Account"
+   "options": "Account",
+   "read_only": 1
   },
   {
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "options": "Company"
+   "options": "Company",
+   "read_only": 1
   },
   {
    "fieldname": "grand_fee_amount",
@@ -97,13 +106,21 @@
   {
    "fieldname": "outstanding_fees",
    "fieldtype": "Currency",
-   "label": "Outstanding Fees"
+   "label": "Outstanding Fees",
+   "read_only": 1
+  },
+  {
+   "fieldname": "waiver_account",
+   "fieldtype": "Link",
+   "label": "Waiver Account",
+   "options": "Account",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2022-05-06 10:00:47.376519",
+ "modified": "2022-05-11 13:02:13.381047",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Fee Waiver Components",

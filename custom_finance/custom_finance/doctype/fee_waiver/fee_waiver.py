@@ -5,8 +5,44 @@ import frappe
 from frappe.model.document import Document
 from six import iteritems, string_types
 import json
+from erpnext.accounts.general_ledger import make_reverse_gl_entries
 
 class FeeWaiver(Document):
+	pass
+	# def validate(doc):
+	# 	make_reverse_gl_entries(gl_entries='6598048b44')
+	# make_reverse_gl_entries(gl_entries='', voucher_type=None, voucher_no=None,adv_adj=False, update_outstanding="Yes")
+		
+	# for cancelation try gl_entries
+	#self.calculate_total()
+	# self.set_missing_accounts_and_fields()
+	# def calculate_total(self):
+	# 	"""Calculates total amount."""
+	# 	self.grand_total = 0
+	# 	for d in self.components:
+	# 		self.grand_total += d.amount
+	# 	self.outstanding_amount = self.grand_total
+	# 	self.grand_total_in_words = money_in_words(self.grand_total)
+	# def set_missing_accounts_and_fields(self):
+	# 	if not self.company:
+	# 		self.company = frappe.defaults.get_defaults().company
+	# 	if not self.currency:
+	# 		self.currency = erpnext.get_company_currency(self.company)
+	# 	################################################################	
+	# 	if not (self.receivable_account and self.income_account and self.cost_center):
+	# 		accounts_details = frappe.get_all("Company",
+	# 			fields=["default_receivable_account", "default_income_account", "cost_center"],
+	# 			filters={"name": self.company})[0]
+
+	# 	if not self.receivable_account:
+	# 		self.receivable_account = accounts_details.default_receivable_account
+	# 	if not self.income_account:
+	# 		self.income_account = accounts_details.default_income_account
+	# 	################################################################	
+	# 	if not self.cost_center:
+	# 		self.cost_center = accounts_details.cost_center
+	# 	if not self.student_email:
+	# 		self.student_email = self.get_student_emails()
 	pass
 
 
@@ -82,8 +118,6 @@ def get_program_enrollment(student):
 
 @frappe.whitelist()
 def get_outstanding_fees(args):
-	print("\n\n\n\n\n")
-	print("ok")
 	if isinstance(args, string_types):
 		args = json.loads(args)
 	################ Fee Component
@@ -109,8 +143,10 @@ def get_outstanding_fees(args):
 	######################### end fees
 	fee_component_info=[]
 	for t in fees_info:
+
 		fee_component=frappe.db.get_all("Fee Component", {"parent":t['name']},
-									["name","fees_category","outstanding_fees","receivable_account","income_account","outstanding_fees","amount"])
+									["name","fees_category","outstanding_fees","receivable_account","income_account","amount","description",
+									'grand_fee_amount','percentage','total_waiver_amount','waiver_type','waiver_amount'])
 		for j in fee_component:
 			if j["outstanding_fees"]>0:	
 				j['posting_date']=t['posting_date']
