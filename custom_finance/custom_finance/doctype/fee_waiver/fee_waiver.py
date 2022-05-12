@@ -9,7 +9,25 @@ from erpnext.accounts.general_ledger import make_reverse_gl_entries
 
 class FeeWaiver(Document):
 	pass
-	# def validate(doc):
+	def validate(self):
+		GL_account_info=[]
+		for t in self.get("fee_componemts"):
+			Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.receivable_account]],fields=['name','voucher_no'])
+			GL_account_info.append(Gl_entry[0])
+			Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.income_account]],fields=['name','voucher_no'])
+			GL_account_info.append(Gl_entry[0])
+		print("\n\n\n\n\n")
+		print(GL_account_info)
+		for t in GL_account_info:
+			print(t['name'])
+			print(t['voucher_no'])
+			make_reverse_gl_entries(gl_entries=t['name'],voucher_no=t['voucher_no'])
+			# make_reverse_gl_entries(gl_entries=t['name'], voucher_type=None, voucher_no=t['voucher_no'],adv_adj=False, update_outstanding="Yes")
+
+
+
+
+
 	# 	make_reverse_gl_entries(gl_entries='6598048b44')
 	# make_reverse_gl_entries(gl_entries='', voucher_type=None, voucher_no=None,adv_adj=False, update_outstanding="Yes")
 		
@@ -43,7 +61,7 @@ class FeeWaiver(Document):
 	# 		self.cost_center = accounts_details.cost_center
 	# 	if not self.student_email:
 	# 		self.student_email = self.get_student_emails()
-	pass
+	# pass
 
 
 
@@ -151,7 +169,7 @@ def get_outstanding_fees(args):
 			if j["outstanding_fees"]>0:	
 				j['posting_date']=t['posting_date']
 				j['Type']='Fees'
-				j['reference_name']=t['name']
+				j['fee_voucher_no']=t['name']
 				fee_component_info.append(j)	
 	data=fee_component_info
 	# fee_component_info [{'name': '46914acb77', 'fees_category': 'Development Fees', 'outstanding_fees': 5800.0, 'receivable_account': 'Development Fees - KP', 'income_account': 'Development Fees Income - KP', 'amount': 5800.0, 'posting_date': datetime.date(2022, 4, 27), 'Type': 'Fees', 'reference_name': 'EDU-FEE-2022-00051'}, {'name': '21f7da294d', 'fees_category': 'Development Fees', 'outstanding_fees': 5800.0, 'receivable_account': 'Development Fees - KP', 'income_account': 'Development Fees Income - KP', 'amount': 5800.0, 'posting_date': datetime.date(2022, 4, 21), 'Type': 'Fees', 'reference_name': 'EDU-FEE-2022-00010'}]

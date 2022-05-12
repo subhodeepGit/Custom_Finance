@@ -199,6 +199,7 @@ frappe.ui.form.on('Fee Waiver', {
 						c.income_account=element.income_account
 						c.receivable_account=element.receivable_account
 						c.waiver_type=element.waiver_type
+						c.fee_voucher_no=element.fee_voucher_no
                     });
                     frm.refresh_field("fee_componemts")
 				}
@@ -239,27 +240,27 @@ frappe.ui.form.on("Fee Waiver Components", "amount", function(frm, cdt, cdn) {
 
 });
 
-frappe.ui.form.on('Fee Waiver', {
-amount(frm){
-		if(frm.doc.amount){
-			// frm.doc.outstanding_amount = frm.doc.grand_total - frm.doc.amount;
-			// frm.doc.waiver_amount = frm.doc.amount
-			frm.set_value("outstanding_amount",frm.doc.grand_total - frm.doc.amount);
-			frm.set_value("waiver_amount",frm.doc.amount);
+// frappe.ui.form.on('Fee Waiver', {
+// amount(frm){
+// 		if(frm.doc.amount){
+// 			// frm.doc.outstanding_amount = frm.doc.grand_total - frm.doc.amount;
+// 			// frm.doc.waiver_amount = frm.doc.amount
+// 			frm.set_value("outstanding_amount",frm.doc.grand_total - frm.doc.amount);
+// 			frm.set_value("waiver_amount",frm.doc.amount);
 
-		}
- },
+// 		}
+//  },
 
-percentage(frm){
-	if(frm.doc.percentage){
-		// outstanding_amount = frm.doc.grand_total - (frm.doc.grand_total*(frm.doc.percentage/100));
-		// waiver_amount = (frm.doc.grand_total*(frm.doc.percentage/100))
-		frm.set_value("outstanding_amount",frm.doc.grand_total - (frm.doc.grand_total*(frm.doc.percentage/100)));
-		frm.set_value("waiver_amount",(frm.doc.grand_total*(frm.doc.percentage/100)));
-	}
-},
+// percentage(frm){
+// 	if(frm.doc.percentage){
+// 		// outstanding_amount = frm.doc.grand_total - (frm.doc.grand_total*(frm.doc.percentage/100));
+// 		// waiver_amount = (frm.doc.grand_total*(frm.doc.percentage/100))
+// 		frm.set_value("outstanding_amount",frm.doc.grand_total - (frm.doc.grand_total*(frm.doc.percentage/100)));
+// 		frm.set_value("waiver_amount",(frm.doc.grand_total*(frm.doc.percentage/100)));
+// 	}
+// },
 
-})
+// })
 
 frappe.ui.form.on("Fee Waiver Components", "waiver_amount", function(frm, cdt, cdn) {
     var d = locals[cdt][cdn];
@@ -285,8 +286,15 @@ frappe.ui.form.on("Fee Waiver Components", "waiver_amount", function(frm, cdt, c
 
 frappe.ui.form.on("Fee Waiver Components", "percentage", function(frm, cdt, cdn) {
     var d = locals[cdt][cdn];
-	var amount=parseInt(d.percentage)
-    if(amount!=0 && percentage<=100){
+	// var amount=parseInt(d.percentage)
+    // if(amount!=0 && percentage<=100){
+	// 	d.total_waiver_amount  = ((d.percentage/100) * d.grand_fee_amount)
+    //     d.amount =  d.grand_fee_amount - ((d.percentage/100) * d.grand_fee_amount)
+	// 	d.total_waiver_amount  = d.grand_fee_amount-d.amount
+    //     refresh_field("amount", d.name, d.parentfield);
+    //     refresh_field("total_waiver_amount", d.name, d.parentfield);
+    // }
+	if(d.percentage && d.amount ){
 		d.total_waiver_amount  = ((d.percentage/100) * d.grand_fee_amount)
         d.amount =  d.grand_fee_amount - ((d.percentage/100) * d.grand_fee_amount)
 		d.total_waiver_amount  = d.grand_fee_amount-d.amount
@@ -299,11 +307,6 @@ frappe.ui.form.on("Fee Waiver Components", "percentage", function(frm, cdt, cdn)
 		d.outstanding_fees=d.grand_fee_amount
 		refresh_field("percentage", d.name, d.parentfield);
 	}
-	// if(!d.percentage){
-	// 	d.total_waiver_amount=grand_fee_amount-total_waiver_amount
-	// 	alert("ok2")
-	// 	alert(d.percentage)
-	// }
     if(!d.amount){
         frappe.throw("Please add Amount first");
     }
@@ -315,9 +318,11 @@ frappe.ui.form.on("Fee Waiver Components", "waiver_type", function(frm, cdt, cdn
 		d.percentage=null
 		d.waiver_amount=null
 		d.total_waiver_amount=null
+		d.amount=d.grand_fee_amount
 		refresh_field("total_waiver_amount", d.name, d.parentfield);
 		refresh_field("percentage", d.name, d.parentfield);
 		refresh_field("waiver_amount", d.name, d.parentfield);
+		refresh_field("amount", d.name, d.parentfield);
 	}
 
 frappe.ui.form.on("Fee Waiver Components", "waiver_amount", function(frm, cdt, cdn) {
@@ -337,18 +342,15 @@ frappe.ui.form.on("Fee Waiver Components", "percentage", function(frm, cdt, cdn)
 });
 
 
-// frappe.ui.form.on("Fee Waiver Components", "waiver_amount", function(frm, cdt, cdn) {
-// 	var d=locals[cdt][cdn];
-// 	$("d.waiver_type").change(function() {
-// 		if ($(this).val() == "Percentage") {
-// 		$('d.percentage').show();
-// 		$('d.percentage').attr('required', '');
-// 		$('d.percentage').attr('data-error', 'This field is required.');
-// 		} else {
-// 		$('d.percentage').hide();
-// 		$('d.percentage').removeAttr('required');
-// 		$('d.percentage').removeAttr('data-error');
-// 		}
-// 	});
-// 	$("#waiver_type").trigger("change");
-// });
+
+frappe.ui.form.on('Fee Waiver', {
+	setup: function (frm) {
+		frm.set_query("waiver_account", "fee_componemts", function () {
+			return {
+				filters: [
+					["Account", "wavier_account", "=", 1]
+				]
+			}
+		});
+	}
+})
