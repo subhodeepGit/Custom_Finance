@@ -13,14 +13,16 @@ class FeeWaiver(Document):
 		GL_account_info=[]
 		for t in self.get("fee_componemts"):
 			Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.receivable_account]],fields=['name','voucher_no'])
-			GL_account_info.append(Gl_entry)
+			GL_account_info.append(Gl_entry[0])
 			Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.income_account]],fields=['name','voucher_no'])
-			GL_account_info.append(Gl_entry)
+			GL_account_info.append(Gl_entry[0])
 		print("\n\n\n\n\n")
 		print(GL_account_info)
 		for t in GL_account_info:
 			print(t['name'])
-			# make_reverse_gl_entries(gl_entries='', voucher_type=None, voucher_no=None,adv_adj=False, update_outstanding="Yes")
+			print(t['voucher_no'])
+			make_reverse_gl_entries(gl_entries=t['name'],voucher_no=t['voucher_no'])
+			# make_reverse_gl_entries(gl_entries=t['name'], voucher_type=None, voucher_no=t['voucher_no'],adv_adj=False, update_outstanding="Yes")
 
 
 
