@@ -199,6 +199,7 @@ frappe.ui.form.on('Fee Waiver', {
 						c.income_account=element.income_account
 						c.receivable_account=element.receivable_account
 						c.waiver_type=element.waiver_type
+						c.fee_voucher_no=element.fee_voucher_no
                     });
                     frm.refresh_field("fee_componemts")
 				}
@@ -299,11 +300,6 @@ frappe.ui.form.on("Fee Waiver Components", "percentage", function(frm, cdt, cdn)
 		d.outstanding_fees=d.grand_fee_amount
 		refresh_field("percentage", d.name, d.parentfield);
 	}
-	// if(!d.percentage){
-	// 	d.total_waiver_amount=grand_fee_amount-total_waiver_amount
-	// 	alert("ok2")
-	// 	alert(d.percentage)
-	// }
     if(!d.amount){
         frappe.throw("Please add Amount first");
     }
@@ -337,18 +333,15 @@ frappe.ui.form.on("Fee Waiver Components", "percentage", function(frm, cdt, cdn)
 });
 
 
-// frappe.ui.form.on("Fee Waiver Components", "waiver_amount", function(frm, cdt, cdn) {
-// 	var d=locals[cdt][cdn];
-// 	$("d.waiver_type").change(function() {
-// 		if ($(this).val() == "Percentage") {
-// 		$('d.percentage').show();
-// 		$('d.percentage').attr('required', '');
-// 		$('d.percentage').attr('data-error', 'This field is required.');
-// 		} else {
-// 		$('d.percentage').hide();
-// 		$('d.percentage').removeAttr('required');
-// 		$('d.percentage').removeAttr('data-error');
-// 		}
-// 	});
-// 	$("#waiver_type").trigger("change");
-// });
+
+frappe.ui.form.on('Fee Waiver', {
+	setup: function (frm) {
+		frm.set_query("waiver_account", "fee_componemts", function () {
+			return {
+				filters: [
+					["Account", "wavier_account", "=", 1]
+				]
+			}
+		});
+	}
+})
