@@ -7,12 +7,19 @@ from six import iteritems, string_types
 import json
 from frappe.utils import cint, cstr, flt, formatdate, getdate, now
 from erpnext.accounts.doctype.budget.budget import validate_expense_against_budget
+from frappe.utils import money_in_words
 
 
 class ClosedAccountingPeriod(frappe.ValidationError): pass
 
 class FeeWaiver(Document):
+
 	def validate(self):
+		self.calculate_total()
+
+
+
+	def on_submit(self):
 		GL_account_info=[]
 		for t in self.get("fee_componemts"):
 			Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.receivable_account]],fields=['name', 'creation', 'modified', 'modified_by', 'owner', 
@@ -26,7 +33,17 @@ class FeeWaiver(Document):
 			'project', 'remarks', 'is_opening', 'is_advance', 'fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
 			GL_account_info.append(Gl_entry[0])
 		gl_entries=GL_account_info
-		make_reverse_gl_entries(gl_entries=gl_entries,voucher_type='Fees')	
+		make_reverse_gl_entries(gl_entries=gl_entries,voucher_type='Fees')
+
+	def calculate_total(self):
+		"""Calculates total amount."""
+		self.grand_total = 0
+		self.outstanding_amount=0
+		for d in self.fee_componemts:
+			self.grand_total += d.waiver_amount
+			self.outstanding_amount =self.outstanding_amount+int(d.outstanding_fees)
+		self.grand_total_in_words = money_in_words(self.grand_total)		
+
 
 def make_reverse_gl_entries(gl_entries=None, voucher_type=None, voucher_no=None,adv_adj=False, update_outstanding="Yes"):
 	"""
@@ -40,12 +57,10 @@ def make_reverse_gl_entries(gl_entries=None, voucher_type=None, voucher_no=None,
 		for t in gl_entries:
 			gl_name.append(t['name'])	
 		set_as_cancel(gl_entries[0]['voucher_type'], gl_entries[0]['voucher_no'],gl_name)
-
 		for entry in gl_entries:
 			entry['name'] = None
 			debit = entry.get('debit', 0)
 			credit = entry.get('credit', 0)
-
 			debit_in_account_currency = entry.get('debit_in_account_currency', 0)
 			credit_in_account_currency = entry.get('credit_in_account_currency', 0)
 
@@ -115,7 +130,7 @@ def make_entry(args, adv_adj, update_outstanding, from_repost=False):
 	gle.flags.ignore_permissions = 1
 	gle.flags.from_repost = from_repost
 	gle.flags.adv_adj = adv_adj
-	# gle.flags.update_outstanding = update_outstanding or 'Yes'
+	gle.flags.update_outstanding = update_outstanding or 'Yes'
 	gle.submit()
 
 	if not from_repost:

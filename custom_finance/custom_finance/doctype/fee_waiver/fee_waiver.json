@@ -26,6 +26,8 @@
   "section_break_17",
   "currency",
   "grand_total",
+  "grand_total_in_words",
+  "outstanding_amount",
   "waiver_amount",
   "waiver_amount_in_words",
   "fees_voucher_column",
@@ -166,12 +168,13 @@
   {
    "fieldname": "grand_total",
    "fieldtype": "Currency",
-   "label": "Grand Total",
+   "label": "Total Waiver amount",
    "read_only": 1
   },
   {
    "fieldname": "waiver_amount",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Waiver Amount",
    "read_only": 1
   },
@@ -224,11 +227,23 @@
    "fieldtype": "Table",
    "label": "Fee Componemts",
    "options": "Fee Waiver Components"
+  },
+  {
+   "fieldname": "grand_total_in_words",
+   "fieldtype": "Data",
+   "label": "In Words",
+   "read_only": 1
+  },
+  {
+   "fieldname": "outstanding_amount",
+   "fieldtype": "Data",
+   "label": "Outstanding Amount",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-05-09 11:48:51.068165",
+ "modified": "2022-05-13 16:32:30.221544",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Fee Waiver",

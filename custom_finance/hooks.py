@@ -126,8 +126,8 @@ doc_events = {
 		"validate": "custom_finance.custom_finance.validations.fees_extention.validate",
 	},
 	"Program Enrollment":{
-		"on_submit":"custom_finance.custom_finance.doctype.program_enrollment.on_submit",
-		"on_cancel":"custom_finance.custom_finance.doctype.program_enrollment.on_cancel",
+		"on_submit":"custom_finance.custom_finance.validations.program_enrollment.on_submit",
+		"on_cancel":"custom_finance.custom_finance.validations.program_enrollment.on_cancel",
 	},
 }
 

@@ -1,0 +1,168 @@
+{
+ "actions": [],
+ "allow_copy": 1,
+ "creation": "2022-05-09 16:08:09.145718",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "program_grade",
+  "programs",
+  "program",
+  "student_batch",
+  "column_break_3",
+  "academic_year",
+  "academic_term",
+  "section_break_5",
+  "get_students",
+  "students",
+  "section_break_7",
+  "new_semester",
+  "new_student_batch",
+  "fees_due_date",
+  "enroll_students",
+  "column_break_12",
+  "new_academic_year",
+  "new_academic_term",
+  "section_break_18",
+  "courses"
+ ],
+ "fields": [
+  {
+   "fieldname": "program_grade",
+   "fieldtype": "Link",
+   "label": "Program Grade",
+   "options": "Program Grades",
+   "reqd": 1
+  },
+  {
+   "fieldname": "programs",
+   "fieldtype": "Link",
+   "label": "Programs",
+   "options": "Programs",
+   "reqd": 1
+  },
+  {
+   "fieldname": "program",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Program",
+   "options": "Program",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.get_students_from==\"Program Enrollment\"",
+   "fieldname": "student_batch",
+   "fieldtype": "Link",
+   "label": "Student Batch",
+   "options": "Student Batch Name"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "academic_year",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Academic Year",
+   "options": "Academic Year",
+   "reqd": 1
+  },
+  {
+   "fieldname": "academic_term",
+   "fieldtype": "Link",
+   "label": "Academic Term",
+   "options": "Academic Term"
+  },
+  {
+   "fieldname": "section_break_5",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "get_students",
+   "fieldtype": "Button",
+   "label": "Get Students"
+  },
+  {
+   "fieldname": "students",
+   "fieldtype": "Table",
+   "label": "Students",
+   "options": "Student Reregistration Item"
+  },
+  {
+   "fieldname": "section_break_7",
+   "fieldtype": "Section Break",
+   "label": "Enrollment Details"
+  },
+  {
+   "fieldname": "new_semester",
+   "fieldtype": "Link",
+   "label": "New Semester",
+   "options": "Program",
+   "reqd": 1
+  },
+  {
+   "fieldname": "new_student_batch",
+   "fieldtype": "Link",
+   "label": "New Student Batch",
+   "options": "Student Batch Name"
+  },
+  {
+   "fieldname": "enroll_students",
+   "fieldtype": "Button",
+   "label": "Enroll Students"
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "new_academic_year",
+   "fieldtype": "Link",
+   "label": "New Academic Year",
+   "options": "Academic Year",
+   "reqd": 1
+  },
+  {
+   "fieldname": "new_academic_term",
+   "fieldtype": "Link",
+   "label": "New Academic Term",
+   "options": "Academic Term"
+  },
+  {
+   "fieldname": "section_break_18",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "courses",
+   "fieldtype": "Table",
+   "label": "Mandatory Courses",
+   "options": "Program Enrollment Course"
+  },
+  {
+   "fieldname": "fees_due_date",
+   "fieldtype": "Date",
+   "label": "Fees Due Date",
+   "reqd": 1
+  }
+ ],
+ "hide_toolbar": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2022-05-13 14:46:37.097718",
+ "modified_by": "Administrator",
+ "module": "Custom Finance",
+ "name": "Student Reregistration Tool Fees",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "read": 1,
+   "role": "Education Manager",
+   "write": 1
+  }
+ ],
+ "restrict_to_domain": "Education",
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}
