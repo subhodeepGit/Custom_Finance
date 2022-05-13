@@ -5,65 +5,124 @@ import frappe
 from frappe.model.document import Document
 from six import iteritems, string_types
 import json
-from erpnext.accounts.general_ledger import make_reverse_gl_entries
+from frappe.utils import cint, cstr, flt, formatdate, getdate, now
+from erpnext.accounts.doctype.budget.budget import validate_expense_against_budget
+
+
+class ClosedAccountingPeriod(frappe.ValidationError): pass
 
 class FeeWaiver(Document):
-	pass
 	def validate(self):
 		GL_account_info=[]
 		for t in self.get("fee_componemts"):
-			Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.receivable_account]],fields=['name','voucher_no'])
+			Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.receivable_account]],fields=['name', 'creation', 'modified', 'modified_by', 'owner', 
+			'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 'account_currency', 
+			'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 'project', 'remarks', 
+			'is_opening', 'is_advance','fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
 			GL_account_info.append(Gl_entry[0])
-			Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.income_account]],fields=['name','voucher_no'])
+			Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.income_account]],fields=['name', 'creation', 'modified', 'modified_by', 
+			'owner', 'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 
+			'account_currency', 'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 
+			'project', 'remarks', 'is_opening', 'is_advance', 'fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
 			GL_account_info.append(Gl_entry[0])
-		print("\n\n\n\n\n")
-		print(GL_account_info)
-		for t in GL_account_info:
-			print(t['name'])
-			print(t['voucher_no'])
-			make_reverse_gl_entries(gl_entries=t['name'],voucher_no=t['voucher_no'])
-			# make_reverse_gl_entries(gl_entries=t['name'], voucher_type=None, voucher_no=t['voucher_no'],adv_adj=False, update_outstanding="Yes")
+		gl_entries=GL_account_info
+		make_reverse_gl_entries(gl_entries=gl_entries,voucher_type='Fees')	
+
+def make_reverse_gl_entries(gl_entries=None, voucher_type=None, voucher_no=None,adv_adj=False, update_outstanding="Yes"):
+	"""
+		Get original gl entries of the voucher
+		and make reverse gl entries by swapping debit and credit
+	"""
+	if gl_entries:
+		validate_accounting_period(gl_entries)
+		check_freezing_date(gl_entries[0]["posting_date"], adv_adj)
+		gl_name=[]
+		for t in gl_entries:
+			gl_name.append(t['name'])	
+		set_as_cancel(gl_entries[0]['voucher_type'], gl_entries[0]['voucher_no'],gl_name)
+
+		for entry in gl_entries:
+			entry['name'] = None
+			debit = entry.get('debit', 0)
+			credit = entry.get('credit', 0)
+
+			debit_in_account_currency = entry.get('debit_in_account_currency', 0)
+			credit_in_account_currency = entry.get('credit_in_account_currency', 0)
+
+			entry['debit'] = credit
+			entry['credit'] = debit
+			entry['debit_in_account_currency'] = credit_in_account_currency
+			entry['credit_in_account_currency'] = debit_in_account_currency
+
+			entry['remarks'] = "On cancellation of " + entry['voucher_no']
+			entry['is_cancelled'] = 1
+
+			if entry['debit'] or entry['credit']:
+				make_entry(entry, adv_adj, "Yes")
+
+def validate_accounting_period(gl_map):
+	accounting_periods = frappe.db.sql(""" SELECT
+			ap.name as name
+		FROM
+			`tabAccounting Period` ap, `tabClosed Document` cd
+		WHERE
+			ap.name = cd.parent
+			AND ap.company = %(company)s
+			AND cd.closed = 1
+			AND cd.document_type = %(voucher_type)s
+			AND %(date)s between ap.start_date and ap.end_date
+			""", {
+				'date': gl_map[0].posting_date,
+				'company': gl_map[0].company,
+				'voucher_type': gl_map[0].voucher_type
+			}, as_dict=1)
+
+	if accounting_periods:
+		frappe.throw(_("You cannot create or cancel any accounting entries with in the closed Accounting Period {0}")
+			.format(frappe.bold(accounting_periods[0].name)), ClosedAccountingPeriod)
+
+def check_freezing_date(posting_date, adv_adj=False):
+	"""
+		Nobody can do GL Entries where posting date is before freezing date
+		except authorized person
+
+		Administrator has all the roles so this check will be bypassed if any role is allowed to post
+		Hence stop admin to bypass if accounts are freezed
+	"""
+	if not adv_adj:
+		acc_frozen_upto = frappe.db.get_value('Accounts Settings', None, 'acc_frozen_upto')
+		if acc_frozen_upto:
+			frozen_accounts_modifier = frappe.db.get_value( 'Accounts Settings', None,'frozen_accounts_modifier')
+			if getdate(posting_date) <= getdate(acc_frozen_upto) \
+					and (frozen_accounts_modifier not in frappe.get_roles() or frappe.session.user == 'Administrator'):
+				frappe.throw(_("You are not authorized to add or update entries before {0}").format(formatdate(acc_frozen_upto)))
 
 
+def set_as_cancel(voucher_type, voucher_no,gl_name):
+	"""
+		Set is_cancelled=1 for perticular gl entries for the voucher
+	"""
+	for t in gl_name:
+		frappe.db.sql("""UPDATE `tabGL Entry` SET is_cancelled = 1,
+			modified=%s, modified_by=%s
+			where voucher_type=%s and voucher_no=%s and name=%s and is_cancelled = 0""",
+			(now(), frappe.session.user, voucher_type,t,voucher_no))
 
 
+def make_entry(args, adv_adj, update_outstanding, from_repost=False):
+	gle = frappe.new_doc("GL Entry")
+	gle.update(args)
+	gle.flags.ignore_permissions = 1
+	gle.flags.from_repost = from_repost
+	gle.flags.adv_adj = adv_adj
+	# gle.flags.update_outstanding = update_outstanding or 'Yes'
+	gle.submit()
 
-	# 	make_reverse_gl_entries(gl_entries='6598048b44')
-	# make_reverse_gl_entries(gl_entries='', voucher_type=None, voucher_no=None,adv_adj=False, update_outstanding="Yes")
-		
-	# for cancelation try gl_entries
-	#self.calculate_total()
-	# self.set_missing_accounts_and_fields()
-	# def calculate_total(self):
-	# 	"""Calculates total amount."""
-	# 	self.grand_total = 0
-	# 	for d in self.components:
-	# 		self.grand_total += d.amount
-	# 	self.outstanding_amount = self.grand_total
-	# 	self.grand_total_in_words = money_in_words(self.grand_total)
-	# def set_missing_accounts_and_fields(self):
-	# 	if not self.company:
-	# 		self.company = frappe.defaults.get_defaults().company
-	# 	if not self.currency:
-	# 		self.currency = erpnext.get_company_currency(self.company)
-	# 	################################################################	
-	# 	if not (self.receivable_account and self.income_account and self.cost_center):
-	# 		accounts_details = frappe.get_all("Company",
-	# 			fields=["default_receivable_account", "default_income_account", "cost_center"],
-	# 			filters={"name": self.company})[0]
-
-	# 	if not self.receivable_account:
-	# 		self.receivable_account = accounts_details.default_receivable_account
-	# 	if not self.income_account:
-	# 		self.income_account = accounts_details.default_income_account
-	# 	################################################################	
-	# 	if not self.cost_center:
-	# 		self.cost_center = accounts_details.cost_center
-	# 	if not self.student_email:
-	# 		self.student_email = self.get_student_emails()
-	# pass
+	if not from_repost:
+		validate_expense_against_budget(args)
 
 
+######################################################
 
 @frappe.whitelist()
 def get_progarms(doctype, txt, searchfield, start, page_len, filters):
