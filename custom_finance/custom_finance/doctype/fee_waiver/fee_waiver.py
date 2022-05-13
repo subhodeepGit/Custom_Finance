@@ -33,6 +33,7 @@ def make_reverse_gl_entries(gl_entries=None, voucher_type=None, voucher_no=None,
 		Get original gl entries of the voucher
 		and make reverse gl entries by swapping debit and credit
 	"""
+	print("\n\n\n\n\n\n")
 	if gl_entries:
 		validate_accounting_period(gl_entries)
 		check_freezing_date(gl_entries[0]["posting_date"], adv_adj)
@@ -40,12 +41,13 @@ def make_reverse_gl_entries(gl_entries=None, voucher_type=None, voucher_no=None,
 		for t in gl_entries:
 			gl_name.append(t['name'])	
 		set_as_cancel(gl_entries[0]['voucher_type'], gl_entries[0]['voucher_no'],gl_name)
-
 		for entry in gl_entries:
+			print("entry",entry)
 			entry['name'] = None
 			debit = entry.get('debit', 0)
 			credit = entry.get('credit', 0)
-
+			print("debit",debit)
+			print("credit",credit)
 			debit_in_account_currency = entry.get('debit_in_account_currency', 0)
 			credit_in_account_currency = entry.get('credit_in_account_currency', 0)
 
@@ -110,12 +112,14 @@ def set_as_cancel(voucher_type, voucher_no,gl_name):
 
 
 def make_entry(args, adv_adj, update_outstanding, from_repost=False):
+	print("\n\n\n\n\n")
+	print("update_outstanding",update_outstanding)
 	gle = frappe.new_doc("GL Entry")
 	gle.update(args)
 	gle.flags.ignore_permissions = 1
 	gle.flags.from_repost = from_repost
 	gle.flags.adv_adj = adv_adj
-	# gle.flags.update_outstanding = update_outstanding or 'Yes'
+	gle.flags.update_outstanding = update_outstanding or 'Yes'
 	gle.submit()
 
 	if not from_repost:

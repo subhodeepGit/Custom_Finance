@@ -1,13 +1,3 @@
-# # Copyright (c) 2022, SOUL and contributors
-# # For license information, please see license.txt
-
-# # import frappe
-
-# def execute(filters=None):
-# 	columns, data = [], []
-# 	return columns, data
-
-
 # Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
 # License: GNU General Public License v3. See license.txt
 
@@ -34,7 +24,6 @@ TRANSLATIONS = frappe._dict()
 def execute(filters=None):
 	if not filters:
 		return [], []
-
 	account_details = {}
 
 	if filters and filters.get('print_in_account_currency') and \
@@ -47,7 +36,6 @@ def execute(filters=None):
 	if filters.get('party'):
 		filters.party = frappe.parse_json(filters.get("party"))
 
-	
 	validate_filters(filters, account_details)
 
 	validate_party(filters)
@@ -155,7 +143,6 @@ def get_result(filters, account_details):
 	accounting_dimensions = []
 	if filters.get("include_dimensions"):
 		accounting_dimensions = get_accounting_dimensions()
-
 	gl_entries = get_gl_entries(filters, accounting_dimensions)
 
 	data = get_data_with_opening_closing(filters, account_details,
@@ -194,7 +181,6 @@ def get_gl_entries(filters, accounting_dimensions):
 		credit*(DCC_allocation.percentage_allocation/100) as credit,
 		debit_in_account_currency*(DCC_allocation.percentage_allocation/100) as debit_in_account_currency,
 		credit_in_account_currency*(DCC_allocation.percentage_allocation/100) as credit_in_account_currency """
-
 		distributed_cost_center_query = """
 		UNION ALL
 		SELECT name as gl_entry,
@@ -242,8 +228,6 @@ def get_gl_entries(filters, accounting_dimensions):
 		),
 		filters, as_dict=1)
 
-
-	
 	if filters.get('presentation_currency'):
 		return convert_to_presentation_currency(gl_entries, currency_map, filters.get('company'))
 	else:
@@ -262,13 +246,7 @@ def get_conditions(filters):
 		conditions.append("cost_center in %(cost_center)s")
 
 	if filters.get("voucher_no"):
-		fee_structure=filters.get("voucher_no")
-		list_of_voucher_no=frappe.db.get_list("Fees", filters=[["fee_schedule","=",fee_structure]],fields=["name"])
-		voucher_no_list=[]
-		for t in list_of_voucher_no:
-			voucher_no_list.append(t['name'])
-		# conditions.append("voucher_no=%(voucher_no)s")
-		conditions.append("voucher_no in %s"%str(tuple(voucher_no_list)))
+		conditions.append("voucher_no=%(voucher_no)s")
 
 	if filters.get("group_by") == "Group by Party" and not filters.get("party_type"):
 		conditions.append("party_type in ('Customer', 'Supplier')")
@@ -650,3 +628,4 @@ def get_columns(filters):
 	])
 
 	return columns
+
