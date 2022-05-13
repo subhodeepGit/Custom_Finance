@@ -8,6 +8,7 @@ import json
 from frappe.utils import cint, cstr, flt, formatdate, getdate, now
 from erpnext.accounts.doctype.budget.budget import validate_expense_against_budget
 from frappe.utils import money_in_words
+import erpnext
 
 
 class ClosedAccountingPeriod(frappe.ValidationError): pass
@@ -16,7 +17,7 @@ class FeeWaiver(Document):
 
 	def validate(self):
 		self.calculate_total()
-
+		self.set_missing_accounts_and_fields()
 
 
 	def on_submit(self):
@@ -42,7 +43,36 @@ class FeeWaiver(Document):
 		for d in self.fee_componemts:
 			self.grand_total += d.waiver_amount
 			self.outstanding_amount =self.outstanding_amount+int(d.outstanding_fees)
-		self.grand_total_in_words = money_in_words(self.grand_total)		
+		self.grand_total_in_words = money_in_words(self.grand_total)
+
+	def set_missing_accounts_and_fields(self):
+		if not self.company:
+			self.company = frappe.defaults.get_defaults().company
+		if not self.currency:
+			self.currency = erpnext.get_company_currency(self.company)
+		if not self.cost_center:
+			accounts_details = frappe.get_all("Company",
+				fields=["default_receivable_account", "default_income_account", "cost_center"],
+				filters={"name": self.company})[0]
+			self.cost_center = accounts_details.cost_center
+		if not self.student_email:
+			self.student_email = self.get_student_emails()	
+				
+	def get_student_emails(self):
+		student_emails = frappe.db.sql_list("""
+			select g.email_address
+			from `tabGuardian` g, `tabStudent Guardian` sg
+			where g.name = sg.guardian and sg.parent = %s and sg.parenttype = 'Student'
+			and ifnull(g.email_address, '')!=''
+		""", self.student)
+
+		student_email_id = frappe.db.get_value("Student", self.student, "student_email_id")
+		if student_email_id:
+			student_emails.append(student_email_id)
+		if student_emails:
+			return ", ".join(list(set(student_emails)))
+		else:
+			return None			
 
 
 def make_reverse_gl_entries(gl_entries=None, voucher_type=None, voucher_no=None,adv_adj=False, update_outstanding="Yes"):

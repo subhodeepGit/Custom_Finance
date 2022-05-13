@@ -160,7 +160,6 @@
   {
    "fieldname": "currency",
    "fieldtype": "Link",
-   "hidden": 1,
    "label": "Currency",
    "options": "Currency",
    "read_only": 1
@@ -243,7 +242,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-05-13 16:32:30.221544",
+ "modified": "2022-05-13 17:15:22.684561",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Fee Waiver",
