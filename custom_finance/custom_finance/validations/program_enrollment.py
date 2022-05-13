@@ -12,7 +12,7 @@ def on_submit(doc,method):
 def fee_structure_validation(doc): 
    
     existed_fs = frappe.db.get_list("Fee Structure", {'programs':doc.programs, 'program':doc.program, 
-                 'student_category':doc.student_category,'fee_type':'Semester Fees', 'academic_year':doc.academic_year,
+                 'fee_type':'Semester Fees', 'academic_year':doc.academic_year,
                   'academic_term':doc.academic_term, 'docstatus':1},["name"])
    
     if len(existed_fs) != 0:
