@@ -50,7 +50,6 @@ class StudentReregistrationToolFees(Document):
         frappe.publish_realtime("student_reregistration_tool_fees",
 			{"progress": "0", "reload": 1}, user=frappe.session.user)
         total = len(self.students)
-        print("\n\n\n",total)
         if total > 0:
             frappe.msgprint(_('''Student Re-registration will be created in the background.
 						In case of any error the error message will be updated in the Schedule.'''))
@@ -58,13 +57,10 @@ class StudentReregistrationToolFees(Document):
         else:
             enroll_stud(self)
 	
-# @frappe.whitelist()
 def enroll_stud(self):
-# def enroll_students(self):
     fee_structure_id = fee_structure_validation(self) #KP
     total = len(self.students)
     existed_enrollment = [p.get('student') for p in frappe.db.get_list("Program Enrollment", {'student':['in', [s.student for s in self.students]],'programs':self.programs, 'program': self.new_semester,'academic_year':self.new_academic_year, 'academic_term':self.new_academic_term,'docstatus':1 }, 'student')]
-    print(existed_enrollment)
     if len(existed_enrollment) > 0:
         frappe.msgprint(_("{0} Students already enrolled").format( ', '.join(map(str, existed_enrollment))))
     enrolled_students = []
@@ -93,7 +89,7 @@ def enroll_stud(self):
                     prog_enrollment.reference_doctype="Program Enrollment"
                     prog_enrollment.reference_name=pe.name
                 prog_enrollment.save()
-                # prog_enrollment.submit()
+                prog_enrollment.submit()
                 create_fees(self,stud,fee_structure_id) #KP
                 enrolled_students.append(stud.student)
             except Exception as e:
@@ -157,4 +153,4 @@ def create_fees(self,stud,fee_structure_id): #KP
             'outstanding_fees' : i['outstanding_fees'],
         })
     fee.save()
-    # fee.submit()
+    fee.submit()
