@@ -1,6 +1,7 @@
 # Copyright (c) 2022, SOUL and contributors
 # For license information, please see license.txt
 
+from cgi import print_form
 import frappe
 from frappe.model.document import Document
 from six import iteritems, string_types
@@ -9,20 +10,44 @@ from frappe.utils import cint, cstr, flt, formatdate, getdate, now
 from erpnext.accounts.doctype.budget.budget import validate_expense_against_budget
 from frappe.utils import money_in_words
 import erpnext
-
+from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import (
+	get_accounting_dimensions,
+)
+from frappe.model.meta import get_field_precision
 
 class ClosedAccountingPeriod(frappe.ValidationError): pass
+
+class get_gl_dict(dict):
+    def __getattr__(self, key):
+        try:
+            return self[key]
+        except KeyError as k:
+            raise AttributeError(k)
+
+    def __setattr__(self, key, value):
+        self[key] = value
+
+    def __delattr__(self, key):
+        try:
+            del self[key]
+        except KeyError as k:
+            raise AttributeError(k)
+
+    # def __repr__(self):
+    #     return '<DictX ' + dict.__repr__(self) + '>'
+
 
 class FeeWaiver(Document):
 
 	def validate(self):
 		self.calculate_total()
 		self.set_missing_accounts_and_fields()
+		self.make_gl_entries_waiver()
 
 
 	def on_submit(self):
 		gl_cancelation(self)
-		self.make_gl_entries()
+		
 
 
 	def calculate_total(self):
@@ -62,48 +87,368 @@ class FeeWaiver(Document):
 			return ", ".join(list(set(student_emails)))
 		else:
 			return None		
-	def make_gl_entries(self):
+	def make_gl_entries_waiver(self):
+		print("\n\n\n\n\n\n\n")
 		if not self.grand_total:
 			return
 				####################################################################	completed
-		data = frappe.get_all("Fee Component",{"parent":self.name},["fees_category","receivable_account","income_account","amount"])
+		data = frappe.get_all("Fee Waiver Components",{"parent":self.name},['fees_category','amount','waiver_type','percentage',
+																	'waiver_amount','total_waiver_amount','receivable_account','income_account',
+																	'company','grand_fee_amount','outstanding_fees','waiver_account','fee_voucher_no'
+																])														
 		for fc in data:
-			# student_gl_entries =  self.get_gl_dict({
-			# 	"account": fc["receivable_account"],
-			# 	"party_type": "Student",
-			# 	"party": self.student,
-			# 	"against": fc["income_account"],
-			# 	"debit": fc["amount"],
-			# 	"debit_in_account_currency": fc["amount"],
-			# 	"against_voucher": self.name,
-			# 	"against_voucher_type": self.doctype
-			# }, item=self)
-
-			# fee_gl_entry = self.get_gl_dict({
-			# 	"account": fc["income_account"],
-			# 	"against": self.student,
-			# 	"credit": fc["amount"],
-			# 	"credit_in_account_currency": fc["amount"],
-			# 	"cost_center": self.cost_center
-			# }, item=self)
-			student_gl_entries={'company': 'KiiT Polytechnic', 'posting_date': '2022-05-14', 'fiscal_year': '2022-2023', 'voucher_type': 'Fees', 'voucher_no': 'EDU-FEE-2022-00076', 
-			'remarks': None, 'debit': 5800.0, 'credit': 0, 'debit_in_account_currency': 5800.0, 'credit_in_account_currency': 0, 'is_opening': 'No', 'party_type': 'Student', 
-			'party': 'EDU-STU-2022-00001', 'project': None, 'post_net_value': None, 'account': 'Development Fees - KP', 'against': 'Development Fees Income - KP', 
-			'against_voucher': 'EDU-FEE-2022-00076', 'against_voucher_type': 'Fees', 'account_currency': 'INR'} # This gl will be 2 enrty
-			fee_gl_entry={'company': 'KiiT Polytechnic', 'posting_date': '2022-05-14', 'fiscal_year': '2022-2023', 'voucher_type': 'Fees', 
-			'voucher_no': 'EDU-FEE-2022-00076', 'remarks': None, 'debit': 0, 'credit': 5800.0, 'debit_in_account_currency': 0, 'credit_in_account_currency': 5800.0, 
-			'is_opening': 'No', 'party_type': None, 'party': None, 'project': None, 'post_net_value': None, 'account': 'Development Fees Income - KP', 
-			'against': 'EDU-STU-2022-00001', 'cost_center': 'Main - KP', 'account_currency': 'INR'} # one entry 
+			student_gl_entries=get_gl_dict({'company': self.company, 
+			'posting_date': self.posting_date, 
+			'fiscal_year': self.academic_year, 
+			'voucher_type': 'Fees', 
+			'voucher_no': fc['fee_voucher_no'], 
+			'remarks': None, 
+			'debit': fc['grand_fee_amount'], 
+			'credit': 0, 
+			'debit_in_account_currency':fc['grand_fee_amount'], 
+			'credit_in_account_currency': 0, 
+			'is_opening': 'No', 
+			'party_type': 'Student', 
+			'party': self.student, 
+			'project': None, 
+			'post_net_value': None, 
+			'account': fc['receivable_account'], 
+			'against': fc['income_account'], 
+			'against_voucher':fc['fee_voucher_no'], 
+			'against_voucher_type': 'Fees', 
+			'account_currency': 'INR'}) # This gl will be one entry
+			### Fees entry without waiver part
+			fee_gl_entry=get_gl_dict({'company': self.company, 
+			'posting_date':self.posting_date, 
+			'fiscal_year': self.academic_year, 
+			'voucher_type': 'Fees', 
+			'voucher_no':fc['fee_voucher_no'], 
+			'remarks': None, 
+			'debit': 0, 
+			'credit': fc['grand_fee_amount']-fc['waiver_amount'], 
+			'debit_in_account_currency': 0, 
+			'credit_in_account_currency': fc['grand_fee_amount']-fc['waiver_amount'], 
+			'is_opening': 'No', 
+			'party_type': None, 
+			'party': None, 
+			'project': None, 
+			'post_net_value': None, 
+			'account': fc['income_account'], 
+			'against': self.student, 
+			'cost_center': self.cost_center, 
+			'account_currency': 'INR'}) # one entry 
+			################### end 
+			waiver_fee_gl_entry=get_gl_dict({'company': self.company, 
+			'posting_date':self.posting_date, 
+			'fiscal_year': self.academic_year, 
+			'voucher_type': 'Fees', 
+			'voucher_no':fc['fee_voucher_no'], 
+			'remarks': None, 
+			'debit': 0, 
+			'credit': fc['waiver_amount'], 
+			'debit_in_account_currency': 0, 
+			'credit_in_account_currency': fc['grand_fee_amount']-fc['waiver_amount'], 
+			'is_opening': 'No', 
+			'party_type': None, 
+			'party': None, 
+			'project': None, 
+			'post_net_value': None, 
+			'account': fc['waiver_account'], 
+			'against': self.student, 
+			'cost_center': self.cost_center, 
+			'account_currency': 'INR'})
+			###########################
 			print(student_gl_entries)
+			print(waiver_fee_gl_entry)
 			print(fee_gl_entry)
 			# from erpnext.accounts.general_ledger import make_gl_entries
-			# make_gl_entries([student_gl_entries, fee_gl_entry], cancel=(self.docstatus == 2), code has to be copied 
-			# 	update_outstanding="Yes", merge_entries=False)
+			# make_gl_entries([student_gl_entries, fee_gl_entry], cancel=(self.docstatus == 2),update_outstanding="Yes", merge_entries=False)
+			make_gl_entries([student_gl_entries,waiver_fee_gl_entry, fee_gl_entry], cancel=(self.docstatus == 2),update_outstanding="Yes", merge_entries=False)
 		###################################################################
 
+def make_gl_entries(gl_map, cancel=False, adv_adj=False, merge_entries=True, update_outstanding='Yes', from_repost=False):
+	if gl_map:
+		if not cancel:
+			validate_accounting_period(gl_map)
+			gl_map = process_gl_map(gl_map, merge_entries)
+			if gl_map and len(gl_map) > 1:
+				save_entries(gl_map, adv_adj, update_outstanding, from_repost)
+			# Post GL Map proccess there may no be any GL Entries
+			elif gl_map:
+				frappe.throw(_("Incorrect number of General Ledger Entries found. You might have selected a wrong Account in the transaction."))
+		else:
+			make_reverse_gl_entries_fees(gl_map, adv_adj=adv_adj, update_outstanding=update_outstanding)
 
 
 
+def validate_accounting_period_fees(gl_map):
+	accounting_periods = frappe.db.sql(""" SELECT
+			ap.name as name
+		FROM
+			`tabAccounting Period` ap, `tabClosed Document` cd
+		WHERE
+			ap.name = cd.parent
+			AND ap.company = %(company)s
+			AND cd.closed = 1
+			AND cd.document_type = %(voucher_type)s
+			AND %(date)s between ap.start_date and ap.end_date
+			""", {
+				'date': gl_map[0]['posting_date'],
+				'company': gl_map[0]['company'],
+				'voucher_type': gl_map[0]['voucher_type']
+			}, as_dict=1)
+
+	if accounting_periods:
+		frappe.throw(_("You cannot create or cancel any accounting entries with in the closed Accounting Period {0}")
+			.format(frappe.bold(accounting_periods[0].name)), ClosedAccountingPeriod)
+
+
+def process_gl_map(gl_map, merge_entries=True, precision=None): ##################### cont
+	if merge_entries:
+		gl_map = merge_similar_entries(gl_map, precision)
+	for entry in gl_map:
+		# toggle debit, credit if negative entry
+		if flt(entry.debit) < 0:
+			entry.credit = flt(entry.credit) - flt(entry.debit)
+			entry.debit = 0.0
+
+		if flt(entry.debit_in_account_currency) < 0:
+			entry.credit_in_account_currency = \
+				flt(entry.credit_in_account_currency) - flt(entry.debit_in_account_currency)
+			entry.debit_in_account_currency = 0.0
+
+		if flt(entry.credit) < 0:
+			entry.debit = flt(entry.debit) - flt(entry.credit)
+			entry.credit = 0.0
+
+		if flt(entry.credit_in_account_currency) < 0:
+			entry.debit_in_account_currency = \
+				flt(entry.debit_in_account_currency) - flt(entry.credit_in_account_currency)
+			entry.credit_in_account_currency = 0.0
+
+		update_net_values(entry)
+
+	return gl_map
+
+
+def merge_similar_entries(gl_map, precision=None):
+	merged_gl_map = []
+	accounting_dimensions = get_accounting_dimensions()
+	for entry in gl_map:
+		# if there is already an entry in this account then just add it
+		# to that entry
+		same_head = check_if_in_list(entry, merged_gl_map, accounting_dimensions)
+		if same_head:
+			same_head.debit	= flt(same_head.debit) + flt(entry.debit)
+			same_head.debit_in_account_currency	= \
+				flt(same_head.debit_in_account_currency) + flt(entry.debit_in_account_currency)
+			same_head.credit = flt(same_head.credit) + flt(entry.credit)
+			same_head.credit_in_account_currency = \
+				flt(same_head.credit_in_account_currency) + flt(entry.credit_in_account_currency)
+		else:
+			merged_gl_map.append(entry)
+
+	company = gl_map[0].company if gl_map else erpnext.get_default_company()
+	company_currency = erpnext.get_company_currency(company)
+
+	if not precision:
+		precision = get_field_precision(frappe.get_meta("GL Entry").get_field("debit"), company_currency)
+
+	# filter zero debit and credit entries
+	merged_gl_map = filter(lambda x: flt(x.debit, precision)!=0 or flt(x.credit, precision)!=0, merged_gl_map)
+	merged_gl_map = list(merged_gl_map)
+
+	return merged_gl_map
+
+
+
+def check_if_in_list(gle, gl_map, dimensions=None):
+	account_head_fieldnames = ['voucher_detail_no', 'party', 'against_voucher',
+			'cost_center', 'against_voucher_type', 'party_type', 'project', 'finance_book']
+
+	if dimensions:
+		account_head_fieldnames = account_head_fieldnames + dimensions
+
+	for e in gl_map:
+		same_head = True
+		if e.account != gle.account:
+			same_head = False
+			continue
+
+		for fieldname in account_head_fieldnames:
+			if cstr(e.get(fieldname)) != cstr(gle.get(fieldname)):
+				same_head = False
+				break
+
+		if same_head:
+			return e
+
+def update_net_values(entry):
+	# In some scenarios net value needs to be shown in the ledger
+	# This method updates net values as debit or credit
+	if entry.post_net_value and entry.debit and entry.credit:
+		if entry.debit > entry.credit:
+			entry.debit = entry.debit - entry.credit
+			entry.debit_in_account_currency = entry.debit_in_account_currency \
+				- entry.credit_in_account_currency
+			entry.credit = 0
+			entry.credit_in_account_currency = 0
+		else:
+			entry.credit = entry.credit - entry.debit
+			entry.credit_in_account_currency = entry.credit_in_account_currency \
+				- entry.debit_in_account_currency
+
+			entry.debit = 0
+			entry.debit_in_account_currency = 0
+
+
+
+
+
+def make_reverse_gl_entries_fees(gl_entries=None, voucher_type=None, voucher_no=None,
+	adv_adj=False, update_outstanding="Yes"):
+	"""
+		Get original gl entries of the voucher
+		and make reverse gl entries by swapping debit and credit
+	"""
+
+	if not gl_entries:
+		gl_entries = frappe.get_all("GL Entry",
+			fields = ["*"],
+			filters = {
+				"voucher_type": voucher_type,
+				"voucher_no": voucher_no,
+				"is_cancelled": 0
+			})
+
+	if gl_entries:
+		validate_accounting_period(gl_entries)
+		check_freezing_date(gl_entries[0]["posting_date"], adv_adj)
+		set_as_cancel(gl_entries[0]['voucher_type'], gl_entries[0]['voucher_no'])
+
+		for entry in gl_entries:
+			entry['name'] = None
+			debit = entry.get('debit', 0)
+			credit = entry.get('credit', 0)
+
+			debit_in_account_currency = entry.get('debit_in_account_currency', 0)
+			credit_in_account_currency = entry.get('credit_in_account_currency', 0)
+
+			entry['debit'] = credit
+			entry['credit'] = debit
+			entry['debit_in_account_currency'] = credit_in_account_currency
+			entry['credit_in_account_currency'] = debit_in_account_currency
+
+			entry['remarks'] = "On cancellation of " + entry['voucher_no']
+			entry['is_cancelled'] = 1
+
+			if entry['debit'] or entry['credit']:
+				make_entry(entry, adv_adj, "Yes")
+
+def save_entries(gl_map, adv_adj, update_outstanding, from_repost=False):
+	if not from_repost:
+		validate_cwip_accounts(gl_map)
+
+	round_off_debit_credit(gl_map)
+
+	if gl_map:
+		check_freezing_date(gl_map[0]["posting_date"], adv_adj)
+
+	for entry in gl_map:
+		print("\n\n\n\n")
+		print("ok")
+		print(entry)
+		make_entry(entry, adv_adj, update_outstanding, from_repost) ######### problem
+
+def round_off_debit_credit(gl_map):
+	precision = get_field_precision(frappe.get_meta("GL Entry").get_field("debit"),
+		currency=frappe.get_cached_value('Company',  gl_map[0].company,  "default_currency"))
+
+	debit_credit_diff = 0.0
+	for entry in gl_map:
+		entry.debit = flt(entry.debit, precision)
+		entry.credit = flt(entry.credit, precision)
+		debit_credit_diff += entry.debit - entry.credit
+
+	debit_credit_diff = flt(debit_credit_diff, precision)
+
+	if gl_map[0]["voucher_type"] in ("Journal Entry", "Payment Entry"):
+		allowance = 5.0 / (10**precision)
+	else:
+		allowance = .5
+
+	if abs(debit_credit_diff) > allowance:
+		frappe.throw(_("Debit and Credit not equal for {0} #{1}. Difference is {2}.")
+			.format(gl_map[0].voucher_type, gl_map[0].voucher_no, debit_credit_diff))
+
+	elif abs(debit_credit_diff) >= (1.0 / (10**precision)):
+		make_round_off_gle(gl_map, debit_credit_diff, precision)
+
+def validate_cwip_accounts(gl_map):
+	"""Validate that CWIP account are not used in Journal Entry"""
+	if gl_map and gl_map[0].voucher_type != "Journal Entry":
+		return
+
+	cwip_enabled = any(cint(ac.enable_cwip_accounting) for ac in frappe.db.get_all("Asset Category", "enable_cwip_accounting"))
+	if cwip_enabled:
+		cwip_accounts = [d[0] for d in frappe.db.sql("""select name from tabAccount
+			where account_type = 'Capital Work in Progress' and is_group=0""")]
+
+		for entry in gl_map:
+			if entry.account in cwip_accounts:
+				frappe.throw(
+					_("Account: <b>{0}</b> is capital Work in progress and can not be updated by Journal Entry").format(entry.account))
+					
+def make_round_off_gle(gl_map, debit_credit_diff, precision):
+	round_off_account, round_off_cost_center = get_round_off_account_and_cost_center(gl_map[0].company)
+	round_off_account_exists = False
+	round_off_gle = frappe._dict()
+	for d in gl_map:
+		if d.account == round_off_account:
+			round_off_gle = d
+			if d.debit:
+				debit_credit_diff -= flt(d.debit)
+			else:
+				debit_credit_diff += flt(d.credit)
+			round_off_account_exists = True
+
+	if round_off_account_exists and abs(debit_credit_diff) <= (1.0 / (10**precision)):
+		gl_map.remove(round_off_gle)
+		return
+
+	if not round_off_gle:
+		for k in ["voucher_type", "voucher_no", "company",
+			"posting_date", "remarks"]:
+				round_off_gle[k] = gl_map[0][k]
+
+	round_off_gle.update({
+		"account": round_off_account,
+		"debit_in_account_currency": abs(debit_credit_diff) if debit_credit_diff < 0 else 0,
+		"credit_in_account_currency": debit_credit_diff if debit_credit_diff > 0 else 0,
+		"debit": abs(debit_credit_diff) if debit_credit_diff < 0 else 0,
+		"credit": debit_credit_diff if debit_credit_diff > 0 else 0,
+		"cost_center": round_off_cost_center,
+		"party_type": None,
+		"party": None,
+		"is_opening": "No",
+		"against_voucher_type": None,
+		"against_voucher": None
+	})
+
+	if not round_off_account_exists:
+		gl_map.append(round_off_gle)
+
+def get_round_off_account_and_cost_center(company):
+	round_off_account, round_off_cost_center = frappe.get_cached_value('Company',  company,
+		["round_off_account", "round_off_cost_center"]) or [None, None]
+	if not round_off_account:
+		frappe.throw(_("Please mention Round Off Account in Company"))
+
+	if not round_off_cost_center:
+		frappe.throw(_("Please mention Round Off Cost Center in Company"))
+
+	return round_off_account, round_off_cost_center
+###################################################################################################
 def gl_cancelation(self):
 	GL_account_info=[]
 	for t in self.get("fee_componemts"):
@@ -200,6 +545,9 @@ def set_as_cancel(voucher_type, voucher_no,gl_name):
 
 
 def make_entry(args, adv_adj, update_outstanding, from_repost=False):
+	print("\n\n\n\n")
+	print("ok 1")
+	print(args)
 	gle = frappe.new_doc("GL Entry")
 	gle.update(args)
 	gle.flags.ignore_permissions = 1
