@@ -131,7 +131,6 @@ frappe.ui.form.on('Student Reregistration Tool Fees', {
 	},
 	"new_semester": function(frm) {
 		if(frm.doc.new_semester){
-			alert(new_semester)
 			frappe.model.with_doc("Program", frm.doc.new_semester, function() {
 	            var tabletransfer= frappe.model.get_doc("Program", frm.doc.new_semester)
 	            if(tabletransfer.courses){
@@ -153,4 +152,3 @@ frappe.ui.form.on('Student Reregistration Tool Fees', {
 		}
 	}
 });
-
