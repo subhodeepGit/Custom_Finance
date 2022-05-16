@@ -154,6 +154,7 @@ frappe.ui.form.on('Payment Entry', {
 					(r.message).forEach(element => {
                         var c = frm.add_child("references")
                         c.fees_category = element.fees_category
+						c.program=element.program
 						c.reference_doctype=element.Type
 						c.reference_name=element.reference_name
 						c.due_date=element.posting_date
@@ -163,58 +164,7 @@ frappe.ui.form.on('Payment Entry', {
 						c.account_paid_from=element.receivable_account
                     });
                     frm.refresh_field("references")
-						// c.reference_doctype = d.voucher_type;
-						// c.reference_name = d.voucher_no;
-						// c.due_date = d.due_date
-						// c.total_amount = d.invoice_amount;
-						// c.outstanding_amount = d.outstanding_amount;
-						// c.bill_no = d.bill_no;
-						// c.payment_term = d.payment_term;
-						// c.allocated_amount = d.allocated_amount;
-
-						// if(!in_list(["Sales Order", "Purchase Order", "Expense Claim", "Fees"], d.voucher_type)) {
-						// 	if(flt(d.outstanding_amount) > 0)
-						// 		total_positive_outstanding += flt(d.outstanding_amount);
-						// 	else
-						// 		total_negative_outstanding += Math.abs(flt(d.outstanding_amount));
-						// }
-
-						// var party_account_currency = frm.doc.payment_type=="Receive" ?
-						// 	frm.doc.paid_from_account_currency : frm.doc.paid_to_account_currency;
-
-						// if(party_account_currency != company_currency) {
-						// 	c.exchange_rate = d.exchange_rate;
-						// } else {
-						// 	c.exchange_rate = 1;
-						// }
-						// if (in_list(['Sales Invoice', 'Purchase Invoice', "Expense Claim", "Fees"], d.reference_doctype)){
-						// 	c.due_date = d.due_date;
-						// }
-					// });
-
-				// 	if(
-				// 		(frm.doc.payment_type=="Receive" && frm.doc.party_type=="Customer") ||
-				// 		(frm.doc.payment_type=="Pay" && frm.doc.party_type=="Supplier")  ||
-				// 		(frm.doc.payment_type=="Pay" && frm.doc.party_type=="Employee") ||
-				// 		(frm.doc.payment_type=="Receive" && frm.doc.party_type=="Student") ||
-				// 		(frm.doc.payment_type=="Receive" && frm.doc.party_type=="Donor")
-				// 	) {
-				// 		if(total_positive_outstanding > total_negative_outstanding)
-				// 			if (!frm.doc.paid_amount)
-				// 				frm.set_value("paid_amount",
-				// 					total_positive_outstanding - total_negative_outstanding);
-				// 	} else if (
-				// 		total_negative_outstanding &&
-				// 		total_positive_outstanding < total_negative_outstanding
-				// 	) {
-				// 		if (!frm.doc.received_amount)
-				// 			frm.set_value("received_amount",
-				// 				total_negative_outstanding - total_positive_outstanding);
-				// 	}
 				}
-
-				// frm.events.allocate_party_amount_against_ref_docs(frm,
-				// 	(frm.doc.payment_type=="Receive" ? frm.doc.paid_amount : frm.doc.received_amount));
 
 			}
 		});
@@ -222,7 +172,29 @@ frappe.ui.form.on('Payment Entry', {
 
 
 });
-
+frappe.ui.form.on('Payment Entry', {
+	student(frm){
+		if (frm.doc.student) {
+			frappe.call({
+				// /opt/bench/frappe-bench/apps/custom_finance/custom_finance/custom_finance/doctype/payment_entry.py
+				method: 'custom_finance.custom_finance.doctype.payment_entry.get_student_detai',
+				args: {
+					args:args
+				},
+				callback: function(r) {
+					if (r.message) {
+						(r.message).forEach(function (element) {
+								var c = frm.add_child("references");
+								c.semesters = element.program;
+							});
+					}
+					frm.refresh();
+					refresh_field('references');
+				}
+			});
+		}
+	}
+});
 frappe.ui.form.on("Payment Entry","mode_of_payment", function(frm){
 	
     var mop = frm.doc.mode_of_payment

@@ -7,33 +7,124 @@ from six import iteritems, string_types
 import json
 from frappe.utils import cint, cstr, flt, formatdate, getdate, now
 from erpnext.accounts.doctype.budget.budget import validate_expense_against_budget
+from frappe.utils import money_in_words
+import erpnext
 
 
 class ClosedAccountingPeriod(frappe.ValidationError): pass
 
 class FeeWaiver(Document):
+
 	def validate(self):
-		GL_account_info=[]
-		for t in self.get("fee_componemts"):
-			Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.receivable_account]],fields=['name', 'creation', 'modified', 'modified_by', 'owner', 
-			'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 'account_currency', 
-			'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 'project', 'remarks', 
-			'is_opening', 'is_advance','fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
-			GL_account_info.append(Gl_entry[0])
-			Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.income_account]],fields=['name', 'creation', 'modified', 'modified_by', 
-			'owner', 'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 
-			'account_currency', 'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 
-			'project', 'remarks', 'is_opening', 'is_advance', 'fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
-			GL_account_info.append(Gl_entry[0])
-		gl_entries=GL_account_info
-		make_reverse_gl_entries(gl_entries=gl_entries,voucher_type='Fees')	
+		self.calculate_total()
+		self.set_missing_accounts_and_fields()
+
+
+	def on_submit(self):
+		gl_cancelation(self)
+		self.make_gl_entries()
+
+
+	def calculate_total(self):
+		"""Calculates total amount."""
+		self.grand_total = 0
+		self.outstanding_amount=0
+		for d in self.fee_componemts:
+			self.grand_total += d.waiver_amount
+			self.outstanding_amount =self.outstanding_amount+int(d.outstanding_fees)
+		self.grand_total_in_words = money_in_words(self.grand_total)
+
+	def set_missing_accounts_and_fields(self):
+		if not self.company:
+			self.company = frappe.defaults.get_defaults().company
+		if not self.currency:
+			self.currency = erpnext.get_company_currency(self.company)
+		if not self.cost_center:
+			accounts_details = frappe.get_all("Company",
+				fields=["default_receivable_account", "default_income_account", "cost_center"],
+				filters={"name": self.company})[0]
+			self.cost_center = accounts_details.cost_center
+		if not self.student_email:
+			self.student_email = self.get_student_emails()	
+				
+	def get_student_emails(self):
+		student_emails = frappe.db.sql_list("""
+			select g.email_address
+			from `tabGuardian` g, `tabStudent Guardian` sg
+			where g.name = sg.guardian and sg.parent = %s and sg.parenttype = 'Student'
+			and ifnull(g.email_address, '')!=''
+		""", self.student)
+
+		student_email_id = frappe.db.get_value("Student", self.student, "student_email_id")
+		if student_email_id:
+			student_emails.append(student_email_id)
+		if student_emails:
+			return ", ".join(list(set(student_emails)))
+		else:
+			return None		
+	def make_gl_entries(self):
+		if not self.grand_total:
+			return
+				####################################################################	completed
+		data = frappe.get_all("Fee Component",{"parent":self.name},["fees_category","receivable_account","income_account","amount"])
+		for fc in data:
+			# student_gl_entries =  self.get_gl_dict({
+			# 	"account": fc["receivable_account"],
+			# 	"party_type": "Student",
+			# 	"party": self.student,
+			# 	"against": fc["income_account"],
+			# 	"debit": fc["amount"],
+			# 	"debit_in_account_currency": fc["amount"],
+			# 	"against_voucher": self.name,
+			# 	"against_voucher_type": self.doctype
+			# }, item=self)
+
+			# fee_gl_entry = self.get_gl_dict({
+			# 	"account": fc["income_account"],
+			# 	"against": self.student,
+			# 	"credit": fc["amount"],
+			# 	"credit_in_account_currency": fc["amount"],
+			# 	"cost_center": self.cost_center
+			# }, item=self)
+			student_gl_entries={'company': 'KiiT Polytechnic', 'posting_date': '2022-05-14', 'fiscal_year': '2022-2023', 'voucher_type': 'Fees', 'voucher_no': 'EDU-FEE-2022-00076', 
+			'remarks': None, 'debit': 5800.0, 'credit': 0, 'debit_in_account_currency': 5800.0, 'credit_in_account_currency': 0, 'is_opening': 'No', 'party_type': 'Student', 
+			'party': 'EDU-STU-2022-00001', 'project': None, 'post_net_value': None, 'account': 'Development Fees - KP', 'against': 'Development Fees Income - KP', 
+			'against_voucher': 'EDU-FEE-2022-00076', 'against_voucher_type': 'Fees', 'account_currency': 'INR'} # This gl will be 2 enrty
+			fee_gl_entry={'company': 'KiiT Polytechnic', 'posting_date': '2022-05-14', 'fiscal_year': '2022-2023', 'voucher_type': 'Fees', 
+			'voucher_no': 'EDU-FEE-2022-00076', 'remarks': None, 'debit': 0, 'credit': 5800.0, 'debit_in_account_currency': 0, 'credit_in_account_currency': 5800.0, 
+			'is_opening': 'No', 'party_type': None, 'party': None, 'project': None, 'post_net_value': None, 'account': 'Development Fees Income - KP', 
+			'against': 'EDU-STU-2022-00001', 'cost_center': 'Main - KP', 'account_currency': 'INR'} # one entry 
+			print(student_gl_entries)
+			print(fee_gl_entry)
+			# from erpnext.accounts.general_ledger import make_gl_entries
+			# make_gl_entries([student_gl_entries, fee_gl_entry], cancel=(self.docstatus == 2), code has to be copied 
+			# 	update_outstanding="Yes", merge_entries=False)
+		###################################################################
+
+
+
+
+def gl_cancelation(self):
+	GL_account_info=[]
+	for t in self.get("fee_componemts"):
+		Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.receivable_account]],fields=['name', 'creation', 'modified', 'modified_by', 'owner', 
+		'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 'account_currency', 
+		'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 'project', 'remarks', 
+		'is_opening', 'is_advance','fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
+		GL_account_info.append(Gl_entry[0])
+		Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.income_account]],fields=['name', 'creation', 'modified', 'modified_by', 
+		'owner', 'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 
+		'account_currency', 'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 
+		'project', 'remarks', 'is_opening', 'is_advance', 'fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
+		GL_account_info.append(Gl_entry[0])
+	gl_entries=GL_account_info
+	make_reverse_gl_entries(gl_entries=gl_entries,voucher_type='Fees')
 
 def make_reverse_gl_entries(gl_entries=None, voucher_type=None, voucher_no=None,adv_adj=False, update_outstanding="Yes"):
 	"""
 		Get original gl entries of the voucher
 		and make reverse gl entries by swapping debit and credit
 	"""
-	print("\n\n\n\n\n\n")
 	if gl_entries:
 		validate_accounting_period(gl_entries)
 		check_freezing_date(gl_entries[0]["posting_date"], adv_adj)
@@ -42,12 +133,9 @@ def make_reverse_gl_entries(gl_entries=None, voucher_type=None, voucher_no=None,
 			gl_name.append(t['name'])	
 		set_as_cancel(gl_entries[0]['voucher_type'], gl_entries[0]['voucher_no'],gl_name)
 		for entry in gl_entries:
-			print("entry",entry)
 			entry['name'] = None
 			debit = entry.get('debit', 0)
 			credit = entry.get('credit', 0)
-			print("debit",debit)
-			print("credit",credit)
 			debit_in_account_currency = entry.get('debit_in_account_currency', 0)
 			credit_in_account_currency = entry.get('credit_in_account_currency', 0)
 
@@ -112,8 +200,6 @@ def set_as_cancel(voucher_type, voucher_no,gl_name):
 
 
 def make_entry(args, adv_adj, update_outstanding, from_repost=False):
-	print("\n\n\n\n\n")
-	print("update_outstanding",update_outstanding)
 	gle = frappe.new_doc("GL Entry")
 	gle.update(args)
 	gle.flags.ignore_permissions = 1
