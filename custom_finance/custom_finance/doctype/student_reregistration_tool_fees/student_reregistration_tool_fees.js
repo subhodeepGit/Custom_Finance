@@ -131,26 +131,24 @@ frappe.ui.form.on('Student Reregistration Tool Fees', {
 	},
 	"new_semester": function(frm) {
 		if(frm.doc.new_semester){
-			alert(new_semester)
 			frappe.model.with_doc("Program", frm.doc.new_semester, function() {
-	            var tabletransfer= frappe.model.get_doc("Program", frm.doc.new_semester)
-	            if(tabletransfer.courses){
-	            	frm.clear_table("courses");
-		            $.each(tabletransfer.courses, function(index, row){
-			            if(row.required){
-			                var d = frm.add_child("courses");
-			                d.course = row.course;
-			                d.course_name = row.course_name ;
-			                frappe.db.get_value("Course", {"name": row.course}, "course_code", function(value) {
-						        d.course_code = value.course_code;
-						        frm.refresh_field("courses");
-						    });
-			                frm.refresh_field("courses");
-			            }
-		            });
+				var tabletransfer= frappe.model.get_doc("Program", frm.doc.new_semester)
+				if(tabletransfer.courses){
+					frm.clear_table("courses");
+						$.each(tabletransfer.courses, function(index, row){
+							if(row.required){
+								var d = frm.add_child("courses");
+								d.course = row.course;
+								d.course_name = row.course_name ;
+								frappe.db.get_value("Course", {"name": row.course}, "course_code", function(value) {
+											d.course_code = value.course_code;
+											frm.refresh_field("courses");
+										});
+								frm.refresh_field("courses");
+							}
+						});
 	            }
 	        });
 		}
 	}
 });
-
