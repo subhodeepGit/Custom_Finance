@@ -39,13 +39,16 @@ class FeeWaiver(Document):
 	def validate(self):
 		self.calculate_total()
 		self.set_missing_accounts_and_fields()
-		update_fee(self)
+		fiscal_year=frappe.get_all("Fiscal Year",filters=[["year_start_date","<=",self.posting_date],["year_end_date",">=",self.posting_date]],fields=['name'])	
+		if len(fiscal_year)==0:
+			frappe.throw("Fiscal Year not maintained")
 		
 
 
 	def on_submit(self):
 		gl_cancelation(self)
 		self.make_gl_entries_waiver()
+		update_fee(self)
 
 
 	def calculate_total(self):
@@ -53,7 +56,7 @@ class FeeWaiver(Document):
 		self.grand_total = 0
 		self.outstanding_amount=0
 		for d in self.fee_componemts:
-			self.grand_total += d.waiver_amount
+			self.grand_total += d.total_waiver_amount
 			self.outstanding_amount =self.outstanding_amount+int(d.outstanding_fees)
 		self.grand_total_in_words = money_in_words(self.grand_total)
 
@@ -158,11 +161,7 @@ class FeeWaiver(Document):
 			make_gl_entries([student_gl_entries,waiver_fee_gl_entry, fee_gl_entry], cancel=(self.docstatus == 2),update_outstanding="Yes", merge_entries=False)
 
 def update_fee(self):
-	print("\n\n\n\n\n")
 	for t in self.get('fee_componemts'):
-		print(t.fee_voucher_no)
-		print(t.fees_category)
-		print(t.outstanding_fees)
 		data=frappe.get_all("Fee Component",filters=[["parent","=",t.fee_voucher_no],['fees_category','=',t.fees_category]],fields=["name",'outstanding_fees'])
 		fee_data=frappe.get_all("Fees",filters=[['name','=',t.fee_voucher_no]],fields=["name","outstanding_amount"])
 		outsatnding_amount=t.outstanding_fees
@@ -171,8 +170,6 @@ def update_fee(self):
 		amount=t.amount
 		waiver_amount=t.waiver_amount
 		total_waiver_amount=t.total_waiver_amount
-		print(waiver_type)
-		print(data[0]["name"])
 		frappe.db.set_value("Fee Component",data[0]["name"], "waiver_type",str(waiver_type))
 		if waiver_type=="Amount":
 			frappe.db.set_value("Fee Component",data[0]["name"], "waiver_amount",waiver_amount)
@@ -182,7 +179,7 @@ def update_fee(self):
 		frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount) 
 		frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
 		frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount)
-		frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-outsatnding_amount) 
+		frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-waiver_amount) 
 
 
 
