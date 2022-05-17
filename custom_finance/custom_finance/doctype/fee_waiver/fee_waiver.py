@@ -88,7 +88,6 @@ class FeeWaiver(Document):
 	def make_gl_entries_waiver(self):
 		if not self.grand_total:
 			return
-				####################################################################	completed
 		data = frappe.get_all("Fee Waiver Components",{"parent":self.name},['fees_category','amount','waiver_type','percentage',
 																	'waiver_amount','total_waiver_amount','receivable_account','income_account',
 																	'company','grand_fee_amount','outstanding_fees','waiver_account','fee_voucher_no'
@@ -157,22 +156,40 @@ class FeeWaiver(Document):
 			'account_currency': 'INR'})
 			###########################
 			make_gl_entries([student_gl_entries,waiver_fee_gl_entry, fee_gl_entry], cancel=(self.docstatus == 2),update_outstanding="Yes", merge_entries=False)
-		###################################################################
 
 def update_fee(self):
 	print("\n\n\n\n\n")
 	for t in self.get('fee_componemts'):
 		print(t.fee_voucher_no)
 		print(t.fees_category)
-		a=frappe.get_all("Fee Component",filters=[["parent","=",t.fee_voucher_no],['fees_category','=',t.fees_category]],fields=["name"])
-		outsatnding_amount=0
-		# frappe.db.set_value("Fee Component",a["name"], "outstanding_fees",) 
+		print(t.outstanding_fees)
+		data=frappe.get_all("Fee Component",filters=[["parent","=",t.fee_voucher_no],['fees_category','=',t.fees_category]],fields=["name",'outstanding_fees'])
+		fee_data=frappe.get_all("Fees",filters=[['name','=',t.fee_voucher_no]],fields=["name","outstanding_amount"])
+		outsatnding_amount=t.outstanding_fees
+		waiver_type=t.waiver_type
+		percentage=t.percentage
+		amount=t.amount
+		waiver_amount=t.waiver_amount
+		total_waiver_amount=t.total_waiver_amount
+		print(waiver_type)
+		print(data[0]["name"])
+		frappe.db.set_value("Fee Component",data[0]["name"], "waiver_type",str(waiver_type))
+		if waiver_type=="Amount":
+			frappe.db.set_value("Fee Component",data[0]["name"], "waiver_amount",waiver_amount)
+		if waiver_type=="Percentage":
+			frappe.db.set_value("Fee Component",data[0]["name"], "percentage",percentage)
+		frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",total_waiver_amount) 	
+		frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount) 
+		frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
+		frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount)
+		frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-outsatnding_amount) 
 
 
 
 
 
 
+######################################################################################################
 
 def make_gl_entries(gl_map, cancel=False, adv_adj=False, merge_entries=True, update_outstanding='Yes', from_repost=False):
 	if gl_map:
