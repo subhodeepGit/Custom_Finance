@@ -33,21 +33,19 @@ class get_gl_dict(dict):
         except KeyError as k:
             raise AttributeError(k)
 
-    # def __repr__(self):
-    #     return '<DictX ' + dict.__repr__(self) + '>'
-
 
 class FeeWaiver(Document):
 
 	def validate(self):
 		self.calculate_total()
 		self.set_missing_accounts_and_fields()
-		self.make_gl_entries_waiver()
+		update_fee(self)
+		
 
 
 	def on_submit(self):
 		gl_cancelation(self)
-		
+		self.make_gl_entries_waiver()
 
 
 	def calculate_total(self):
@@ -88,18 +86,18 @@ class FeeWaiver(Document):
 		else:
 			return None		
 	def make_gl_entries_waiver(self):
-		print("\n\n\n\n\n\n\n")
 		if not self.grand_total:
 			return
 				####################################################################	completed
 		data = frappe.get_all("Fee Waiver Components",{"parent":self.name},['fees_category','amount','waiver_type','percentage',
 																	'waiver_amount','total_waiver_amount','receivable_account','income_account',
 																	'company','grand_fee_amount','outstanding_fees','waiver_account','fee_voucher_no'
-																])														
+																])
+		fiscal_year=frappe.get_all("Fiscal Year",filters=[["year_start_date","<=",self.posting_date],["year_end_date",">=",self.posting_date]],fields=['name'])																											
 		for fc in data:
 			student_gl_entries=get_gl_dict({'company': self.company, 
 			'posting_date': self.posting_date, 
-			'fiscal_year': self.academic_year, 
+			'fiscal_year': fiscal_year[0]['name'], 
 			'voucher_type': 'Fees', 
 			'voucher_no': fc['fee_voucher_no'], 
 			'remarks': None, 
@@ -120,7 +118,7 @@ class FeeWaiver(Document):
 			### Fees entry without waiver part
 			fee_gl_entry=get_gl_dict({'company': self.company, 
 			'posting_date':self.posting_date, 
-			'fiscal_year': self.academic_year, 
+			'fiscal_year': fiscal_year[0]['name'], 
 			'voucher_type': 'Fees', 
 			'voucher_no':fc['fee_voucher_no'], 
 			'remarks': None, 
@@ -140,14 +138,14 @@ class FeeWaiver(Document):
 			################### end 
 			waiver_fee_gl_entry=get_gl_dict({'company': self.company, 
 			'posting_date':self.posting_date, 
-			'fiscal_year': self.academic_year, 
+			'fiscal_year':fiscal_year[0]['name'], 
 			'voucher_type': 'Fees', 
 			'voucher_no':fc['fee_voucher_no'], 
 			'remarks': None, 
 			'debit': 0, 
 			'credit': fc['waiver_amount'], 
 			'debit_in_account_currency': 0, 
-			'credit_in_account_currency': fc['grand_fee_amount']-fc['waiver_amount'], 
+			'credit_in_account_currency': fc['waiver_amount'], 
 			'is_opening': 'No', 
 			'party_type': None, 
 			'party': None, 
@@ -158,13 +156,23 @@ class FeeWaiver(Document):
 			'cost_center': self.cost_center, 
 			'account_currency': 'INR'})
 			###########################
-			print(student_gl_entries)
-			print(waiver_fee_gl_entry)
-			print(fee_gl_entry)
-			# from erpnext.accounts.general_ledger import make_gl_entries
-			# make_gl_entries([student_gl_entries, fee_gl_entry], cancel=(self.docstatus == 2),update_outstanding="Yes", merge_entries=False)
 			make_gl_entries([student_gl_entries,waiver_fee_gl_entry, fee_gl_entry], cancel=(self.docstatus == 2),update_outstanding="Yes", merge_entries=False)
 		###################################################################
+
+def update_fee(self):
+	print("\n\n\n\n\n")
+	for t in self.get('fee_componemts'):
+		print(t.fee_voucher_no)
+		print(t.fees_category)
+		a=frappe.get_all("Fee Component",filters=[["parent","=",t.fee_voucher_no],['fees_category','=',t.fees_category]],fields=["name"])
+		outsatnding_amount=0
+		# frappe.db.set_value("Fee Component",a["name"], "outstanding_fees",) 
+
+
+
+
+
+
 
 def make_gl_entries(gl_map, cancel=False, adv_adj=False, merge_entries=True, update_outstanding='Yes', from_repost=False):
 	if gl_map:
@@ -355,9 +363,6 @@ def save_entries(gl_map, adv_adj, update_outstanding, from_repost=False):
 		check_freezing_date(gl_map[0]["posting_date"], adv_adj)
 
 	for entry in gl_map:
-		print("\n\n\n\n")
-		print("ok")
-		print(entry)
 		make_entry(entry, adv_adj, update_outstanding, from_repost) ######### problem
 
 def round_off_debit_credit(gl_map):
@@ -545,9 +550,6 @@ def set_as_cancel(voucher_type, voucher_no,gl_name):
 
 
 def make_entry(args, adv_adj, update_outstanding, from_repost=False):
-	print("\n\n\n\n")
-	print("ok 1")
-	print(args)
 	gle = frappe.new_doc("GL Entry")
 	gle.update(args)
 	gle.flags.ignore_permissions = 1
