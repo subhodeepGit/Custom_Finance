@@ -25,7 +25,7 @@ class StudentReregistrationToolFees(Document):
             condition = 'and academic_term=%(academic_term)s' if self.academic_term else " "
             self.get_students_from = "Program Enrollment"
             condition2 = 'and student_batch_name=%(student_batch)s' if self.student_batch else " "
-            students = frappe.db.sql('''select student, student_name, student_batch_name, roll_no,permanant_registration_number, student_category from `tabProgram Enrollment`   
+            students = frappe.db.sql('''select student, student_name, student_batch_name, roll_no,permanant_registration_number, student_category from `tabProgram Enrollment`
                 where program=%(program)s and academic_year=%(academic_year)s {0} {1} and docstatus != 2'''
                 .format(condition, condition2), self.as_dict(), as_dict=1)          
 
@@ -47,8 +47,8 @@ class StudentReregistrationToolFees(Document):
     @frappe.whitelist()
     def enroll_students(self):
         # self.db_set("fee_creation_status", "In Process")
-        frappe.publish_realtime("student_reregistration_tool_fees",
-			{"progress": "0", "reload": 1}, user=frappe.session.user)
+        # frappe.publish_realtime("student_reregistration_tool_fees",
+		# 	{"progress": "0", "reload": 1}, user=frappe.session.user)
         total = len(self.students)
         if total > 0:
             frappe.msgprint(_('''Student Re-registration will be created in the background.
@@ -56,7 +56,7 @@ class StudentReregistrationToolFees(Document):
             enqueue(enroll_stud, queue='default', timeout=6000, event='enroll_stud',self=self)
         else:
             enroll_stud(self)
-	
+
 def enroll_stud(self):
     fee_structure_id = fee_structure_validation(self) #KP
     total = len(self.students)
@@ -82,14 +82,14 @@ def enroll_stud(self):
                     course_data  = frappe.db.get_value("Course",{'name':stud.additional_course_1},["course_name", "course_code"], as_dict=1)
                     if course_data:
                         course_data = course_data
-                        create_course_row(prog_enrollment,stud.additional_course_1,course_data.course_name,course_data.course_code)     
+                        create_course_row(prog_enrollment,stud.additional_course_1,course_data.course_name,course_data.course_code)
                 for c in self.courses:
                     create_course_row(prog_enrollment,c.course,c.course_name,c.course_code)
                 for pe in frappe.get_all("Program Enrollment",filters={"student":stud.student},order_by='`creation` DESC',limit=1):
                     prog_enrollment.reference_doctype="Program Enrollment"
                     prog_enrollment.reference_name=pe.name
                 prog_enrollment.save()
-                prog_enrollment.submit()
+                # prog_enrollment.submit()
                 create_fees(self,stud,fee_structure_id) #KP
                 enrolled_students.append(stud.student)
             except Exception as e:
@@ -98,7 +98,7 @@ def enroll_stud(self):
 
     frappe.msgprint(_("{0} Students have been enrolled").format(', '.join(map(str, enrolled_students))))
     # frappe.publish_realtime("fee_schedule_progress", {"progress": str(int(created_records * 100/total_records)),"reload": 1}, user=frappe.session.user)
-            
+ 
 def create_course_row(prog_enrollment,course,course_name,course_code): 
     prog_enrollment.append("courses",{
         "course":course,
@@ -107,7 +107,7 @@ def create_course_row(prog_enrollment,course,course_name,course_code):
     })
 
 @frappe.whitelist()
-def get_optional_courses(doctype, txt, searchfield, start, page_len, filters): 
+def get_optional_courses(doctype, txt, searchfield, start, page_len, filters):
     course_list = []
     if filters.get('additional_course_1'):
         course_list.append(filters.get('additional_course_1'))
@@ -116,7 +116,7 @@ def get_optional_courses(doctype, txt, searchfield, start, page_len, filters):
     if filters.get('additional_course_3'):
         course_list.append(filters.get('additional_course_3'))
     return [[c.course, c.course_name] for c in frappe.db.get_list("Program Course",{"parent":filters.get("new_semester"),"required":0, 'course':['not in', course_list],'course_name':['like', '%{}%'.format(txt)]},['course','course_name'])]
-   
+
 def fee_structure_validation(self): #KP
     existed_fs = frappe.db.get_list("Fee Structure", {'programs':self.programs, 'program':self.new_semester, 'fee_type':'Semester Fees', 'academic_year':self.new_academic_year, 'academic_term':self.new_academic_term, 'docstatus':1})
     if len(existed_fs) != 0:
@@ -153,4 +153,4 @@ def create_fees(self,stud,fee_structure_id): #KP
             'outstanding_fees' : i['outstanding_fees'],
         })
     fee.save()
-    fee.submit()
+    # fee.submit()

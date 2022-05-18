@@ -37,7 +37,8 @@
   "letter_head",
   "print_heading",
   "accounting_dimensions_section",
-  "cost_center"
+  "cost_center",
+  "amended_from"
  ],
  "fields": [
   {
@@ -238,11 +239,21 @@
    "fieldtype": "Data",
    "label": "Outstanding Amount",
    "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Fee Waiver",
+   "print_hide": 1,
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2022-05-13 17:15:22.684561",
+ "modified": "2022-05-17 21:54:27.940195",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Fee Waiver",

@@ -80,13 +80,13 @@ frappe.ui.form.on('Student Reregistration Tool Fees', {
 
 	"refresh": function(frm) {
 		frm.disable_save();
-		frm.fields_dict.enroll_students.$input.addClass(' btn btn-primary');
+		frm.fields_dict.enroll_students.$input.addClass('btn btn-primary');
 		frappe.realtime.on("student_reregistration_tool_fees", function(data) {
 			frappe.hide_msgprint(true);
 			frappe.show_progress(__("Enrolling students"), data.progress[0], data.progress[1]);
-			if (data.reload && data.reload === 1) {
-				frm.reload_doc();
-			}
+			// if (data.reload && data.reload === 1) {
+			// 	frm.reload_doc();
+			// }
 		});	
 
 		// frappe.realtime.on('student_reregistration_tool_fees', function(data) {
@@ -131,26 +131,24 @@ frappe.ui.form.on('Student Reregistration Tool Fees', {
 	},
 	"new_semester": function(frm) {
 		if(frm.doc.new_semester){
-			alert(new_semester)
 			frappe.model.with_doc("Program", frm.doc.new_semester, function() {
-	            var tabletransfer= frappe.model.get_doc("Program", frm.doc.new_semester)
-	            if(tabletransfer.courses){
-	            	frm.clear_table("courses");
-		            $.each(tabletransfer.courses, function(index, row){
-			            if(row.required){
-			                var d = frm.add_child("courses");
-			                d.course = row.course;
-			                d.course_name = row.course_name ;
-			                frappe.db.get_value("Course", {"name": row.course}, "course_code", function(value) {
-						        d.course_code = value.course_code;
-						        frm.refresh_field("courses");
-						    });
-			                frm.refresh_field("courses");
-			            }
-		            });
+				var tabletransfer= frappe.model.get_doc("Program", frm.doc.new_semester)
+				if(tabletransfer.courses){
+					frm.clear_table("courses");
+						$.each(tabletransfer.courses, function(index, row){
+							if(row.required){
+								var d = frm.add_child("courses");
+								d.course = row.course;
+								d.course_name = row.course_name ;
+								frappe.db.get_value("Course", {"name": row.course}, "course_code", function(value) {
+											d.course_code = value.course_code;
+											frm.refresh_field("courses");
+										});
+								frm.refresh_field("courses");
+							}
+						});
 	            }
 	        });
 		}
 	}
 });
-

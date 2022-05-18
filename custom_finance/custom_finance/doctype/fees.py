@@ -112,9 +112,6 @@ class Fees(AccountsController):
 				"credit_in_account_currency": fc["amount"],
 				"cost_center": self.cost_center
 			}, item=self)
-			print("\n\n\n\n\n\n")
-			print("student_gl_entries",student_gl_entries)
-			print("fee_gl_entry",fee_gl_entry)
 			from erpnext.accounts.general_ledger import make_gl_entries
 			make_gl_entries([student_gl_entries, fee_gl_entry], cancel=(self.docstatus == 2),
 				update_outstanding="Yes", merge_entries=False)
