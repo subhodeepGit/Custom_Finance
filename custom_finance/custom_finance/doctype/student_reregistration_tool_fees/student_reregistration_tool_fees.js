@@ -80,7 +80,7 @@ frappe.ui.form.on('Student Reregistration Tool Fees', {
 
 	"refresh": function(frm) {
 		frm.disable_save();
-		frm.fields_dict.enroll_students.$input.addClass(' btn btn-primary');
+		frm.fields_dict.enroll_students.$input.addClass('btn btn-primary');
 		frappe.realtime.on("student_reregistration_tool_fees", function(data) {
 			frappe.hide_msgprint(true);
 			frappe.show_progress(__("Enrolling students"), data.progress[0], data.progress[1]);
