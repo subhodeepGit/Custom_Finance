@@ -84,9 +84,9 @@ frappe.ui.form.on('Student Reregistration Tool Fees', {
 		frappe.realtime.on("student_reregistration_tool_fees", function(data) {
 			frappe.hide_msgprint(true);
 			frappe.show_progress(__("Enrolling students"), data.progress[0], data.progress[1]);
-			if (data.reload && data.reload === 1) {
-				frm.reload_doc();
-			}
+			// if (data.reload && data.reload === 1) {
+			// 	frm.reload_doc();
+			// }
 		});	
 
 		// frappe.realtime.on('student_reregistration_tool_fees', function(data) {

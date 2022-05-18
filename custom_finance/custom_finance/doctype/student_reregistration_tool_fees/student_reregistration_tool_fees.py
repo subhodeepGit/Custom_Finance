@@ -47,8 +47,8 @@ class StudentReregistrationToolFees(Document):
     @frappe.whitelist()
     def enroll_students(self):
         # self.db_set("fee_creation_status", "In Process")
-        frappe.publish_realtime("student_reregistration_tool_fees",
-			{"progress": "0", "reload": 1}, user=frappe.session.user)
+        # frappe.publish_realtime("student_reregistration_tool_fees",
+		# 	{"progress": "0", "reload": 1}, user=frappe.session.user)
         total = len(self.students)
         if total > 0:
             frappe.msgprint(_('''Student Re-registration will be created in the background.
@@ -89,7 +89,7 @@ def enroll_stud(self):
                     prog_enrollment.reference_doctype="Program Enrollment"
                     prog_enrollment.reference_name=pe.name
                 prog_enrollment.save()
-                prog_enrollment.submit()
+                # prog_enrollment.submit()
                 create_fees(self,stud,fee_structure_id) #KP
                 enrolled_students.append(stud.student)
             except Exception as e:
@@ -153,4 +153,4 @@ def create_fees(self,stud,fee_structure_id): #KP
             'outstanding_fees' : i['outstanding_fees'],
         })
     fee.save()
-    fee.submit()
+    # fee.submit()
