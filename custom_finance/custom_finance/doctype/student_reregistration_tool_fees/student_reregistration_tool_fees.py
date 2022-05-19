@@ -47,10 +47,15 @@ class StudentReregistrationToolFees(Document):
     @frappe.whitelist()
     def enroll_students(self):
         # self.db_set("fee_creation_status", "In Process")
-        # frappe.publish_realtime("student_reregistration_tool_fees",
-		# 	{"progress": "0", "reload": 1}, user=frappe.session.user)
+        fee_structure_validation(self,validate=1)
+        existed_enrollment = [p.get('student') for p in frappe.db.get_list("Program Enrollment", {'student':['in', [s.student for s in self.students]],'programs':self.programs, 'program': self.new_semester,'academic_year':self.new_academic_year, 'academic_term':self.new_academic_term,'docstatus':1 }, 'student')]
+        if len(existed_enrollment) > 0:
+            frappe.msgprint(_("{0} Students already enrolled").format( ', '.join(map(str, existed_enrollment))))
+            
+        frappe.publish_realtime("student_reregistration_tool_fees",
+			{"progress": "0", "reload": 1}, user=frappe.session.user)
         total = len(self.students)
-        if total > 0:
+        if total > 10:
             frappe.msgprint(_('''Student Re-registration will be created in the background.
 						In case of any error the error message will be updated in the Schedule.'''))
             enqueue(enroll_stud, queue='default', timeout=6000, event='enroll_stud',self=self)
@@ -58,7 +63,7 @@ class StudentReregistrationToolFees(Document):
             enroll_stud(self)
 
 def enroll_stud(self):
-    fee_structure_id = fee_structure_validation(self) #KP
+    fee_structure_id=fee_structure_validation(self)
     total = len(self.students)
     existed_enrollment = [p.get('student') for p in frappe.db.get_list("Program Enrollment", {'student':['in', [s.student for s in self.students]],'programs':self.programs, 'program': self.new_semester,'academic_year':self.new_academic_year, 'academic_term':self.new_academic_term,'docstatus':1 }, 'student')]
     if len(existed_enrollment) > 0:
@@ -89,7 +94,7 @@ def enroll_stud(self):
                     prog_enrollment.reference_doctype="Program Enrollment"
                     prog_enrollment.reference_name=pe.name
                 prog_enrollment.save()
-                # prog_enrollment.submit()
+                prog_enrollment.submit()
                 create_fees(self,stud,fee_structure_id) #KP
                 enrolled_students.append(stud.student)
             except Exception as e:
@@ -97,7 +102,6 @@ def enroll_stud(self):
                 err_msg = frappe.local.message_log and "\n\n".join(frappe.local.message_log) or cstr(e)
 
     frappe.msgprint(_("{0} Students have been enrolled").format(', '.join(map(str, enrolled_students))))
-    # frappe.publish_realtime("fee_schedule_progress", {"progress": str(int(created_records * 100/total_records)),"reload": 1}, user=frappe.session.user)
  
 def create_course_row(prog_enrollment,course,course_name,course_code): 
     prog_enrollment.append("courses",{
@@ -117,11 +121,13 @@ def get_optional_courses(doctype, txt, searchfield, start, page_len, filters):
         course_list.append(filters.get('additional_course_3'))
     return [[c.course, c.course_name] for c in frappe.db.get_list("Program Course",{"parent":filters.get("new_semester"),"required":0, 'course':['not in', course_list],'course_name':['like', '%{}%'.format(txt)]},['course','course_name'])]
 
-def fee_structure_validation(self): #KP
+def fee_structure_validation(self,validate=None): #KP
     existed_fs = frappe.db.get_list("Fee Structure", {'programs':self.programs, 'program':self.new_semester, 'fee_type':'Semester Fees', 'academic_year':self.new_academic_year, 'academic_term':self.new_academic_term, 'docstatus':1})
-    if len(existed_fs) != 0:
+    if len(existed_fs) != 0 and validate== None:
         fee_structure_id = existed_fs[0]['name']
         return fee_structure_id
+    elif len(existed_fs) != 0 and validate== 1:
+        pass
     else:
         frappe.throw("Fee Structure Not Found")
     term_date = frappe.get_all("Academic Term",{'name': self.new_academic_term},['term_start_date','term_end_date'])
@@ -153,4 +159,4 @@ def create_fees(self,stud,fee_structure_id): #KP
             'outstanding_fees' : i['outstanding_fees'],
         })
     fee.save()
-    # fee.submit()
+    fee.submit()
