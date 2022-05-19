@@ -47,13 +47,13 @@ class StudentReregistrationToolFees(Document):
     @frappe.whitelist()
     def enroll_students(self):
         # self.db_set("fee_creation_status", "In Process")
-        fee_structure_validation(self,validate=1)
-        existed_enrollment = [p.get('student') for p in frappe.db.get_list("Program Enrollment", {'student':['in', [s.student for s in self.students]],'programs':self.programs, 'program': self.new_semester,'academic_year':self.new_academic_year, 'academic_term':self.new_academic_term,'docstatus':1 }, 'student')]
-        if len(existed_enrollment) > 0:
-            frappe.msgprint(_("{0} Students already enrolled").format( ', '.join(map(str, existed_enrollment))))
+        # fee_structure_validation(self,validate=1)
+        # existed_enrollment = [p.get('student') for p in frappe.db.get_list("Program Enrollment", {'student':['in', [s.student for s in self.students]],'programs':self.programs, 'program': self.new_semester,'academic_year':self.new_academic_year, 'academic_term':self.new_academic_term,'docstatus':1 }, 'student')]
+        # if len(existed_enrollment) > 0:
+        #     frappe.msgprint(_("{0} Students already enrolled").format( ', '.join(map(str, existed_enrollment))))
             
-        frappe.publish_realtime("student_reregistration_tool_fees",
-			{"progress": "0", "reload": 1}, user=frappe.session.user)
+        # frappe.publish_realtime("student_reregistration_tool_fees",
+		# 	{"progress": "0", "reload": 1}, user=frappe.session.user)
         total = len(self.students)
         if total > 10:
             frappe.msgprint(_('''Student Re-registration will be created in the background.
@@ -70,7 +70,7 @@ def enroll_stud(self):
         frappe.msgprint(_("{0} Students already enrolled").format( ', '.join(map(str, existed_enrollment))))
     enrolled_students = []
     for i, stud in enumerate(self.students):
-        frappe.publish_realtime("student_reregistration_tool_fees", dict(progress=[i+1, total]), user=frappe.session.user)
+        frappe.publish_realtime("student_reregistration_tool_fees", dict(progress=[i+1, total]),{"reload": 1}, user=frappe.session.user)
         if stud.student and stud.student not in existed_enrollment:
             try:
                 prog_enrollment = frappe.new_doc("Program Enrollment")
@@ -95,11 +95,12 @@ def enroll_stud(self):
                     prog_enrollment.reference_name=pe.name
                 prog_enrollment.save()
                 prog_enrollment.submit()
-                create_fees(self,stud,fee_structure_id) #KP
+                create_fees(self,stud,fee_structure_id)
                 enrolled_students.append(stud.student)
+                # create_fees(self,stud,fee_structure_id,prog_enrollment.name)
             except Exception as e:
                 error = True
-                err_msg = frappe.local.message_log and "\n\n".join(frappe.local.message_log) or cstr(e)
+                err_msg = frappe.local.message_log and "\n\n".join(frappe.local.message_log) or cstr(e)   
 
     frappe.msgprint(_("{0} Students have been enrolled").format(', '.join(map(str, enrolled_students))))
  
@@ -135,6 +136,8 @@ def fee_structure_validation(self,validate=None): #KP
         frappe.throw("Academic Term Start Date End Date Not Found")
 
 def create_fees(self,stud,fee_structure_id): #KP
+    # fees_info=frappe.get_list("Fees",filters=[['Program Enrollment','=',prog_enrollment]])
+    # if len(fees_info)==0:
     data = frappe.get_all("Program Enrollment",{'student':stud.student,'docstatus':1},['name','program','programs','student_batch_name'],limit=1)
     term_date = frappe.get_all("Academic Term",{'name': self.new_academic_term},['term_start_date','term_end_date'])
     fee = frappe.new_doc("Fees")
