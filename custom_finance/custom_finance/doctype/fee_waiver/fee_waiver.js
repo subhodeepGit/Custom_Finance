@@ -200,6 +200,7 @@ frappe.ui.form.on('Fee Waiver', {
 						c.receivable_account=element.receivable_account
 						c.waiver_type=element.waiver_type
 						c.fee_voucher_no=element.fee_voucher_no
+						c.outstanding_fees_ref=element.outstanding_fees
                     });
                     frm.refresh_field("fee_componemts")
 				}
@@ -266,21 +267,26 @@ frappe.ui.form.on("Fee Waiver Components", "waiver_amount", function(frm, cdt, c
     var d = locals[cdt][cdn];
     if(d.waiver_amount && d.amount ){
 		
-        d.amount =  d.grand_fee_amount -d.waiver_amount
+        d.amount =  d.outstanding_fees_ref - d.waiver_amount
         d.total_waiver_amount  = d.waiver_amount
         refresh_field("amount", d.name, d.parentfield);
         refresh_field("total_waiver_amount", d.name, d.parentfield);
-		
     }
 	else{
-		d.amount=d.grand_fee_amount
+		d.amount=d.outstanding_fees_ref
 		d.total_waiver_amount=null
-		d.outstanding_fees=d.grand_fee_amount
+		d.outstanding_fees=d.outstanding_fees_ref
 	}
-    if(!d.amount){
-        frappe.throw("Please add Amount first");
-    }
-
+    // if(!d.amount){
+    //     frappe.throw("Please add Amount first");
+    // }
+	if(d.amount < 0)
+	{
+		d.outstanding_fees = 0
+		d.amount = 0
+		refresh_field("outstanding_fees", d.name, d.parentfield);
+		refresh_field("amount", d.name, d.parentfield);
+	}
 
 });
 
@@ -296,20 +302,21 @@ frappe.ui.form.on("Fee Waiver Components", "percentage", function(frm, cdt, cdn)
     // }
 	if(d.percentage && d.amount ){
 		d.total_waiver_amount  = ((d.percentage/100) * d.grand_fee_amount)
-        d.amount =  d.grand_fee_amount - ((d.percentage/100) * d.grand_fee_amount)
-		d.total_waiver_amount  = d.grand_fee_amount-d.amount
+        d.amount =  d.outstanding_fees_ref - ((d.percentage/100) * d.grand_fee_amount)
+		d.total_waiver_amount  = d.outstanding_fees-d.amount
+		if(d.amount < 0){
+			d.amount = 0
+		}
+		refresh_field("outstanding_fees", d.name, d.parentfield);
         refresh_field("amount", d.name, d.parentfield);
         refresh_field("total_waiver_amount", d.name, d.parentfield);
     }
 	else{
-		d.amount=d.grand_fee_amount
+		d.amount=d.outstanding_fees_ref
 		d.total_waiver_amount=null
-		d.outstanding_fees=d.grand_fee_amount
+		d.outstanding_fees=d.outstanding_fees_ref
 		refresh_field("percentage", d.name, d.parentfield);
 	}
-    if(!d.amount){
-        frappe.throw("Please add Amount first");
-    }
 });
 
 frappe.ui.form.on("Fee Waiver Components", "waiver_type", function(frm, cdt, cdn){
@@ -318,11 +325,13 @@ frappe.ui.form.on("Fee Waiver Components", "waiver_type", function(frm, cdt, cdn
 		d.percentage=null
 		d.waiver_amount=null
 		d.total_waiver_amount=null
-		d.amount=d.grand_fee_amount
+		d.amount=d.outstanding_fees_ref
+		d.outstanding_fees=d.outstanding_fees_ref
 		refresh_field("total_waiver_amount", d.name, d.parentfield);
 		refresh_field("percentage", d.name, d.parentfield);
 		refresh_field("waiver_amount", d.name, d.parentfield);
 		refresh_field("amount", d.name, d.parentfield);
+		refresh_field("outstanding_fees", d.name, d.parentfield);
 	}
 
 frappe.ui.form.on("Fee Waiver Components", "waiver_amount", function(frm, cdt, cdn) {

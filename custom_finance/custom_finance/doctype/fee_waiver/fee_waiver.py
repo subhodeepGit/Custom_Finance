@@ -175,15 +175,52 @@ def update_fee(self):
 			frappe.db.set_value("Fee Component",data[0]["name"], "waiver_amount",waiver_amount)
 		if waiver_type=="Percentage":
 			frappe.db.set_value("Fee Component",data[0]["name"], "percentage",percentage)
-		frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",total_waiver_amount) 	
-		frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount) 
-		frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
-		frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount)
-		frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-waiver_amount) 
+		refundable_amount=outsatnding_amount-waiver_amount
+		if refundable_amount==0:	
+			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",total_waiver_amount) 	
+			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount) 
+			frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
+			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",0)
+			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-waiver_amount) 
+		elif refundable_amount >0:
+			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",total_waiver_amount) 	
+			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount) 
+			frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
+			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount)
+			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-waiver_amount) 	
+		elif refundable_amount <0:
+			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",total_waiver_amount) 	
+			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount) 
+			frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
+			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount)
+			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-waiver_amount)
+			refundable_function(self,abs(refundable_amount),t) 		
 
-
-
-
+def refundable_function(self,refundable_amount=None,rev_object=None):
+	fee_voucher_no=rev_object.fee_voucher_no
+	print("\n\n\n\n\n\n")
+	print(fee_voucher_no)
+	print(refundable_amount)
+	# vouture_no=frappe.db.get_all("Payment Entry")
+	# GL_account_info=[]
+	# Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",fee_voucher_no],["account","=",rev_object.receivable_account]],fields=['name', 'creation', 'modified', 'modified_by', 
+	# 	'owner', 'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 'account_currency', 
+	# 	'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 'project', 'remarks', 
+	# 	'is_opening', 'is_advance','fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
+	# GL_account_info.append(Gl_entry[0])
+	# Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",fee_voucher_no],["account","=",rev_object.income_account]],fields=['name', 'creation', 'modified', 'modified_by', 
+	# 	'owner', 'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 
+	# 	'account_currency', 'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 
+	# 	'project', 'remarks', 'is_opening', 'is_advance', 'fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
+	
+	
+	
+	
+	# cancel=1
+	# adv_adj=0
+	# gl_entries = process_gl_map(gl_entries)
+	# make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
+	pass
 
 
 ######################################################################################################

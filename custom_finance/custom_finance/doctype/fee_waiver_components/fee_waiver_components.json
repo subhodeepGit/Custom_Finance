@@ -19,6 +19,7 @@
   "income_account",
   "company",
   "grand_fee_amount",
+  "outstanding_fees_ref",
   "outstanding_fees",
   "waiver_account",
   "fee_voucher_no"
@@ -123,12 +124,19 @@
    "label": "Fee Voucher no.",
    "options": "Fees",
    "read_only": 1
+  },
+  {
+   "fieldname": "outstanding_fees_ref",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "Outstanding Fees Ref",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2022-05-11 15:38:46.073121",
+ "modified": "2022-05-20 18:11:34.848649",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Fee Waiver Components",
