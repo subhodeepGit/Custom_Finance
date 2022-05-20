@@ -272,7 +272,8 @@ frappe.ui.form.on('Payment Entry', {
 				]
 			}
 		});
-		// Rupali:Code for Refund amount:Start		
+		// Rupali:Code for Refund amount:Start	
+		
 		if (frm.doc.paid_amount == undefined){
 			frm.set_df_property("paid_amount","read_only",0);	
 			var df = frappe.meta.get_docfield("Payment Entry Reference","account_paid_from", frm.doc.name);
@@ -282,9 +283,7 @@ frappe.ui.form.on('Payment Entry', {
 			
 			
 		} else  
-		   frm.set_df_property("paid_amount","read_only",1);		
-		   df.read_only = 0
-		   df1.read_only = 1
+		   frm.set_df_property("paid_amount","read_only",1);
         // Rupali:Code for Refund amount:End	
 		
 		erpnext.accounts.dimensions.setup_dimension_filters(frm, frm.doctype);
