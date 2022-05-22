@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 from cgi import print_form
+from custom_finance.custom_finance.custom_finance.doctype.payment_entry import PaymentEntry
 import frappe
 from frappe.model.document import Document
 from six import iteritems, string_types
@@ -37,25 +38,32 @@ class get_gl_dict(dict):
 class FeeWaiver(Document):
 
 	def validate(self):
+		print("\n\n\n\n")
+		print("oooo")
 		self.calculate_total()
 		self.set_missing_accounts_and_fields()
 		fiscal_year=frappe.get_all("Fiscal Year",filters=[["year_start_date","<=",self.posting_date],["year_end_date",">=",self.posting_date]],fields=['name'])	
 		if len(fiscal_year)==0:
 			frappe.throw("Fiscal Year not maintained")
+		update_fee(self)	
 		
 
 
 	def on_submit(self):
 		gl_cancelation(self)
 		self.make_gl_entries_waiver()
-		update_fee(self)
+		
 
 
 	def calculate_total(self):
 		"""Calculates total amount."""
 		self.grand_total = 0
 		self.outstanding_amount=0
+		print("\n\n\n\n\n")
+		print("ok")
 		for d in self.fee_componemts:
+			print("\n\n\n\n")
+			print("ok")
 			self.grand_total += d.total_waiver_amount
 			self.outstanding_amount =self.outstanding_amount+int(d.outstanding_fees)
 		self.grand_total_in_words = money_in_words(self.grand_total)
@@ -162,6 +170,8 @@ class FeeWaiver(Document):
 
 def update_fee(self):
 	for t in self.get('fee_componemts'):
+		print("\n\n\n\n\n")
+		print("ok")
 		data=frappe.get_all("Fee Component",filters=[["parent","=",t.fee_voucher_no],['fees_category','=',t.fees_category]],fields=["name",'outstanding_fees'])
 		fee_data=frappe.get_all("Fees",filters=[['name','=',t.fee_voucher_no]],fields=["name","outstanding_amount"])
 		outsatnding_amount=t.outstanding_fees
@@ -175,7 +185,7 @@ def update_fee(self):
 			frappe.db.set_value("Fee Component",data[0]["name"], "waiver_amount",waiver_amount)
 		if waiver_type=="Percentage":
 			frappe.db.set_value("Fee Component",data[0]["name"], "percentage",percentage)
-		refundable_amount=outsatnding_amount-waiver_amount
+		refundable_amount=t.outstanding_fees_ref-waiver_amount
 		if refundable_amount==0:	
 			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",total_waiver_amount) 	
 			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount) 
@@ -201,6 +211,18 @@ def refundable_function(self,refundable_amount=None,rev_object=None):
 	print("\n\n\n\n\n\n")
 	print(fee_voucher_no)
 	print(refundable_amount)
+	print(rev_object.fees_category)
+	payment_data=frappe.get_all("Payment Entry Reference",{"reference_name":fee_voucher_no,"fees_category":rev_object.fees_category},['name',"parent","allocated_amount"])
+
+	for t in payment_data:
+		paymententry_voucher_no=t['parent']
+		Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",paymententry_voucher_no]],fields=['name', 'creation', 'modified', 'modified_by', 
+		'owner', 'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 'account_currency', 
+		'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 'project', 'remarks', 
+		'is_opening', 'is_advance','fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
+		print(Gl_entry)
+		pass
+
 	# vouture_no=frappe.db.get_all("Payment Entry")
 	# GL_account_info=[]
 	# Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",fee_voucher_no],["account","=",rev_object.receivable_account]],fields=['name', 'creation', 'modified', 'modified_by', 
