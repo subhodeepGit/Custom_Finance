@@ -2,7 +2,6 @@
 # For license information, please see license.txt
 
 from cgi import print_form
-from custom_finance.custom_finance.custom_finance.doctype.payment_entry import PaymentEntry
 import frappe
 from frappe.model.document import Document
 from six import iteritems, string_types
