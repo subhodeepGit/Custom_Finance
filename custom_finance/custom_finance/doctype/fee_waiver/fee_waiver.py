@@ -243,7 +243,18 @@ def refundable_function(self,refundable_amount=None,rev_object=None):
 						new_gl_entry.append(new_ref_adj)
 						refundable_amount=0 	
 					elif amount_adjust<0:
-						pass
+						new_ref_adj=t.copy()
+						del new_ref_adj['name']
+						new_ref_adj['posting_date']=self.posting_date
+						new_ref_adj['credit']=abs(amount_adjust)
+						##########################'Fees Refundable / Adjustable'######################################
+						account=frappe.get_all("Account",fields=[["account_type","=","Income Account"],["name",'like','%Fees Refundable / Adjustable%']])
+						if not account:
+							frappe.throw("Fees Refundable / Adjustable account not maintained for payment reconciliation")
+						################################################################################################
+						new_ref_adj['account']=account[0]['name']
+						new_gl_entry.append(new_ref_adj)
+						refundable_amount=refundable_amount-abs(amount_adjust)
 				elif t['against_voucher']!=None and i['account_paid_from']!=t['account']:
 					new_ref_adj=t.copy()
 					del new_ref_adj['name']
@@ -424,7 +435,10 @@ def make_reverse_gl_entries_fees(gl_entries=None, voucher_type=None, voucher_no=
 	if gl_entries:
 		validate_accounting_period(gl_entries)
 		check_freezing_date(gl_entries[0]["posting_date"], adv_adj)
-		set_as_cancel(gl_entries[0]['voucher_type'], gl_entries[0]['voucher_no'])
+		try:
+			set_as_cancel(gl_entries[0]['voucher_type'], gl_entries[0]['voucher_no'])
+		except:
+			set_as_cancel_payment(gl_entries[0]['voucher_type'], gl_entries[0]['voucher_no'])	
 
 		for entry in gl_entries:
 			entry['name'] = None
@@ -640,6 +654,14 @@ def set_as_cancel(voucher_type, voucher_no,gl_name):
 			where voucher_type=%s and voucher_no=%s and name=%s and is_cancelled = 0""",
 			(now(), frappe.session.user, voucher_type,t,voucher_no))
 
+def set_as_cancel_payment(voucher_type, voucher_no):
+	"""
+		Set is_cancelled=1 in all original gl entries for the voucher
+	"""
+	frappe.db.sql("""UPDATE `tabGL Entry` SET is_cancelled = 1,
+		modified=%s, modified_by=%s
+		where voucher_type=%s and voucher_no=%s and is_cancelled = 0""",
+		(now(), frappe.session.user, voucher_type, voucher_no))
 
 def make_entry(args, adv_adj, update_outstanding, from_repost=False):
 	gle = frappe.new_doc("GL Entry")
