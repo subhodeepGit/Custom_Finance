@@ -265,29 +265,30 @@ frappe.ui.form.on("Fee Waiver Components", "amount", function(frm, cdt, cdn) {
 
 frappe.ui.form.on("Fee Waiver Components", "waiver_amount", function(frm, cdt, cdn) {
     var d = locals[cdt][cdn];
-    if(d.waiver_amount && d.amount ){
-		
-        d.amount =  d.outstanding_fees_ref - d.waiver_amount
-        d.total_waiver_amount  = d.waiver_amount
+    if(d.waiver_amount){
+        d.amount = d.outstanding_fees_ref - d.waiver_amount
+		if(d.amount < 0){
+			d.amount = 0
+			d.outstanding_fees = 0
+			d.total_waiver_amount  = d.waiver_amount
+		}
+		else{
+			d.total_waiver_amount  = d.waiver_amount
+		}
         refresh_field("amount", d.name, d.parentfield);
         refresh_field("total_waiver_amount", d.name, d.parentfield);
     }
 	else{
-		d.amount=d.outstanding_fees_ref
-		d.total_waiver_amount=null
+		d.amount=0
+		d.total_waiver_amount=0
 		d.outstanding_fees=d.outstanding_fees_ref
+		refresh_field("amount", d.name, d.parentfield);
+		refresh_field("total_waiver_amount", d.name, d.parentfield);
+		refresh_field("outstanding_fees", d.name, d.parentfield);
 	}
     // if(!d.amount){
     //     frappe.throw("Please add Amount first");
     // }
-	if(d.amount < 0)
-	{
-		d.outstanding_fees = 0
-		d.amount = 0
-		refresh_field("outstanding_fees", d.name, d.parentfield);
-		refresh_field("amount", d.name, d.parentfield);
-	}
-
 });
 
 frappe.ui.form.on("Fee Waiver Components", "percentage", function(frm, cdt, cdn) {
@@ -313,9 +314,10 @@ frappe.ui.form.on("Fee Waiver Components", "percentage", function(frm, cdt, cdn)
     }
 	else{
 		d.amount=d.outstanding_fees_ref
-		d.total_waiver_amount=null
+		d.total_waiver_amount=0
 		d.outstanding_fees=d.outstanding_fees_ref
 		refresh_field("percentage", d.name, d.parentfield);
+		refresh_field("total_waiver_amount", d.name, d.parentfield);
 	}
 });
 
@@ -323,15 +325,15 @@ frappe.ui.form.on("Fee Waiver Components", "waiver_type", function(frm, cdt, cdn
 	var d = locals[cdt][cdn];
 	if(d.waiver_type=="Percentage"||"Amount"){
 		d.percentage=null
-		d.waiver_amount=null
-		d.total_waiver_amount=null
-		d.amount=d.outstanding_fees_ref
+		d.waiver_amount=0
+		d.total_waiver_amount=0
+		d.amount=0
 		d.outstanding_fees=d.outstanding_fees_ref
-		refresh_field("total_waiver_amount", d.name, d.parentfield);
 		refresh_field("percentage", d.name, d.parentfield);
 		refresh_field("waiver_amount", d.name, d.parentfield);
 		refresh_field("amount", d.name, d.parentfield);
 		refresh_field("outstanding_fees", d.name, d.parentfield);
+		refresh_field("total_waiver_amount", d.name, d.parentfield);
 	}
 
 frappe.ui.form.on("Fee Waiver Components", "waiver_amount", function(frm, cdt, cdn) {
