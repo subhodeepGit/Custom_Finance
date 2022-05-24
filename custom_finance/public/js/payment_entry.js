@@ -34,7 +34,7 @@ frappe.ui.form.on("Payment Entry", "refresh", function(frm){
                         email_id:frm.doc.student_email,
                         amount:frm.doc.paid_amount,
                         doctype:"Payment Entry",
-                        name:frm.doc.name
+                        name:frm.doc.name						
 				},
 				callback: function(r) {
 					var res=r.message;
@@ -243,7 +243,7 @@ frappe.ui.form.on('Payment Entry', {
 					'name': "Fees Refundable / Adjustable",
 				}
 			};
-		});
+		});		
 		frm.set_query("reference_name", "references", function(doc, cdt, cdn) {
 			const child = locals[cdt][cdn];
 			let ost = doc.outstanding_amount;
@@ -272,6 +272,19 @@ frappe.ui.form.on('Payment Entry', {
 				]
 			}
 		});
+		// Rupali:Code for Refund amount:Start	
+		
+		if (frm.doc.paid_amount == undefined){
+			frm.set_df_property("paid_amount","read_only",0);	
+			var df = frappe.meta.get_docfield("Payment Entry Reference","account_paid_from", frm.doc.name);
+			df.read_only = 1
+			var df1 = frappe.meta.get_docfield("Payment Entry Reference","account_paid_to", frm.doc.name);
+			df1.read_only = 0		
+			
+			
+		} else  
+		   frm.set_df_property("paid_amount","read_only",1);
+        // Rupali:Code for Refund amount:End	
 		
 		erpnext.accounts.dimensions.setup_dimension_filters(frm, frm.doctype);
 	},

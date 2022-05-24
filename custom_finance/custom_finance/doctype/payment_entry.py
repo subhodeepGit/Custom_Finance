@@ -790,8 +790,12 @@ class PaymentEntry(AccountsController):
 		self.add_bank_gl_entries(gl_entries)
 		self.add_deductions_gl_entries(gl_entries)
 		self.add_tax_gl_entries(gl_entries)
-
+		print("\n\n\n\n\n")
+		print(cancel)
+		print(adv_adj)
+		print(gl_entries)
 		gl_entries = process_gl_map(gl_entries)
+
 		make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
 #####################################################################################################################
 
