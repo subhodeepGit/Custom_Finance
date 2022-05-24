@@ -249,8 +249,6 @@ def bank_draft_amount(self):
         total_amount=0    
         for d in self.get("bank_draft_references"):
                 total_amount=total_amount+ d.bank_draft_amount   
-        print("\n\n\n\n\n\n")
-        print(total_amount)
         if total_amount == self.paid_amount:
             pass
         elif total_amount < self.paid_amount:
