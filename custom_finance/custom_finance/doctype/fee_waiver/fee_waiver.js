@@ -213,33 +213,33 @@ frappe.ui.form.on('Fee Waiver', {
 
 //zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
 
-frappe.ui.form.on("Fee Waiver Components", "amount", function(frm, cdt, cdn) {
+// frappe.ui.form.on("Fee Waiver Components", "amount", function(frm, cdt, cdn) {
    
-    var ed_details = frm.doc.fee_componemts;
-    for(var i in ed_details) {
+//     var ed_details = frm.doc.fee_componemts;
+//     for(var i in ed_details) {
             
-    if (ed_details[i].amount) {
-        // ed_details[i].total_fee_amount="15";
-        ed_details[i].grand_fee_amount=ed_details[i].amount;
-    } 
-   }
-        cur_frm.refresh_field ("fee_componemts");
+//     if (ed_details[i].amount) {
+//         // ed_details[i].total_fee_amount="15";
+//         ed_details[i].grand_fee_amount=ed_details[i].amount;
+//     } 
+//    }
+//         cur_frm.refresh_field ("fee_componemts");
     
-});
-frappe.ui.form.on("Fee Waiver Components", "amount", function(frm, cdt, cdn) {
+// });
+// frappe.ui.form.on("Fee Waiver Components", "amount", function(frm, cdt, cdn) {
 
-    var ed_details = frm.doc.fee_componemts;
-    for(var i in ed_details) {
+//     var ed_details = frm.doc.fee_componemts;
+//     for(var i in ed_details) {
             
-    if (ed_details[i].amount) {
-        // ed_details[i].total_fee_amount="15";
-        ed_details[i].outstanding_fees=ed_details[i].amount;
-    }	 
+//     if (ed_details[i].amount) {
+//         // ed_details[i].total_fee_amount="15";
+//         ed_details[i].outstanding_fees=ed_details[i].amount;
+//     }	 
         
-}
-    cur_frm.refresh_field ("fee_componemts");
+// }
+//     cur_frm.refresh_field ("fee_componemts");
 
-});
+// });
 
 // frappe.ui.form.on('Fee Waiver', {
 // amount(frm){
@@ -293,31 +293,37 @@ frappe.ui.form.on("Fee Waiver Components", "waiver_amount", function(frm, cdt, c
 
 frappe.ui.form.on("Fee Waiver Components", "percentage", function(frm, cdt, cdn) {
     var d = locals[cdt][cdn];
-	// var amount=parseInt(d.percentage)
-    // if(amount!=0 && percentage<=100){
-	// 	d.total_waiver_amount  = ((d.percentage/100) * d.grand_fee_amount)
-    //     d.amount =  d.grand_fee_amount - ((d.percentage/100) * d.grand_fee_amount)
-	// 	d.total_waiver_amount  = d.grand_fee_amount-d.amount
-    //     refresh_field("amount", d.name, d.parentfield);
-    //     refresh_field("total_waiver_amount", d.name, d.parentfield);
-    // }
-	if(d.percentage && d.amount ){
+	if(d.percentage){
 		d.total_waiver_amount  = ((d.percentage/100) * d.grand_fee_amount)
         d.amount =  d.outstanding_fees_ref - ((d.percentage/100) * d.grand_fee_amount)
-		d.total_waiver_amount  = d.outstanding_fees-d.amount
 		if(d.amount < 0){
 			d.amount = 0
+			d.outstanding_fees = 0
+			d.total_waiver_amount  = ((d.percentage/100) * d.grand_fee_amount)
+		}
+		else{
+			d.total_waiver_amount  = ((d.percentage/100) * d.grand_fee_amount)
 		}
 		refresh_field("outstanding_fees", d.name, d.parentfield);
         refresh_field("amount", d.name, d.parentfield);
         refresh_field("total_waiver_amount", d.name, d.parentfield);
+		if(d.percentage > 100){
+			frappe.throw("Waiver Percentage should not be more than 100");
+			d.total_waiver_amount=0
+			d.outstanding_fees=0
+			d.amount=0
+			refresh_field("total_waiver_amount", d.name, d.parentfield);
+			refresh_field("outstanding_fees", d.name, d.parentfield);
+			refresh_field("amount", d.name, d.parentfield);
+		}
     }
 	else{
-		d.amount=d.outstanding_fees_ref
-		d.total_waiver_amount=0
+		d.amount=0
+		d.total_waiver_amount=((d.percentage/100) * d.grand_fee_amount)
 		d.outstanding_fees=d.outstanding_fees_ref
-		refresh_field("percentage", d.name, d.parentfield);
+		refresh_field("amount", d.name, d.parentfield);
 		refresh_field("total_waiver_amount", d.name, d.parentfield);
+		refresh_field("outstanding_fees", d.name, d.parentfield);
 	}
 });
 
@@ -338,6 +344,17 @@ frappe.ui.form.on("Fee Waiver Components", "waiver_type", function(frm, cdt, cdn
 
 frappe.ui.form.on("Fee Waiver Components", "waiver_amount", function(frm, cdt, cdn) {
     var cal=locals[cdt][cdn];
+	if(cal.waiver_amount > cal.outstanding_fees_ref){
+		frappe.throw("Waiver Amount should not be more than Outstanding Fees");
+		cal.waiver_amount=0
+		cal.total_waiver_amount=0
+		cal.outstanding_fees=0
+		cal.amount=0
+		refresh_field("waiver_amount", cal.name, cal.parentfield);
+		refresh_field("total_waiver_amount", cal.name, cal.parentfield);
+		refresh_field("outstanding_fees", cal.name, cal.parentfield);
+		refresh_field("amount", cal.name, cal.parentfield);
+	}
     if (cal.total_waiver_amount) {
         cal.outstanding_fees=cal.amount;
     }	 
