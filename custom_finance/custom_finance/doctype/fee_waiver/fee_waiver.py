@@ -42,13 +42,14 @@ class FeeWaiver(Document):
 		fiscal_year=frappe.get_all("Fiscal Year",filters=[["year_start_date","<=",self.posting_date],["year_end_date",">=",self.posting_date]],fields=['name'])	
 		if len(fiscal_year)==0:
 			frappe.throw("Fiscal Year not maintained")
-		update_fee(self)	
+			
 		
 
 
 	def on_submit(self):
 		gl_cancelation(self)
 		self.make_gl_entries_waiver()
+		update_fee(self)
 		
 
 
@@ -190,11 +191,11 @@ def update_fee(self):
 			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount)
 			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-waiver_amount) 	
 		elif refundable_amount <0:
-			# frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",total_waiver_amount) 	
-			# frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount) 
-			# frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
-			# frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount)
-			# frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-waiver_amount)
+			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",total_waiver_amount) 	
+			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount) 
+			frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
+			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount)
+			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-waiver_amount)
 			refundable_function(self,abs(refundable_amount),t) 		
 
 def refundable_function(self,refundable_amount=None,rev_object=None):
