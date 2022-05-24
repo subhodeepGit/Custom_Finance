@@ -33,9 +33,11 @@ class FeeStructure(Document):
             "academic_year":self.academic_year,
             "academic_term": self.academic_term,
             # "name":("!=",self.name)
+            "docstatus":1
+            
         })
         if duplicateForm:
-            frappe.throw(("Same Fee Structure is already exist in Created."))        
+            frappe.throw(("Same Fee Structure is already exist."))        
 
 @frappe.whitelist()
 def make_fee_schedule(source_name, target_doc=None):
