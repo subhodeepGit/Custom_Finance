@@ -163,8 +163,6 @@ class FeeWaiver(Document):
 
 def update_fee(self):
 	for t in self.get('fee_componemts'):
-		print("\n\n\n\n\n")
-		print("ok")
 		data=frappe.get_all("Fee Component",filters=[["parent","=",t.fee_voucher_no],['fees_category','=',t.fees_category]],fields=["name",'outstanding_fees'])
 		fee_data=frappe.get_all("Fees",filters=[['name','=',t.fee_voucher_no]],fields=["name","outstanding_amount"])
 		outsatnding_amount=t.outstanding_fees
@@ -192,50 +190,89 @@ def update_fee(self):
 			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount)
 			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-waiver_amount) 	
 		elif refundable_amount <0:
-			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",total_waiver_amount) 	
-			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount) 
-			frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
-			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount)
-			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-waiver_amount)
+			# frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",total_waiver_amount) 	
+			# frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount) 
+			# frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
+			# frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount)
+			# frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-waiver_amount)
 			refundable_function(self,abs(refundable_amount),t) 		
 
 def refundable_function(self,refundable_amount=None,rev_object=None):
 	fee_voucher_no=rev_object.fee_voucher_no
 	print("\n\n\n\n\n\n")
-	print(fee_voucher_no)
-	print(refundable_amount)
-	print(rev_object.fees_category)
-	payment_data=frappe.get_all("Payment Entry Reference",{"reference_name":fee_voucher_no,"fees_category":rev_object.fees_category},['name',"parent","allocated_amount"])
-
-	for t in payment_data:
-		paymententry_voucher_no=t['parent']
-		Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",paymententry_voucher_no],['is_cancelled','=',0]],fields=['name', 'creation', 'modified', 'modified_by', 
-		'owner', 'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 'account_currency', 
-		'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 'project', 'remarks', 
-		'is_opening', 'is_advance','fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
-		print(Gl_entry)
-		pass
-
-	# vouture_no=frappe.db.get_all("Payment Entry")
-	# GL_account_info=[]
-	# Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",fee_voucher_no],["account","=",rev_object.receivable_account]],fields=['name', 'creation', 'modified', 'modified_by', 
-	# 	'owner', 'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 'account_currency', 
-	# 	'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 'project', 'remarks', 
-	# 	'is_opening', 'is_advance','fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
-	# GL_account_info.append(Gl_entry[0])
-	# Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",fee_voucher_no],["account","=",rev_object.income_account]],fields=['name', 'creation', 'modified', 'modified_by', 
-	# 	'owner', 'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 
-	# 	'account_currency', 'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 
-	# 	'project', 'remarks', 'is_opening', 'is_advance', 'fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
-	
-	
-	
-	
-	# cancel=1
-	# adv_adj=0
-	# gl_entries = process_gl_map(gl_entries)
-	# make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
-	pass
+	payment_data=frappe.get_all("Payment Entry Reference",{"reference_name":fee_voucher_no,"fees_category":rev_object.fees_category},['name',"parent","allocated_amount",'account_paid_from'])
+	for i in payment_data:
+		if refundable_amount!=0:
+			new_gl_entry=[]
+			paymententry_voucher_no=i['parent']
+			Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",paymententry_voucher_no],['is_cancelled','=',0]],fields=['name', 'creation', 'modified', 'modified_by', 
+			'owner', 'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 'account_currency', 
+			'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 'project', 'remarks', 
+			'is_opening', 'is_advance','fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
+			for t in Gl_entry:
+				if t['against_voucher']!=None and i['account_paid_from']==t['account']:
+					amount_adjust=t['credit']-refundable_amount
+					if amount_adjust>0:
+						new_ref_adj=t.copy()
+						del new_ref_adj['name']
+						new_ref_adj['posting_date']=self.posting_date
+						new_ref_adj['credit']=amount_adjust
+						new_gl_entry.append(new_ref_adj)
+						ref_adj_acc_gl=t.copy()
+						del ref_adj_acc_gl['name']
+						##########################'Fees Refundable / Adjustable'######################################
+						account=frappe.get_all("Account",fields=[["account_type","=","Income Account"],["name",'like','%Fees Refundable / Adjustable%']])
+						if not account:
+							frappe.throw("Fees Refundable / Adjustable account not maintained for payment reconciliation")
+						################################################################################################	
+						ref_adj_acc_gl['account']=account[0]['name']
+						ref_adj_acc_gl['credit']=refundable_amount
+						new_gl_entry.append(ref_adj_acc_gl)
+						refundable_amount=0
+					elif amount_adjust==0:
+						new_ref_adj=t.copy()
+						del new_ref_adj['name']
+						new_ref_adj['posting_date']=self.posting_date
+						new_ref_adj['credit']=amount_adjust
+						##########################'Fees Refundable / Adjustable'######################################
+						account=frappe.get_all("Account",fields=[["account_type","=","Income Account"],["name",'like','%Fees Refundable / Adjustable%']])
+						if not account:
+							frappe.throw("Fees Refundable / Adjustable account not maintained for payment reconciliation")
+						################################################################################################
+						new_ref_adj['account']=account[0]['name']
+						new_gl_entry.append(new_ref_adj)
+						refundable_amount=0 	
+					elif amount_adjust<0:
+						new_ref_adj=t.copy()
+						del new_ref_adj['name']
+						new_ref_adj['posting_date']=self.posting_date
+						new_ref_adj['credit']=abs(amount_adjust)
+						##########################'Fees Refundable / Adjustable'######################################
+						account=frappe.get_all("Account",fields=[["account_type","=","Income Account"],["name",'like','%Fees Refundable / Adjustable%']])
+						if not account:
+							frappe.throw("Fees Refundable / Adjustable account not maintained for payment reconciliation")
+						################################################################################################
+						new_ref_adj['account']=account[0]['name']
+						new_gl_entry.append(new_ref_adj)
+						refundable_amount=refundable_amount-abs(amount_adjust)
+				elif t['against_voucher']!=None and i['account_paid_from']!=t['account']:
+					new_ref_adj=t.copy()
+					del new_ref_adj['name']
+					new_gl_entry.append(new_ref_adj)
+				else:
+					new_ref_adj=t.copy()
+					del new_ref_adj['name']
+					new_gl_entry.append(new_ref_adj)
+			print("man",new_gl_entry)
+			
+			########################## First Canncelation
+			cancel=1
+			adv_adj=0
+			gl_entries = process_gl_map(Gl_entry)
+			print("gl_entries",gl_entries)
+			make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
+			########################## New entry
+			make_gl_entries(new_gl_entry)
 
 
 ######################################################################################################
@@ -398,7 +435,10 @@ def make_reverse_gl_entries_fees(gl_entries=None, voucher_type=None, voucher_no=
 	if gl_entries:
 		validate_accounting_period(gl_entries)
 		check_freezing_date(gl_entries[0]["posting_date"], adv_adj)
-		set_as_cancel(gl_entries[0]['voucher_type'], gl_entries[0]['voucher_no'])
+		try:
+			set_as_cancel(gl_entries[0]['voucher_type'], gl_entries[0]['voucher_no'])
+		except:
+			set_as_cancel_payment(gl_entries[0]['voucher_type'], gl_entries[0]['voucher_no'])	
 
 		for entry in gl_entries:
 			entry['name'] = None
@@ -614,6 +654,14 @@ def set_as_cancel(voucher_type, voucher_no,gl_name):
 			where voucher_type=%s and voucher_no=%s and name=%s and is_cancelled = 0""",
 			(now(), frappe.session.user, voucher_type,t,voucher_no))
 
+def set_as_cancel_payment(voucher_type, voucher_no):
+	"""
+		Set is_cancelled=1 in all original gl entries for the voucher
+	"""
+	frappe.db.sql("""UPDATE `tabGL Entry` SET is_cancelled = 1,
+		modified=%s, modified_by=%s
+		where voucher_type=%s and voucher_no=%s and is_cancelled = 0""",
+		(now(), frappe.session.user, voucher_type, voucher_no))
 
 def make_entry(args, adv_adj, update_outstanding, from_repost=False):
 	gle = frappe.new_doc("GL Entry")
