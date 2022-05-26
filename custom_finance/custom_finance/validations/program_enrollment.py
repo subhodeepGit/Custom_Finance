@@ -2,7 +2,8 @@ import frappe
 from erpnext.accounts.general_ledger import make_reverse_gl_entries
 
 def on_cancel(doc,method):
-    cancel_fees(doc)#Rupali:Semester fees added:10May2022 
+    fee_structure_id = fee_structure_validation(doc)
+    cancel_fees(doc,fee_structure_id)#Rupali:Semester fees added:10May2022 
 
 def on_submit(doc,method):
     fee_structure_id = fee_structure_validation(doc)
@@ -58,8 +59,8 @@ def create_fees(doc,fee_structure_id,on_submit=0):
     fees.save()
     fees.submit()
 
-def cancel_fees(doc):
-    for ce in frappe.get_all("Fees",{"program_enrollment":doc.name}):
+def cancel_fees(doc,fee_structure_id):
+    for ce in frappe.get_all("Fees",{"program_enrollment":doc.name,"fee_structure":fee_structure_id}):
         make_reverse_gl_entries(voucher_type="Fees", voucher_no=ce.name)
       
 
