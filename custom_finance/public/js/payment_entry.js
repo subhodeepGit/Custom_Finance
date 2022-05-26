@@ -236,6 +236,17 @@ frappe.ui.form.on('Payment Entry', {
 				}
 			};
 		});
+		frm.set_query("account_paid_to","references", function(_doc, cdt, cdn) {
+			var d = locals[cdt][cdn];
+			return {
+				filters: {
+					// 'name': "Fees Refundable / Adjustable - KP",
+					'company': frm.doc.company,
+					// 'account_type': d.account_type = 'Income Account',
+					'is_group': d.is_group = 0,
+				}
+			};
+		});
 		frm.set_query("fees_category","references", function(_doc, cdt, cdn) {
 			var d = locals[cdt][cdn];
 			return {

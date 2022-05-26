@@ -126,10 +126,8 @@ class PaymentEntry(AccountsController):
 		reference_name=[]
 		for i in z:
 			reference_name.append(i.reference_name)
-		reference_name = list(set(reference_name))	
+		reference_name = list(set(reference_name))
 		############################
-		# ref_details=frappe.get_all("Fee Component",{"parent":s.reference_name},["grand_fee_amount","outstanding_fees","fees_category"])
-		# due_date=frappe.get_all("Fees",{"name":s.reference_name},["due_date"])[0]
 		for v in reference_name:
 			# ref_details=frappe.get_all("Fee Component",{"parent":v},["grand_fee_amount","outstanding_fees","fees_category"])
 			due_date=frappe.get_all("Fees",{"name":v},["due_date"])[0]
@@ -157,7 +155,8 @@ class PaymentEntry(AccountsController):
 						list_final.append(final_dict)
 					ref_details=list_final
 					for t in ref_details:
-						if t['fees_category']==d.fees_category:
+						####################3 i will start from 
+						if t['fees_category']==d.fees_category and d.reference_name==v:
 
 							for field, value in iteritems(t):
 								if d.exchange_gain_loss:
@@ -196,7 +195,7 @@ class PaymentEntry(AccountsController):
 						list_final.append(final_dict)
 					ref_details=list_final
 					for t in ref_details:
-						if t['fees_category']==d.fees_category:
+						if t['fees_category']==d.fees_category and d.reference_name==v:
 
 							for field, value in iteritems(t):
 								if d.exchange_gain_loss:
