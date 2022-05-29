@@ -4,20 +4,19 @@ import frappe
 
 def validate(self,method):
     bank_draft_amount(self)
+    recon_rtgs_neft(self)
     allocation_amount(self)
     if self.mode_of_payment=="Fees Refundable / Adjustable":   
         refundable_amount(self)
     calucate_total(self)  
 
 def on_update(self,method):
-    recon_rtgs_neft(self)
+    pass
 
 def on_submit(self,method):
-    
     recon_rtgs_neft_on_submit(self)    
     child_table_fees_outsatnding(self)
     refundable_fees_outsatnding(self,cancel=0)   
-    # a.s 
 
 def on_cancel(self,method):
     child_table_fees_outsatnding(self)
@@ -26,7 +25,6 @@ def on_cancel(self,method):
 
 
 def recon_rtgs_neft(self):
-    print("\n\n\n\n\n")
     if self.mode_of_payment=="NEFT" or self.mode_of_payment=="RTGS" or self.mode_of_payment=="IMPS":
         if self.reference_no==None:
             frappe.throw("Reference UTR No. not maintaned")
@@ -47,7 +45,6 @@ def recon_rtgs_neft(self):
                                     flag="no_pass"
                                     break 
                             if Recon_info['total_allocated_amount']>self.total_allocated_amount and flag=="pass":
-                                print("ok1")
                                 Account=frappe.db.get_all("Account",filters=[['name','like','%Fees Refundable / Adjustable%'],['account_type','=','Income Account']],fields=['name'])
                                 reference_name=""
                                 allocated_excess_amount=0
@@ -63,20 +60,6 @@ def recon_rtgs_neft(self):
                                     due_date=t.due_date
                                     break
                                 if self.payment_type=="Receive":
-                                    # oph = frappe.get_doc("Payment Entry",self.name)
-                                    # oph.append("references",{
-                                    #     "reference_doctype":"Fees",
-                                    #     "fees_category":"Fees Refundable / Adjustable",
-                                    #     "account_paid_from":Account[0]['name'],
-                                    #     "reference_name":reference_name,
-                                    #     "allocated_amount":allocated_excess_amount,
-                                    #     "total_amount":allocated_excess_amount,
-                                    #     "outstanding_amount":allocated_excess_amount,
-                                    #     "due_date":due_date,
-                                    #     "exchange_rate":1,
-                                    # })
-                                    # oph.save()
-                                    # oph = frappe.get_doc("Payment Entry",self.name)
                                     self.append("references",{
                                         "reference_doctype":"Fees",
                                         "fees_category":"Fees Refundable / Adjustable",
@@ -88,13 +71,7 @@ def recon_rtgs_neft(self):
                                         "due_date":due_date,
                                         "exchange_rate":1,
                                     })
-                                    # oph.save()
-                                    # frappe.db.set_value("Payment Entry Reference",Recon_info['name'],"total_allocated_amount",Grant_total_amount)
-                                    for t in self.get('references'):
-                                        print(t.reference_doctype,t.name)
-
                             elif Recon_info['total_allocated_amount']>self.total_allocated_amount and flag=="no_pass":
-                                print("ok2")
                                 Account=frappe.db.get_all("Account",filters=[['name','like','%Fees Refundable / Adjustable%'],['account_type','=','Income Account']],fields=['name'])
                                 reference_name=""
                                 allocated_excess_amount=0
