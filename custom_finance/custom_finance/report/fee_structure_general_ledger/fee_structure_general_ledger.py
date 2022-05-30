@@ -268,7 +268,11 @@ def get_conditions(filters):
 		for t in list_of_voucher_no:
 			voucher_no_list.append(t['name'])
 		# conditions.append("voucher_no=%(voucher_no)s")
-		conditions.append("voucher_no in %s"%str(tuple(voucher_no_list)))
+		# conditions.append("voucher_no in %s"%str(tuple(voucher_no_list)))
+		if len(voucher_no_list)==1:
+			conditions.append(" voucher_no = '%s' "%str(voucher_no_list[0]))
+		elif len(voucher_no_list)>1:
+			conditions.append(" voucher_no in %s"%str(tuple(voucher_no_list)))
 
 	if filters.get("group_by") == "Group by Party" and not filters.get("party_type"):
 		conditions.append("party_type in ('Customer', 'Supplier')")
