@@ -210,6 +210,10 @@ user_data_fields = [
 	}
 ]
 
+# fixtures = [
+#     {"dt": "Mode of Payment"},
+# ]
+
 # Authentication and authorization
 # --------------------------------
 

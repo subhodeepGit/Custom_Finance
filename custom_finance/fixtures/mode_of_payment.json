@@ -1,0 +1,67 @@
+[
+ {
+  "accounts": [],
+  "docstatus": 0,
+  "doctype": "Mode of Payment",
+  "enabled": 1,
+  "mode_of_payment": "Online Payment",
+  "modified": "2022-05-30 11:59:11.291298",
+  "name": "Online Payment",
+  "parent": null,
+  "parentfield": null,
+  "parenttype": null,
+  "type": "Bank"
+ },
+ {
+  "accounts": [],
+  "docstatus": 0,
+  "doctype": "Mode of Payment",
+  "enabled": 1,
+  "mode_of_payment": "NEFT",
+  "modified": "2022-05-30 11:58:58.198428",
+  "name": "NEFT",
+  "parent": null,
+  "parentfield": null,
+  "parenttype": null,
+  "type": "Bank"
+ },
+ {
+  "accounts": [],
+  "docstatus": 0,
+  "doctype": "Mode of Payment",
+  "enabled": 1,
+  "mode_of_payment": "Fees Refundable / Adjustable",
+  "modified": "2022-05-30 11:10:28.822782",
+  "name": "Fees Refundable / Adjustable",
+  "parent": null,
+  "parentfield": null,
+  "parenttype": null,
+  "type": "Bank"
+ },
+ {
+  "accounts": [],
+  "docstatus": 0,
+  "doctype": "Mode of Payment",
+  "enabled": 1,
+  "mode_of_payment": "RTGS",
+  "modified": "2022-05-30 12:00:23.920805",
+  "name": "RTGS",
+  "parent": null,
+  "parentfield": null,
+  "parenttype": null,
+  "type": "Bank"
+ },
+ {
+  "accounts": [],
+  "docstatus": 0,
+  "doctype": "Mode of Payment",
+  "enabled": 1,
+  "mode_of_payment": "IMPS",
+  "modified": "2022-05-30 12:00:46.406693",
+  "name": "IMPS",
+  "parent": null,
+  "parentfield": null,
+  "parenttype": null,
+  "type": "Bank"
+ }
+]
