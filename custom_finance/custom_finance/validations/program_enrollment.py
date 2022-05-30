@@ -1,14 +1,36 @@
 import frappe
 from erpnext.accounts.general_ledger import make_reverse_gl_entries
 
+
+
+def validate(doc,method):                           #Rupali:program enrollment done whether FS is there or not:27thMay2022
+    fee_structure_id = fee_structure_validation(doc)
+
 def on_cancel(doc,method):
     fee_structure_id = fee_structure_validation(doc)
-    cancel_fees(doc,fee_structure_id)#Rupali:Semester fees added:10May2022 
+    cancel_fees(doc,fee_structure_id) #Rupali:Semester fees added:10May2022 
 
 def on_submit(doc,method):
     fee_structure_id = fee_structure_validation(doc)
-    create_fees(doc,fee_structure_id,on_submit=1) #Rupali:Semester fees added:30Apr2022 
+    if len(fee_structure_id)!=0:
+       
+        current_year_data = frappe.get_all("Program Enrollment",{'student':doc.student,'docstatus':1},['name','program','programs','student_batch_name','student_name','roll_no','student_category','academic_year','academic_term'],limit=1)
+        year_data = frappe.get_all("Program Enrollment",{'student':doc.student,'docstatus':1,'program':doc.program,'programs':doc.programs},['name','program','programs','student_batch_name','student_name','roll_no','student_category','academic_year','academic_term'])
+        if current_year_data[0]['program']== year_data[0]['program'] and current_year_data[0]['programs'] == year_data[0]['programs'] :
+             frappe.msgprint("Fees not charged. Proceed for program enrollment")
 
+            
+             create_fees(doc,fee_structure_id,on_submit=1) #Rupali:Semester fees added:30Apr2022 
+        else:
+            create_fees(doc,fee_structure_id,on_submit=1) #Rupali:Semester fees added:30Apr2022 
+
+
+
+       
+        
+       
+        # create_fees(doc,fee_structure_id,on_submit=1) #Rupali:Semester fees added:30Apr2022 
+        
 # Rupali:Semester fees added during program enrollment:30Apr2022  :start #KP
 def fee_structure_validation(doc): 
    
@@ -16,16 +38,20 @@ def fee_structure_validation(doc):
                  'fee_type':'Semester Fees', 'academic_year':doc.academic_year,
                   'academic_term':doc.academic_term, 'docstatus':1},["name"])
    
-    if len(existed_fs) != 0:
+    if len(existed_fs) != 0:                             #Rupali:Modified the code for PE and FS :27thMay2022
         fee_structure_id = existed_fs[0]['name']
-        return fee_structure_id
-    else:
-        frappe.throw("Fee Structure Not Found")
-    term_date = frappe.get_all("Academic Term",{'name': doc.term_name},['term_start_date','term_end_date'])
+        term_date = frappe.get_all("Academic Term",{'name': doc.academic_term},['term_start_date','term_end_date'])
+        if term_date == None:
+            frappe.throw("Academic Term Start Date,End Date Not Found")
+        return fee_structure_id        
+        
+    
 
-    if term_date == None:
-        frappe.throw("Academic Term Start Date,End Date Not Found")
+    elif len(existed_fs) == 0:
+        frappe.msgprint("Fees not charged. Proceed for program enrollment")
+        return existed_fs
 
+    
 def create_fees(doc,fee_structure_id,on_submit=0):
     data = frappe.get_all("Program Enrollment",{'student':doc.student,'docstatus':1},['name','program','programs','student_batch_name',
                           'student_name','roll_no','student_category','academic_year','academic_term'],limit=1)
@@ -55,9 +81,11 @@ def create_fees(doc,fee_structure_id,on_submit=0):
             'grand_fee_amount' : i['grand_fee_amount'],
             'outstanding_fees' : i['outstanding_fees'],
         })
-      
+    if doc.due_date == None:                            #Rupali:30thMay2022: added to check date mandatory through code wise.
+             frappe.throw("Enter the Due Date.")
     fees.save()
     fees.submit()
+    frappe.db.set_value("Program Enrollment",doc.name, "voucher_no",fees.name) 
 
 def cancel_fees(doc,fee_structure_id):
     for ce in frappe.get_all("Fees",{"program_enrollment":doc.name,"fee_structure":fee_structure_id}):
@@ -65,3 +93,4 @@ def cancel_fees(doc,fee_structure_id):
       
 
 # Rupali:Semester fees added:30Apr2022  :end   #KP
+
