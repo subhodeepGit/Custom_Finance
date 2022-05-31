@@ -17,7 +17,10 @@
   "bank_holder_name",
   "bank_name",
   "date_of_transaction",
-  "reconciliation_status"
+  "reconciliation_status",
+  "payment_status",
+  "payment_id",
+  "brs_name"
  ],
  "fields": [
   {
@@ -45,7 +48,8 @@
   {
    "fieldname": "unique_transaction_reference_utr",
    "fieldtype": "Data",
-   "label": "Unique Transaction Reference (UTR) "
+   "label": "Unique Transaction Reference (UTR) ",
+   "reqd": 1
   },
   {
    "fieldname": "amount",
@@ -90,12 +94,33 @@
    "default": "0",
    "fieldname": "reconciliation_status",
    "fieldtype": "Check",
-   "label": "Reconciliation Status"
+   "label": "Reconciliation Status",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "payment_status",
+   "fieldtype": "Check",
+   "label": "Payment Status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "payment_id",
+   "fieldtype": "Data",
+   "label": "Payment id",
+   "read_only": 1
+  },
+  {
+   "fieldname": "brs_name",
+   "fieldtype": "Data",
+   "label": "BRS Name",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2022-05-29 19:43:59.058249",
+ "modified": "2022-05-30 16:46:20.521763",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Payment Details Upload",

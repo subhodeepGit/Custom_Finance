@@ -170,6 +170,23 @@ frappe.ui.form.on('Payment Entry', {
 		});
 	},
 
+	mode_of_payment: function(frm) {
+		if(frm.doc.mode_of_payment==("RTGS"||"NEFT"||"IMPS")) {
+			frappe.call({
+				method: "custom_finance.custom_finance.doctype.payment_details_upload.payment_details_upload.utr_callback",                
+				args: {
+					"party": frm.doc.party,
+					"mode_of_payment": frm.doc.mode_of_payment
+				},
+				callback: function(r) {
+					if(r.message){
+						var utr=r.message;
+						frm.set_value("reference_no",utr)
+					}
+				}
+			});
+	}
+}
 
 });
 frappe.ui.form.on('Payment Entry', {
