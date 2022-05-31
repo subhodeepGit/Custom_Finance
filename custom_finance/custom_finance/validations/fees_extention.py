@@ -46,6 +46,8 @@ def recon_rtgs_neft(self):
                                     break 
                             if Recon_info['total_allocated_amount']>self.total_allocated_amount and flag=="pass":
                                 Account=frappe.db.get_all("Account",filters=[['name','like','%Fees Refundable / Adjustable%'],['account_type','=','Income Account']],fields=['name'])
+                                if not Account:
+                                    frappe.throw("Fees Refundable / Adjustable not mantained for the comapny")
                                 reference_name=""
                                 allocated_excess_amount=0
                                 for t in self.get('references'):
@@ -73,6 +75,8 @@ def recon_rtgs_neft(self):
                                     })
                             elif Recon_info['total_allocated_amount']>self.total_allocated_amount and flag=="no_pass":
                                 Account=frappe.db.get_all("Account",filters=[['name','like','%Fees Refundable / Adjustable%'],['account_type','=','Income Account']],fields=['name'])
+                                if not Account:
+                                    frappe.throw("Fees Refundable / Adjustable not mantained for the comapny")
                                 reference_name=""
                                 allocated_excess_amount=0
                                 for t in self.get('references'):
@@ -133,8 +137,9 @@ def recon_rtgs_neft_on_submit(self):
         frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"party_name",self.party)
         frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"count",count)
         st_upload_data=frappe.get_all("Payment Details Upload",{"brs_name":Recon_info['name'],"docstatus":1},['name'])
-        frappe.db.set_value("Payment Details Upload",st_upload_data[0]['name'],"payment_status",1)
-        frappe.db.set_value("Payment Details Upload",st_upload_data[0]['name'],"payment_id",self.name)  
+        if len(st_upload_data)!=0:
+            frappe.db.set_value("Payment Details Upload",st_upload_data[0]['name'],"payment_status",1)
+            frappe.db.set_value("Payment Details Upload",st_upload_data[0]['name'],"payment_id",self.name)  
 
 
 def recon_rtgs_neft_on_cancel(self):
@@ -150,8 +155,9 @@ def recon_rtgs_neft_on_cancel(self):
         count=int(Recon_info["count"])-1
         frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"count",count)
         st_upload_data=frappe.get_all("Payment Details Upload",{"brs_name":Recon_info['name'],"docstatus":1},['name'])
-        frappe.db.set_value("Payment Details Upload",st_upload_data[0]['name'],"payment_status",0)
-        frappe.db.set_value("Payment Details Upload",st_upload_data[0]['name'],"payment_id",'')    
+        if len(st_upload_data)!=0:
+            frappe.db.set_value("Payment Details Upload",st_upload_data[0]['name'],"payment_status",0)
+            frappe.db.set_value("Payment Details Upload",st_upload_data[0]['name'],"payment_id",'')    
 
 def child_table_fees_outsatnding(self):
     ### payment entry child doc
@@ -210,7 +216,7 @@ def refundable_fees_outsatnding(self,cancel):
         if d.fees_category=="Fees Refundable / Adjustable":
             if cancel==0:
                 frappe.db.set_value("Payment Entry Reference",d.name, "outstanding_amount",0.0) 
-                # d.outstanding_amount=0.0
+                d.outstanding_amount=0.0
             elif cancel==1:  
                 # frappe.db.set_value("Payment Entry Reference",d.name, "outstanding_amount",d.total_amount) 
                 d.outstanding_amount=d.total_amount    

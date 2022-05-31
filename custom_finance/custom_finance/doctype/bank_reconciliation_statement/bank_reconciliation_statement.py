@@ -27,5 +27,5 @@ class BankReconciliationStatement(Document):
 					frappe.db.set_value("Payment Details Upload",st_payment_upload[0]['name'],'brs_name','')
 			else:
 				frappe.throw("Payment status Updated for the UTR no. So it can't be canceled")	
-		if doc.party_name!='':
+		if doc.total_allocated_amount==0:
 			frappe.throw("Payment status Updated for the UTR no. So it can't be canceled")																		
