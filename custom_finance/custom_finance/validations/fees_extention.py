@@ -132,7 +132,7 @@ def recon_rtgs_neft_on_submit(self):
         frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"total_allocated_amount",Grant_total_amount)
         frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"party_name",self.party)
         frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"count",count)
-        st_upload_data=frappe.get_all("Payment Details Upload",{"brs_name":Recon_info['name'],"docstaus":1},['name'])
+        st_upload_data=frappe.get_all("Payment Details Upload",{"brs_name":Recon_info['name'],"docstatus":1},['name'])
         frappe.db.set_value("Payment Details Upload",st_upload_data[0]['name'],"payment_status",1)
         frappe.db.set_value("Payment Details Upload",st_upload_data[0]['name'],"payment_id",self.name)  
 
@@ -149,7 +149,7 @@ def recon_rtgs_neft_on_cancel(self):
         frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"total_allocated_amount",Grant_total_amount) 
         count=int(Recon_info["count"])-1
         frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"count",count)
-        st_upload_data=frappe.get_all("Payment Details Upload",{"brs_name":Recon_info['name'],"docstaus":1},['name'])
+        st_upload_data=frappe.get_all("Payment Details Upload",{"brs_name":Recon_info['name'],"docstatus":1},['name'])
         frappe.db.set_value("Payment Details Upload",st_upload_data[0]['name'],"payment_status",0)
         frappe.db.set_value("Payment Details Upload",st_upload_data[0]['name'],"payment_id",'')    
 
