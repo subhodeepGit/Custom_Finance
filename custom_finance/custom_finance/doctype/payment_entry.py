@@ -64,7 +64,7 @@ class PaymentEntry(AccountsController):
 		self.validate_bank_accounts()
 		self.set_exchange_rate()
 		self.validate_mandatory()
-		self.validate_reference_documents()###################
+		# self.validate_reference_documents()###################
 		self.set_tax_withholding()
 		self.set_amounts()
 		self.validate_amounts()
@@ -415,6 +415,9 @@ class PaymentEntry(AccountsController):
 				if not frappe.db.exists(d.reference_doctype, d.reference_name):
 					frappe.throw(_("{0} {1} does not exist").format(d.reference_doctype, d.reference_name))
 				else:
+					print("\n\n\n\n\n\n")
+					print(d.reference_doctype)
+					print(d.reference_name)
 					ref_doc = frappe.get_doc(d.reference_doctype, d.reference_name)
 					if d.reference_doctype != "Journal Entry":
 						if self.party != ref_doc.get(scrub(self.party_type)):
