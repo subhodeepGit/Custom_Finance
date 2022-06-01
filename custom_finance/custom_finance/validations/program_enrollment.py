@@ -11,14 +11,22 @@ def validate(doc,method):
     fee_structure_id = fee_structure_validation(doc)
 
 def on_cancel(doc,method):
-    fee_structure_id = fee_structure_validation(doc)
-    if len(fee_structure_id)!=0:        
-        cancel_fees(doc,fee_structure_id) 
-    else:
-        update_reserved_seats(doc)             
-        delete_permissions(doc)
-        delete_course_enrollment(doc)
-        update_student(doc)    
+   voucher_no = doc.voucher_no
+
+   if voucher_no!= None:
+
+       cancel_fees(doc,voucher_no)
+       update_reserved_seats(doc)             
+       delete_permissions(doc)
+       delete_course_enrollment(doc)
+       update_student(doc)
+
+   else:
+
+       update_reserved_seats(doc)             
+       delete_permissions(doc)
+       delete_course_enrollment(doc)
+       update_student(doc)    
 
 
 def on_submit(doc,method):
@@ -98,11 +106,16 @@ def create_fees(doc,fee_structure_id,on_submit=0):
     fees.save()
     fees.submit()
     frappe.db.set_value("Program Enrollment",doc.name, "voucher_no",fees.name) 
+    doc.voucher_no=fees.name
+    
     
 
-def cancel_fees(doc,fee_structure_id):
-    for ce in frappe.get_all("Fees",{"program_enrollment":doc.name,"fee_structure":fee_structure_id}):
-        make_reverse_gl_entries(voucher_type="Fees", voucher_no=ce.name)
+def cancel_fees(doc,voucher_no):
+    cancel_doc = frappe.get_doc("Fees",doc.voucher_no)
+    cancel_doc.cancel()
+    # for ce in frappe.get_all("Fees",{"program_enrollment":doc.name,"fee_structure":fee_structure_id}):
+    #     make_reverse_gl_entries(voucher_type="Fees", voucher_no=ce.name)
+    
       
 def update_reserved_seats(doc,on_submit=0):
     if doc.reference_doctype and doc.reference_name and doc.reference_doctype in ["Student Applicant","Branch Sliding Application"]:
@@ -152,8 +165,7 @@ def update_reserved_seats(doc,on_submit=0):
                                 
                     declaration.validate_seats()
                     declaration.submit()
-def delete_permissions(doc):
-          
+def delete_permissions(doc):          
     delete_ref_doctype_permissions(["Programs","Course Enrollment","Course"],doc)
 def delete_course_enrollment(doc):
     for ce in frappe.get_all("Course Enrollment",{"program_enrollment":doc.name}):
@@ -168,7 +180,14 @@ def update_student(doc):
             "academic_year":doc.academic_year,
             "academic_term":doc.academic_term
         })
-    student.save()          
+    student.save()  
+
+
+
+             
+             
+            
+                                  
 
 
 
