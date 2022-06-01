@@ -13,6 +13,7 @@
 
 
 from collections import OrderedDict
+from dataclasses import fields
 
 import frappe
 from frappe import _, _dict
@@ -262,11 +263,11 @@ def get_conditions(filters):
 		conditions.append("cost_center in %(cost_center)s")
 
 	if filters.get("voucher_no"):
-		fee_structure=filters.get("voucher_no")
-		list_of_voucher_no=frappe.db.get_list("Fees", filters=[["student","=",fee_structure]],fields=["name"])
+		fees=filters.get("voucher_no")
+		list_of_voucher_no=frappe.db.get_list("Fee Waiver Components", filters=[["parent","=",fees]],fields=["name","fee_voucher_no"])
 		voucher_no_list=[]
 		for t in list_of_voucher_no:
-			voucher_no_list.append(t['name'])
+			voucher_no_list.append(t['fee_voucher_no'])
 		if len(voucher_no_list)==1:
 			conditions.append(" voucher_no = '%s' "%str(voucher_no_list[0]))
 		elif len(voucher_no_list)>1:
