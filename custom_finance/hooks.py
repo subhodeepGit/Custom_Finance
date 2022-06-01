@@ -131,6 +131,9 @@ doc_events = {
 		"on_cancel":"custom_finance.custom_finance.validations.program_enrollment.on_cancel",
 		"validate":"custom_finance.custom_finance.validations.program_enrollment.validate",
 	},
+	"Exam Declaration":{
+		"on_submit":"custom_finance.custom_finance.doctype.exam_declaration.on_submit"
+	}
 }
 
 # Scheduled Tasks
