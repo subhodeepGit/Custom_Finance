@@ -14,6 +14,7 @@ def on_cancel(doc,method):
    voucher_no = doc.voucher_no
 
    if voucher_no!= None:
+       
 
        cancel_fees(doc,voucher_no)
        update_reserved_seats(doc)             
