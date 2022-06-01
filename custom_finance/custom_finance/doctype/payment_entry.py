@@ -5,6 +5,7 @@ from frappe import ValidationError, _, scrub, throw
 from frappe.utils import cint, comma_or, flt, getdate, nowdate
 from numpy import append
 from six import iteritems, string_types
+from custom_finance.custom_finance.notification.custom_notification import payment_entry_submit
 
 import erpnext
 from erpnext.accounts.doctype.bank_account.bank_account import (
@@ -91,6 +92,7 @@ class PaymentEntry(AccountsController):
 		self.update_donation()
 		self.update_payment_schedule()######################
 		self.set_status()
+		payment_entry_submit(self)
 		
 		
 
