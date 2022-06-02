@@ -435,11 +435,15 @@ class PaymentEntry(AccountsController):
 							ref_party_account = ref_doc.credit_to
 						elif self.party_type=="Employee":
 							ref_party_account = ref_doc.payable_account
-						# if ref_party_account != self.party_account:	
-						if ref_party_account != d.account_paid_from:
+						# if ref_party_account != self.party_account:
+						if self.payment_type=="Receive":
+							if ref_party_account != d.account_paid_from:
 								frappe.throw(_("{0} {1} is associated with {2}, but Party Account is {3}")
-									.format(d.reference_doctype, d.reference_name, ref_party_account, d.account_paid_from))
-
+										.format(d.reference_doctype, d.reference_name, ref_party_account, d.account_paid_from))
+						elif self.payment_type=="Pay":				
+							if ref_party_account != d.account_paid_to:
+								frappe.throw(_("{0} {1} is associated with {2}, but Party Account is {3}")
+										.format(d.reference_doctype, d.reference_name, ref_party_account, d.account_paid_from))
 					if ref_doc.docstatus != 1:
 						frappe.throw(_("{0} {1} must be submitted")
 							.format(d.reference_doctype, d.reference_name))
@@ -824,7 +828,7 @@ class PaymentEntry(AccountsController):
 					}, item=self)
 					party_gl_list.append(party_gl_dict)
 			elif self.payment_type=="Pay":
-				for t in frappe.db.get_all('Payment Entry Reference',{"parent":self.name},["account_paid_to","fees_category"]):
+				for t in frappe.db.get_all('Payment Entry Reference',{"parent":self.name},["account_paid_to","fees_category",'reference_name']):
 					party_gl_dict = self.get_gl_dict({
 						# "account": self.party_account,
 						"account": t["account_paid_to"],
