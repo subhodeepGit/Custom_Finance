@@ -217,7 +217,7 @@ frappe.ui.form.on('Fee Waiver', {
                         var c = frm.add_child("fee_componemts")
                         c.fees_category = element.fees_category
 						c.description=element.description
-						c.amount=element.amount
+						c.amount=element.outstanding_fees
 						c.grand_fee_amount=element.grand_fee_amount
 						c.outstanding_fees=element.outstanding_fees
 						c.percentage=element.percentage
