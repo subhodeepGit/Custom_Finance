@@ -352,5 +352,17 @@ frappe.ui.form.on("Payment Entry","mode_of_payment", function(frm){
         frm.set_value("reference_date", frappe.datetime.nowdate());
         frm.refresh();
     };
-});
+	if(frm.doc.mode_of_payment == "Cash"){
+		frm.set_df_property('references', 'cannot_add_rows', true);
+		frm.set_df_property('references', 'cannot_delete_rows', true);
+	}	 else if(frm.doc.mode_of_payment !="Cash"){
+		frm.set_df_property('references', 'cannot_add_rows', false);
+		frm.set_df_property('references', 'cannot_delete_rows', false);
+	}
+
+})
+
+	
+
+
 

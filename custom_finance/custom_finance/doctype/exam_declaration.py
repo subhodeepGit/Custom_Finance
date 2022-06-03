@@ -16,10 +16,11 @@ from frappe import _
 def on_submit(self,method):
     make_exam_assessment_result(self)
 
+def on_cancel(self,method):
+    cancel_fees(self)
+
 @frappe.whitelist()
 def make_exam_assessment_result(self):
-    print("\n\n\n\n\n")
-    print("make fee")
     self.db_set("certificate_creation_status", "In Process")
     frappe.publish_realtime("exam_declaration_progress",
         {"progress": "0", "reload": 1}, user=frappe.session.user)
@@ -35,7 +36,6 @@ def make_exam_assessment_result(self):
         create_conduct_certificate(self.name)
             
 def create_conduct_certificate(exam_declaration):
-    print("exam_declaration",exam_declaration)
     doc = frappe.get_doc("Exam Declaration", exam_declaration)
     error = False
     total_records = len(doc.get("students"))
@@ -55,6 +55,7 @@ def create_conduct_certificate(exam_declaration):
             result.program_enrollment=enroll.name
         for fee_stu in doc.get("fee_structure"):
             result.fee_structure=fee_stu.fee_structure
+            print(fee_stu.fee_structure)
             result.due_date=fee_stu.due_date
             ref_details = frappe.get_all("Fee Component",{"parent":fee_stu.fee_structure},['fees_category','amount','receivable_account','income_account','company','grand_fee_amount','outstanding_fees'])
             for i in ref_details:
@@ -74,4 +75,31 @@ def create_conduct_certificate(exam_declaration):
             
         result.submit()
         created_records += 1
-    frappe.msgprint("Record Created")     
+    frappe.msgprint("Record Created")    
+
+def cancel_fees(self):
+    student=[]
+    fee_structure_id=[]
+    for t in self.get("students"):
+        student.append(t.student)
+    for t in self.get("fee_structure"): 
+        fee_structure_id.append(t.fee_structure)   
+    voucher_no=[]    
+    for t in fee_structure_id:
+        for j in student:
+            fee_id=frappe.get_all("Fees",{"student":j,"fee_structure":t},['name'])
+            voucher_no.append(fee_id[0]['name'])
+    for t in voucher_no:
+        cancel_doc = frappe.get_doc("Fees",t)
+        cancel_doc.cancel()      
+    
+    # fee_structure_id=[]
+    # for t in self.get():
+    #     print(t)
+    # cancel_doc = frappe.get_all('Fees',fields=['name'],filters=[['fee_structure','=','EDU-FST-2022-00004']])
+    # for f in cancel_doc:
+    #     f.cancel() 
+    # data = frappe.get_all("Exam Declaration",{'name':self.name,'docstatus':1},['name'])
+	
+
+     
