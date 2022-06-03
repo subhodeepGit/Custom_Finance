@@ -61,7 +61,7 @@ def get_fee_structure(doc):
             frappe.throw("Academic Term Start Date,End Date Not Found.")
         return fee_structure_id 
     elif len(existed_fs) == 0:
-        frappe.msgprint("Fees not found.")
+        frappe.msgprint("Fees not charged. Program enrollment is Done.")
         return existed_fs
 
 
@@ -78,7 +78,7 @@ def fee_structure_validation(doc):
             frappe.throw("Academic Term Start Date,End Date Not Found")
         return fee_structure_id 
     elif len(existed_fs) == 0:
-        frappe.msgprint("Fees not charged. Proceed for program enrollment")
+        frappe.msgprint("Fees not found.")
         return existed_fs
 
 def create_fees(doc,fee_structure_id,on_submit=0):
