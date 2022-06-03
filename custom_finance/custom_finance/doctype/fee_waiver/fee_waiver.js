@@ -93,7 +93,7 @@ frappe.ui.form.on('Fee Waiver', {
 	},
 	refresh: function(frm) {
 		if(frm.doc.docstatus > 0) {
-			frm.add_custom_button(__('Accounting Ledger'), function() {
+			frm.add_custom_button(__('Fee Waiver Ledger'), function() {
 				frappe.route_options = {
 					voucher_no: frm.doc.name,
 					from_date: frm.doc.posting_date,
@@ -103,8 +103,19 @@ frappe.ui.form.on('Fee Waiver', {
 					show_cancelled_entries: frm.doc.docstatus === 2
 				};
 				frappe.set_route("query-report", "Fee waiver Account Ledger");
-			});
+			}, "List view");
 		}
+			frm.add_custom_button(__("Payment Entry Ledger"), function() {
+				frappe.route_options = {
+					voucher_no: frm.doc.name,
+					from_date: frm.doc.posting_date,
+					to_date: moment(frm.doc.modified).format('YYYY-MM-DD'),
+					company: frm.doc.company,
+					group_by: '',
+					show_cancelled_entries: frm.doc.docstatus === 2
+				};
+				frappe.set_route("query-report", "Fee Waiver Payment Entry Report");
+			}, "List view");
 	}
 });
 
