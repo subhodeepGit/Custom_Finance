@@ -201,7 +201,6 @@ def update_fee(self):
 
 def refundable_function(self,refundable_amount=None,rev_object=None):
 	fee_voucher_no=rev_object.fee_voucher_no
-	print("\n\n\n\n\n\n")
 	payment_data=frappe.get_all("Payment Entry Reference",{"reference_name":fee_voucher_no,"fees_category":rev_object.fees_category},['name',"parent","allocated_amount",'account_paid_from'])
 	for i in payment_data:
 		if refundable_amount!=0:
@@ -265,13 +264,11 @@ def refundable_function(self,refundable_amount=None,rev_object=None):
 					new_ref_adj=t.copy()
 					del new_ref_adj['name']
 					new_gl_entry.append(new_ref_adj)
-			print("man",new_gl_entry)
 			
 			########################## First Canncelation
 			cancel=1
 			adv_adj=0
 			gl_entries = process_gl_map(Gl_entry)
-			print("gl_entries",gl_entries)
 			make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
 			########################## New entry
 			make_gl_entries(new_gl_entry)

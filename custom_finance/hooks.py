@@ -37,7 +37,7 @@ doctype_js = {
 	"Fee Schedule":"public/js/fee_schedule.js",
 	"Fee Structure" : "public/js/fee_structure.js",
 	"Payment Entry" : "public/js/payment_entry.js",
-	# "Program Enrollment":"public/js/program_enrollment.js",
+	"Program Enrollment":"public/js/program_enrollment.js",
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -131,6 +131,9 @@ doc_events = {
 		"on_cancel":"custom_finance.custom_finance.validations.program_enrollment.on_cancel",
 		"validate":"custom_finance.custom_finance.validations.program_enrollment.validate",
 	},
+	"Exam Declaration":{
+		"on_submit":"custom_finance.custom_finance.doctype.exam_declaration.on_submit"
+	}
 }
 
 # Scheduled Tasks

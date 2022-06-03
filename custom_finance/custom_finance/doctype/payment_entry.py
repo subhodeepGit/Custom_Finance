@@ -5,6 +5,7 @@ from frappe import ValidationError, _, scrub, throw
 from frappe.utils import cint, comma_or, flt, getdate, nowdate
 from numpy import append
 from six import iteritems, string_types
+from custom_finance.custom_finance.notification.custom_notification import payment_entry_submit
 
 import erpnext
 from erpnext.accounts.doctype.bank_account.bank_account import (
@@ -91,6 +92,7 @@ class PaymentEntry(AccountsController):
 		self.update_donation()
 		self.update_payment_schedule()######################
 		self.set_status()
+		payment_entry_submit(self)
 		
 		
 
@@ -425,15 +427,23 @@ class PaymentEntry(AccountsController):
 						if self.party_type == "Customer":
 							ref_party_account = get_party_account_based_on_invoice_discounting(d.reference_name) or ref_doc.debit_to
 						elif self.party_type == "Student":
-							ref_party_account = ref_doc.receivable_account
+							for z in ref_doc.get('components'):
+								if z.fees_category==d.fees_category:
+									# ref_party_account = ref_doc.receivable_account
+									ref_party_account =z.receivable_account
 						elif self.party_type=="Supplier":
 							ref_party_account = ref_doc.credit_to
 						elif self.party_type=="Employee":
 							ref_party_account = ref_doc.payable_account
-						if ref_party_account != self.party_account:
+						# if ref_party_account != self.party_account:
+						if self.payment_type=="Receive":
+							if ref_party_account != d.account_paid_from:
 								frappe.throw(_("{0} {1} is associated with {2}, but Party Account is {3}")
-									.format(d.reference_doctype, d.reference_name, ref_party_account, self.party_account))
-
+										.format(d.reference_doctype, d.reference_name, ref_party_account, d.account_paid_from))
+						elif self.payment_type=="Pay":				
+							if ref_party_account != d.account_paid_to:
+								frappe.throw(_("{0} {1} is associated with {2}, but Party Account is {3}")
+										.format(d.reference_doctype, d.reference_name, ref_party_account, d.account_paid_from))
 					if ref_doc.docstatus != 1:
 						frappe.throw(_("{0} {1} must be submitted")
 							.format(d.reference_doctype, d.reference_name))
@@ -818,7 +828,7 @@ class PaymentEntry(AccountsController):
 					}, item=self)
 					party_gl_list.append(party_gl_dict)
 			elif self.payment_type=="Pay":
-				for t in frappe.db.get_all('Payment Entry Reference',{"parent":self.name},["account_paid_to","fees_category"]):
+				for t in frappe.db.get_all('Payment Entry Reference',{"parent":self.name},["account_paid_to","fees_category",'reference_name']):
 					party_gl_dict = self.get_gl_dict({
 						# "account": self.party_account,
 						"account": t["account_paid_to"],

@@ -7,22 +7,25 @@ from ed_tec.ed_tec.doctype.user_permission import add_user_permission,delete_ref
 #Semester fees added
 #Cancel functionality added without FS ID
 #check date mandatory in backend.
+
 def validate(doc,method):                           
     fee_structure_id = fee_structure_validation(doc)
 
 def on_cancel(doc,method):
-    fee_structure_id = fee_structure_validation(doc)
-    if len(fee_structure_id)!=0:        
-        cancel_fees(doc,fee_structure_id) 
+    fee_structure_id = get_fee_structure(doc)
+
+    if len(fee_structure_id)!=0:
+        cancel_fees(doc,fee_structure_id)
+
     else:
+
         update_reserved_seats(doc)             
         delete_permissions(doc)
         delete_course_enrollment(doc)
-        update_student(doc)    
-
+        update_student(doc) 
 
 def on_submit(doc,method):
-    fee_structure_id = fee_structure_validation(doc)
+    fee_structure_id = get_fee_structure(doc)
     
     if len(fee_structure_id)!=0:
            
@@ -46,6 +49,22 @@ def on_submit(doc,method):
         else:
             frappe.msgprint("Student is a Year back so fees is not charged.")  
 
+def get_fee_structure(doc):
+    existed_fs = frappe.db.get_list("Fee Structure", {'programs':doc.programs, 'program':doc.program, 
+                 'fee_type':'Semester Fees', 'academic_year':doc.academic_year,
+                  'academic_term':doc.academic_term, 'docstatus':1},["name"])
+    
+    if len(existed_fs) != 0:                            
+        fee_structure_id = existed_fs[0]['name']        
+        term_date = frappe.get_all("Academic Term",{'name': doc.academic_term},['term_start_date','term_end_date'])
+        if term_date == None:
+            frappe.throw("Academic Term Start Date,End Date Not Found.")
+        return fee_structure_id 
+    elif len(existed_fs) == 0:
+        frappe.msgprint("Fees not found.")
+        return existed_fs
+
+
 def fee_structure_validation(doc): 
    
     existed_fs = frappe.db.get_list("Fee Structure", {'programs':doc.programs, 'program':doc.program, 
@@ -62,7 +81,6 @@ def fee_structure_validation(doc):
         frappe.msgprint("Fees not charged. Proceed for program enrollment")
         return existed_fs
 
-    
 def create_fees(doc,fee_structure_id,on_submit=0):
     
     data = frappe.get_all("Program Enrollment",{'student':doc.student,'docstatus':1},['name','program','programs','student_batch_name',
@@ -98,11 +116,16 @@ def create_fees(doc,fee_structure_id,on_submit=0):
     fees.save()
     fees.submit()
     frappe.db.set_value("Program Enrollment",doc.name, "voucher_no",fees.name) 
+    doc.voucher_no=fees.name
+    
     
 
 def cancel_fees(doc,fee_structure_id):
+    # cancel_doc = frappe.get_doc("Fees",voucher_no)
+    # cancel_doc.cancel()
     for ce in frappe.get_all("Fees",{"program_enrollment":doc.name,"fee_structure":fee_structure_id}):
         make_reverse_gl_entries(voucher_type="Fees", voucher_no=ce.name)
+    
       
 def update_reserved_seats(doc,on_submit=0):
     if doc.reference_doctype and doc.reference_name and doc.reference_doctype in ["Student Applicant","Branch Sliding Application"]:
@@ -152,8 +175,7 @@ def update_reserved_seats(doc,on_submit=0):
                                 
                     declaration.validate_seats()
                     declaration.submit()
-def delete_permissions(doc):
-          
+def delete_permissions(doc):          
     delete_ref_doctype_permissions(["Programs","Course Enrollment","Course"],doc)
 def delete_course_enrollment(doc):
     for ce in frappe.get_all("Course Enrollment",{"program_enrollment":doc.name}):
@@ -168,7 +190,14 @@ def update_student(doc):
             "academic_year":doc.academic_year,
             "academic_term":doc.academic_term
         })
-    student.save()          
+    student.save()  
+
+
+
+             
+             
+            
+                                  
 
 
 
