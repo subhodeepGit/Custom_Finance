@@ -184,20 +184,27 @@ def update_fee(self):
 			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount) 
 			frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
 			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",0)
-			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-t.outstanding_fees_ref) 
+			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-total_waiver_amount) 
 		elif refundable_amount >0:
 			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",total_waiver_amount) 	
 			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount) 
 			frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
 			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount)
-			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-t.outstanding_fees_ref) 	
+			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-total_waiver_amount) 	
 		elif refundable_amount <0:
 			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",total_waiver_amount) 	
 			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount) 
 			frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
 			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount)
-			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-t.outstanding_fees_ref)
-			refundable_function(self,abs(refundable_amount),t) 			
+			print("\n\n\n\n\n\n")
+			print(fee_data[0]["outstanding_amount"])
+			print(t.outstanding_fees_ref)
+			print(fee_data[0]["outstanding_amount"]-t.outstanding_fees_ref)
+			print(t.fee_voucher_no)
+			frappe.db.sql(""" UPDATE `tabFees` SET `outstanding_amount`='%s' WHERE `name`='%s' """%((fee_data[0]["outstanding_amount"]-t.outstanding_fees_ref),t.fee_voucher_no))
+			# frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-t.outstanding_fees_ref)
+			refundable_function(self,abs(refundable_amount),t)		
+			# a.s
 
 def refundable_function(self,refundable_amount=None,rev_object=None):
 	fee_voucher_no=rev_object.fee_voucher_no
