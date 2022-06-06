@@ -165,7 +165,8 @@ class FeeWaiver(Document):
 
 def update_fee(self):
 	for t in self.get('fee_componemts'):
-		data=frappe.get_all("Fee Component",filters=[["parent","=",t.fee_voucher_no],['fees_category','=',t.fees_category]],fields=["name",'outstanding_fees'])
+		data=frappe.get_all("Fee Component",filters=[["parent","=",t.fee_voucher_no],['fees_category','=',t.fees_category]],
+											fields=["name",'outstanding_fees','total_waiver_amount','waiver_amount','percentage'])
 		fee_data=frappe.get_all("Fees",filters=[['name','=',t.fee_voucher_no]],fields=["name","outstanding_amount"])
 		outsatnding_amount=t.outstanding_fees
 		waiver_type=t.waiver_type
@@ -175,24 +176,29 @@ def update_fee(self):
 		total_waiver_amount=t.total_waiver_amount
 		frappe.db.set_value("Fee Component",data[0]["name"], "waiver_type",str(waiver_type))
 		if waiver_type=="Amount":
+			waiver_amount=waiver_amount+data[0]['waiver_amount']
 			frappe.db.set_value("Fee Component",data[0]["name"], "waiver_amount",waiver_amount)
 		if waiver_type=="Percentage":
+			percentage=percentage+data[0]["percentage"]
 			frappe.db.set_value("Fee Component",data[0]["name"], "percentage",percentage)
 		refundable_amount=t.outstanding_fees_ref-waiver_amount
-		if refundable_amount==0:	
+		if refundable_amount==0:
+			outsatnding_amount=outsatnding_amount+data[0]['total_waiver_amount']	
 			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",total_waiver_amount) 	
 			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount) 
 			frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
 			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",0)
 			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-total_waiver_amount) 
 		elif refundable_amount >0:
+			outsatnding_amount=outsatnding_amount+data[0]['total_waiver_amount']
 			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",total_waiver_amount) 	
 			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount) 
 			frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
 			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount)
 			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-total_waiver_amount) 	
 		elif refundable_amount <0:
-			refundable_function(self,abs(refundable_amount),t)	
+			refundable_function(self,abs(refundable_amount),t)
+			outsatnding_amount=outsatnding_amount+data[0]['total_waiver_amount']	
 			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",total_waiver_amount) 	
 			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount) 
 			frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
@@ -252,7 +258,7 @@ def refundable_function(self,refundable_amount=None,rev_object=None):
 						##########################'Fees Refundable / Adjustable'######################################
 						account=frappe.get_all("Account",fields=[["account_type","=","Income Account"],["name",'like','%Fees Refundable / Adjustable%']])
 						if not account:
-							frappe.throw("Fees Refundable / Adjustable account not maintained for payment reconciliation")
+							frappe.throw("Fees Refunget_payment_entrydable / Adjustable account not maintained for payment reconciliation")
 						################################################################################################
 						new_ref_adj['account']=account[0]['name']
 						new_gl_entry.append(new_ref_adj)
