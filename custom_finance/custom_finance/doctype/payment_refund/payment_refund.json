@@ -28,11 +28,6 @@
   "paid_from_account_type",
   "paid_from_account_currency",
   "paid_from_account_balance",
-  "column_break_23",
-  "paid_to",
-  "paid_to_account_type",
-  "paid_to_account_currency",
-  "paid_to_account_balance",
   "reference_section",
   "references",
   "accounting_dimensions_section",
@@ -158,43 +153,6 @@
    "print_hide": 1
   },
   {
-   "fieldname": "column_break_23",
-   "fieldtype": "Column Break"
-  },
-  {
-   "depends_on": "eval:doc.payment_type==\"Receive\"||doc.payment_type==\"Internal Transfer\";",
-   "fieldname": "paid_to",
-   "fieldtype": "Link",
-   "label": "Account Paid To",
-   "mandatory_depends_on": "eval:doc.payment_type==\"Receive\"||doc.payment_type==\"Internal Transfer\";",
-   "options": "Account",
-   "reqd": 1
-  },
-  {
-   "fetch_from": "paid_to.account_type",
-   "fieldname": "paid_to_account_type",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Paid To Account Type"
-  },
-  {
-   "depends_on": "paid_to",
-   "fieldname": "paid_to_account_currency",
-   "fieldtype": "Link",
-   "label": "Account Currency",
-   "options": "Currency",
-   "print_hide": 1,
-   "reqd": 1
-  },
-  {
-   "depends_on": "paid_to",
-   "fieldname": "paid_to_account_balance",
-   "fieldtype": "Currency",
-   "label": "Account Balance",
-   "options": "paid_to_account_currency",
-   "print_hide": 1
-  },
-  {
    "fieldname": "reference_section",
    "fieldtype": "Section Break",
    "label": "Reference"
@@ -298,7 +256,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-06-03 17:56:47.641212",
+ "modified": "2022-06-06 14:13:43.155146",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Payment Refund",
