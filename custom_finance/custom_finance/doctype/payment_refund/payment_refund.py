@@ -5,8 +5,7 @@ import frappe
 from frappe.model.document import Document
 
 class PaymentRefund(Document):
-		# def on_submit(self):
-		def validate(self):
+		def on_submit(self):
 			je = frappe.new_doc("Journal Entry")
 			je.posting_date = self.posting_date
 			ref_details = frappe.get_all("Payment Refund",{"name":self.name},['party_type','party','paid_from','cost_center','paid_from_account_currency'])
