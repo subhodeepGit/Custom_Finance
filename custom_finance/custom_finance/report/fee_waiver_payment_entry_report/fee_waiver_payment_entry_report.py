@@ -231,24 +231,6 @@ def get_gl_entries(filters, accounting_dimensions):
 			order_by_statement=order_by_statement
 		),
 		filters, as_dict=1)	
-	# print(gl_entries)
-	# print(frappe.db.sql(
-	# 	"""
-	# 	select
-	# 		name as gl_entry, posting_date, account, party_type, party,
-	# 		voucher_type, voucher_no, {dimension_fields}
-	# 		cost_center, project,
-	# 		against_voucher_type, against_voucher, account_currency,
-	# 		remarks, against, is_opening, creation {select_fields}
-	# 	from `tabGL Entry`
-	# 	where company=%(company)s {conditions}
-	# 	{distributed_cost_center_query}
-	# 	{order_by_statement}
-	# 	""".format(
-	# 		dimension_fields=dimension_fields, select_fields=select_fields, conditions=get_conditions(filters), distributed_cost_center_query=distributed_cost_center_query,
-	# 		order_by_statement=order_by_statement
-	# 	),
-	# 	filters, as_dict=1)))
 	if filters.get('presentation_currency'):
 		return convert_to_presentation_currency(gl_entries, currency_map, filters.get('company'))
 	else:
@@ -256,7 +238,6 @@ def get_gl_entries(filters, accounting_dimensions):
 
 
 def get_conditions(filters):
-	print("\n\n\n\n\n\n")
 	conditions = []
 
 	if filters.get("account"):
@@ -266,7 +247,6 @@ def get_conditions(filters):
 	if filters.get("cost_center"):
 		filters.cost_center = get_cost_centers_with_children(filters.cost_center)
 		conditions.append("cost_center in %(cost_center)s")
-	print(filters.get("voucher_no"))
 	if filters.get("voucher_no"):
 		fee_waiver_components=frappe.get_all("Fee Waiver Components",{"parent":filters.get("voucher_no")},['fee_voucher_no'])
 		fee_voucher_no=[]
@@ -283,7 +263,6 @@ def get_conditions(filters):
 			conditions.append(" voucher_no='%s' "%(str(payment_id[0])))
 		else:
 			conditions.append(" voucher_no in "+str(tuple(payment_id)))
-	print("conditions",conditions)
 	if filters.get("group_by") == "Group by Party" and not filters.get("party_type"):
 		conditions.append("party_type in ('Customer', 'Supplier')")
 
