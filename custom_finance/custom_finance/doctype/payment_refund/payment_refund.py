@@ -6,7 +6,20 @@ from frappe.model.document import Document
 from erpnext.accounts.utils import get_balance_on
 class PaymentRefund(Document):
 	def validate(self):
-		pass
+		print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+		tot = 0
+		print(self.party)
+		refund_fee_info=frappe.get_all("GL Entry",filters=[["account","like","%Fees Refundable / Adjustable%"],["party","like",self.party]],fields=['name','credit'])
+		for t in refund_fee_info:
+			print(t['name'])
+			print(t['credit'])
+			tot += t['credit']
+		print(tot)
+		# self.paid_amount=self.paid_amount
+		print(refund_fee_info)
+		print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+		# print(self.paid_amount)
+		# acc_paid_to
 
 
 	def on_submit(self):
