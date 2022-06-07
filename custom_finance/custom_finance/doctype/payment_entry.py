@@ -1852,9 +1852,17 @@ def get_payment_entry(dt, dn, party_amount=None, bank_account=None, bank_amount=
 							'program':doc.get("program"),
 							'account_paid_to':t['receivable_account'],
 						})
-						
+				
 					else: 
+						# ref_details=frappe.get_all("Fee Component",{"parent":dn,"fees_category":t['fees_category']},["amount"],order_by="creation asc")
+						print("\n\n\n")
+			
 						outstanding_fees=t['outstanding_fees']
+						print(outstanding_fees)
+						print("\n\n\n")
+						print(dt)
+						print(dn)
+						print(t)
 						pe.append("references", {
 							'reference_doctype': dt,
 							'reference_name': dn,
@@ -1925,9 +1933,14 @@ def set_party_account(dt, dn, doc, party_type):
 	elif dt == "Fees":
 	###########################################################################	1st change
 		# data = frappe.get_all("Fee Component",{"parent":self.name},["fees_category","receivable_account","income_account","amount"])
-		receivable_account=frappe.get_all("Fee Component",{"parent":doc.name},["receivable_account","fees_category","outstanding_fees","grand_fee_amount"])
+		receivable_account=frappe.get_all("Fee Component",{"parent":doc.name},["receivable_account","fees_category","outstanding_fees","grand_fee_amount"],order_by="idx asc")
+		print("\n\n\n")
+		print("okk")
+		print(receivable_account)
 		# receivable_account=frappe.get_all("Fee Component",{"parent":doc.name},["receivable_account","fees_category"])
 		party_account = receivable_account
+		print("\n\n\n")
+		print(party_account)
 	############################################################################	
 	elif dt == "Employee Advance":
 		party_account = doc.advance_account
