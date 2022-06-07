@@ -191,7 +191,7 @@
   },
   {
    "fieldname": "reference_date",
-   "fieldtype": "Data",
+   "fieldtype": "Date",
    "label": "Cheque/Reference Date"
   },
   {
@@ -256,7 +256,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-06-06 14:13:43.155146",
+ "modified": "2022-06-07 16:06:58.735693",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Payment Refund",
