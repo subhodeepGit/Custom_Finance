@@ -438,12 +438,14 @@ class PaymentEntry(AccountsController):
 						# if ref_party_account != self.party_account:
 						if self.payment_type=="Receive":
 							if ref_party_account != d.account_paid_from:
-								frappe.throw(_("{0} {1} is associated with {2}, but Party Account is {3}")
-										.format(d.reference_doctype, d.reference_name, ref_party_account, d.account_paid_from))
+								if ('Fees Refundable / Adjustable' in d.account_paid_from)==False:
+									frappe.throw(_("{0} {1} is associated with {2}, but Party Account is {3}")
+											.format(d.reference_doctype, d.reference_name, ref_party_account, d.account_paid_from))
 						elif self.payment_type=="Pay":				
 							if ref_party_account != d.account_paid_to:
-								frappe.throw(_("{0} {1} is associated with {2}, but Party Account is {3}")
-										.format(d.reference_doctype, d.reference_name, ref_party_account, d.account_paid_from))
+								if ('Fees Refundable / Adjustable' in d.account_paid_from)==False:
+									frappe.throw(_("{0} {1} is associated with {2}, but Party Account is {3}")
+											.format(d.reference_doctype, d.reference_name, ref_party_account, d.account_paid_from))
 					if ref_doc.docstatus != 1:
 						frappe.throw(_("{0} {1} must be submitted")
 							.format(d.reference_doctype, d.reference_name))
