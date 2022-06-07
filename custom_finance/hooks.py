@@ -38,7 +38,7 @@ doctype_js = {
 	"Fee Structure" : "public/js/fee_structure.js",
 	"Payment Entry" : "public/js/payment_entry.js",
 	"Program Enrollment":"public/js/program_enrollment.js",
-	# "Exam Declaration":"public/js/exam_declaration.js",
+	"Exam Declaration":"public/js/exam_declaration.js",
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
