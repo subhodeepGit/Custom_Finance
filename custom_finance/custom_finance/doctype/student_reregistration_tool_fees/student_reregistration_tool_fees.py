@@ -118,42 +118,11 @@ def get_optional_courses(doctype, txt, searchfield, start, page_len, filters):
 
 def fee_structure_validation(self,validate=None): #KP
     existed_fs = frappe.db.get_list("Fee Structure", {'programs':self.programs, 'program':self.new_semester, 'fee_type':'Semester Fees', 'academic_year':self.new_academic_year, 'academic_term':self.new_academic_term, 'docstatus':1})
-    if len(existed_fs) != 0 and validate== None:
-        fee_structure_id = existed_fs[0]['name']
-        return fee_structure_id
-    elif len(existed_fs) != 0 and validate== 1:
-        pass
-    else:
-        frappe.throw("Fee Structure Not Found")
+    if len(existed_fs)!=0:
+        if self.fees_due_date==None:
+            frappe.throw("Please maintain due date") 
     term_date = frappe.get_all("Academic Term",{'name': self.new_academic_term},['term_start_date','term_end_date'])
     if term_date == None:
         frappe.throw("Academic Term Start Date End Date Not Found")
 
-# def create_fees(self,stud,fee_structure_id): #KP
-#     fees_info=frappe.get_list("Fees",filters=[['Program Enrollment','=',prog_enrollment]])
-#     if len(fees_info)==0:
-#         data = frappe.get_all("Program Enrollment",{'student':stud.student,'docstatus':1},['name','program','programs','student_batch_name'],limit=1)
-#         term_date = frappe.get_all("Academic Term",{'name': self.new_academic_term},['term_start_date','term_end_date'])
-#         fee = frappe.new_doc("Fees")
-#         fee.student = stud.student
-#         fee.valid_from = term_date[0]['term_start_date']
-#         fee.valid_to = term_date[0]['term_end_date']
-#         fee.due_date = self.fees_due_date
-#         fee.program_enrollment = data[0]['name']
-#         fee.program = data[0]['program']
-#         fee.programs = data[0]['programs']
-#         fee.student_batch = data[0]['student_batch_name']
-#         fee.fee_structure = fee_structure_id
-#         ref_details = frappe.get_all("Fee Component",{"parent":fee_structure_id},['fees_category','amount','receivable_account','income_account','company','grand_fee_amount','outstanding_fees'])
-#         for i in ref_details:
-#             fee.append("components",{
-#                 'fees_category' : i['fees_category'],
-#                 'amount' : i['amount'],
-#                 'receivable_account' : i['receivable_account'],
-#                 'income_account' : i['income_account'],
-#                 'company' : i['company'],
-#                 'grand_fee_amount' : i['grand_fee_amount'],
-#                 'outstanding_fees' : i['outstanding_fees'],
-#             })
-#         fee.save()
-#         fee.submit()
+

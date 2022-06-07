@@ -142,14 +142,13 @@
   {
    "fieldname": "fees_due_date",
    "fieldtype": "Date",
-   "label": "Fees Due Date",
-   "reqd": 1
+   "label": "Fees Due Date"
   }
  ],
  "hide_toolbar": 1,
  "issingle": 1,
  "links": [],
- "modified": "2022-05-13 14:46:37.097718",
+ "modified": "2022-06-07 11:29:42.928296",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Student Reregistration Tool Fees",
