@@ -6,21 +6,13 @@ from frappe.model.document import Document
 from erpnext.accounts.utils import get_balance_on
 class PaymentRefund(Document):
 	def validate(self):
-		print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 		tot = 0
-		print(self.party)
-		refund_fee_info=frappe.get_all("GL Entry",filters=[["account","like","%Fees Refundable / Adjustable%"],["party","like",self.party]],fields=['name','credit'])
+		refund_fee_info=frappe.get_all("GL Entry",filters=[["account","like","%Fees Refundable / Adjustable%"],["party","like",self.party]],fields=['name','debit','credit'])
 		for t in refund_fee_info:
-			print(t['name'])
-			print(t['credit'])
-			tot += t['credit']
-		print(tot)
-		# self.paid_amount=self.paid_amount
-		print(refund_fee_info)
-		print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
-		# print(self.paid_amount)
-		# acc_paid_to
-
+			tot += t['credit']-t['debit']
+		for t in self.get("references"):
+			if t.allocated_amount > tot:
+				frappe.throw("Allocated Amount must be less than Refundable Amount")
 
 	def on_submit(self):
 		je = frappe.new_doc("Journal Entry")
@@ -49,6 +41,8 @@ class PaymentRefund(Document):
 			})
 		je.save()
 		je.submit()
+		# print("\n\n\n\n\n\n\n")
+		# print(je.name)
 
 @frappe.whitelist()
 def paid_from_fetch(mode_of_payment,company):
