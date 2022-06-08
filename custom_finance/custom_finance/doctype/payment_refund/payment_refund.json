@@ -27,9 +27,10 @@
   "paid_from",
   "paid_from_account_type",
   "paid_from_account_currency",
-  "paid_from_account_balance",
+  "jv_entry_voucher_no",
   "reference_section",
   "references",
+  "count_rows",
   "accounting_dimensions_section",
   "cost_center",
   "transaction_references",
@@ -145,14 +146,6 @@
    "reqd": 1
   },
   {
-   "depends_on": "paid_from",
-   "fieldname": "paid_from_account_balance",
-   "fieldtype": "Currency",
-   "label": "Account Balance",
-   "options": "paid_from_account_currency",
-   "print_hide": 1
-  },
-  {
    "fieldname": "reference_section",
    "fieldtype": "Section Break",
    "label": "Reference"
@@ -251,12 +244,26 @@
    "fieldtype": "Data",
    "label": "Vidyarthi Portal ID",
    "read_only": 1
+  },
+  {
+   "fieldname": "jv_entry_voucher_no",
+   "fieldtype": "Data",
+   "label": "JV Entry Voucher No.",
+   "read_only": 1
+  },
+  {
+   "fieldname": "count_rows",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "count_rows",
+   "print_hide": 1,
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-06-07 16:06:58.735693",
+ "modified": "2022-06-08 17:31:23.979929",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Payment Refund",

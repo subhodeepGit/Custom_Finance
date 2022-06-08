@@ -41,8 +41,9 @@ class PaymentRefund(Document):
 			})
 		je.save()
 		je.submit()
-		# print("\n\n\n\n\n\n\n")
-		# print(je.name)
+		print("\n\n\n\n\n\n\n")
+		print(je.name)
+		self.jv_entry_voucher_no=je.name
 
 @frappe.whitelist()
 def paid_from_fetch(mode_of_payment,company):
