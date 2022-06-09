@@ -74,4 +74,19 @@ frappe.ui.form.on("Payment Entry Reference Refund", "fees_category", function(fr
     }
 });
 
+frappe.ui.form.on("Payment Refund","reference_no", function(frm){
+	if(frm.doc.mode_of_payment=="IMPS" || frm.doc.mode_of_payment=="RTGS" || frm.doc.mode_of_payment=="NEFT" ){
+		frappe.call({
+			method: "custom_finance.custom_finance.validations.online_fees.paid_from_account_type",								
+			args: {
+					reference_no:frm.doc.reference_no,
+					mode_of_payment:frm.doc.mode_of_payment,
+			},
+			callback: function(r) {
+				var res=r.message;
+				frm.set_value("reference_date",res);
+			}
+		});
+	}
 
+});

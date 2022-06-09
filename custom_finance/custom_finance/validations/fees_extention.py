@@ -29,7 +29,7 @@ def recon_rtgs_neft(self):
         if self.reference_no==None:
             frappe.throw("Reference UTR No. not maintaned")
         else:
-            Recon_info=frappe.get_all("Bank Reconciliation Statement",{"unique_transaction_reference_utr":self.reference_no,"type_of_transaction":self.mode_of_payment},
+            Recon_info=frappe.get_all("Bank Reconciliation Statement",{"unique_transaction_reference_utr":self.reference_no,"type_of_transaction":self.mode_of_payment,"docstatus":1},
                                         ["name","amount","total_allocated_amount","date","party_name"])
             if len(Recon_info)!=0:
                 Recon_info=Recon_info[0]
