@@ -100,7 +100,7 @@ def create_fees(doc,fee_structure_id,on_submit=0):
     fees.academic_year= data[0]['academic_year']
     fees.academic_term=data[0]['academic_term']                 
     fees.fee_structure = fee_structure_id
-    ref_details = frappe.get_all("Fee Component",{"parent":fee_structure_id},['fees_category','amount','receivable_account','income_account','company','grand_fee_amount','outstanding_fees'])
+    ref_details = frappe.get_all("Fee Component",{"parent":fee_structure_id},['fees_category','amount','receivable_account','income_account','company','grand_fee_amount','outstanding_fees'],order_by ="idx asc")
     for i in ref_details:
         fees.append("components",{
             'fees_category' : i['fees_category'],

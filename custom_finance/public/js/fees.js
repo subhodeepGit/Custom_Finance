@@ -38,7 +38,7 @@ frappe.ui.form.on('Fees', {
 		frm.set_value("components" ,"");
 		if (frm.doc.fee_structure) {
 			frappe.call({
-				method: "erpnext.education.api.get_fee_components",
+				method: "custom_finance.custom_finance.validations.fees.py",
 				args: {
 					"fee_structure": frm.doc.fee_structure
 				},

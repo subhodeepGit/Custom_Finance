@@ -18,7 +18,8 @@ def on_submit(self,method):
 
 def on_cancel(self,method):
     cancel_fees(self)
-# creation of fee(as tool)
+# creation of fee on submit of Exam Declaration
+# (as tool)
 @frappe.whitelist()
 def make_exam_assessment_result(self):
     self.db_set("certificate_creation_status", "In Process")
@@ -57,7 +58,7 @@ def create_conduct_certificate(exam_declaration):
             result.fee_structure=fee_stu.fee_structure
             print(fee_stu.fee_structure)
             result.due_date=fee_stu.due_date
-            ref_details = frappe.get_all("Fee Component",{"parent":fee_stu.fee_structure},['fees_category','amount','receivable_account','income_account','company','grand_fee_amount','outstanding_fees'])
+            ref_details = frappe.get_all("Fee Component",{"parent":fee_stu.fee_structure},['fees_category','amount','receivable_account','income_account','company','grand_fee_amount','outstanding_fees'],order_by="idx asc")
             for i in ref_details:
                 result.append("components",{
                         'fees_category' : i['fees_category'],
@@ -77,6 +78,7 @@ def create_conduct_certificate(exam_declaration):
         created_records += 1
     frappe.msgprint("Record Created")    
 #list append/fetching data from child doctype/cancel doctype
+# Fees will be cancelled on the cancellation of Exam Declaration
 def cancel_fees(self):
     student=[]
     fee_structure_id=[]

@@ -247,6 +247,7 @@ def get_conditions(filters):
 	if filters.get("cost_center"):
 		filters.cost_center = get_cost_centers_with_children(filters.cost_center)
 		conditions.append("cost_center in %(cost_center)s")
+
 	if filters.get("voucher_no"):
 		fee_waiver_components=frappe.get_all("Fee Waiver Components",{"parent":filters.get("voucher_no")},['fee_voucher_no'])
 		fee_voucher_no=[]
@@ -262,7 +263,9 @@ def get_conditions(filters):
 		if len(payment_id)==1:	
 			conditions.append(" voucher_no='%s' "%(str(payment_id[0])))
 		else:
-			conditions.append(" voucher_no in "+str(tuple(payment_id)))
+			frappe.throw(_("No Payment Entry done yet"))
+
+
 	if filters.get("group_by") == "Group by Party" and not filters.get("party_type"):
 		conditions.append("party_type in ('Customer', 'Supplier')")
 

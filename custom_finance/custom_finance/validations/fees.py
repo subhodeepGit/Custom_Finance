@@ -121,7 +121,7 @@ def get_fees_category(doctype, txt, searchfield, start, page_len, filters):
         fltr.update({"fees_category":txt})
     
     fltr.update({"parent":filters.get("fee_structure"),"parenttype":"Fee Structure"})
-    for i in frappe.get_all("Fee Component",fltr,['fees_category']):
+    for i in frappe.get_all("Fee Component",fltr,['fees_category'],order_by="idx asc"):
         if i.fees_category not in lst:
             lst.append(i.fees_category)
     return [(d,) for d in lst]
@@ -150,3 +150,14 @@ def make_refund_fees(source_name, target_doc=None):
     }, target_doc, set_missing_values)
 
     return doclist
+@frappe.whitelist()
+def get_fee_components(fee_structure):
+	"""Returns Fee Components.
+
+	:param fee_structure: Fee Structure.
+	"""
+	if fee_structure:
+		fs = frappe.get_all("Fee Component", fields=["fees_category", "description", "amount"] , filters={"parent": fee_structure}, order_by= "idx asc")
+		return fs
+
+
