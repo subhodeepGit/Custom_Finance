@@ -4,10 +4,10 @@ import frappe,json
 from frappe.model.document import Document
 from datetime import datetime
 from frappe.utils.background_jobs import enqueue
-from ed_tec.ed_tec.utils import date_greater_than_or_equal,academic_term,semester_belongs_to_programs,get_courses_by_semester,duplicate_row_validation
+from kp_edtec.ed_tec.utils import date_greater_than_or_equal,academic_term,semester_belongs_to_programs,get_courses_by_semester,duplicate_row_validation
 from frappe.utils import flt
-from ed_tec.ed_tec.notification.custom_notification import exam_declaration_submit,exam_declaration_for_instructor_submit
-from ed_tec.ed_tec.doctype.user_permission import add_user_permission
+from kp_edtec.ed_tec.notification.custom_notification import exam_declaration_submit,exam_declaration_for_instructor_submit
+from kp_edtec.ed_tec.doctype.user_permission import add_user_permission
 from pytz import all_timezones, country_names
 from frappe.utils.data import nowtime
 from frappe.utils import cint, flt, cstr

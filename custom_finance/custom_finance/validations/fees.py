@@ -1,6 +1,6 @@
 import frappe
 from frappe.model.mapper import get_mapped_doc
-from ed_tec.ed_tec.utils import duplicate_row_validation
+from kp_edtec.ed_tec.utils import duplicate_row_validation
 
 def on_submit(doc,method):
     if doc.exam_application:
