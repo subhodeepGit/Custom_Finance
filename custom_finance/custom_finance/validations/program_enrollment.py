@@ -1,6 +1,6 @@
 import frappe
 from erpnext.accounts.general_ledger import make_reverse_gl_entries
-from kp_edtec.ed_tec.doctype.user_permission import add_user_permission,delete_ref_doctype_permissions
+from ed_tec.ed_tec.doctype.user_permission import add_user_permission,delete_ref_doctype_permissions
 
 
 #program enrollment done whether FS is there or not

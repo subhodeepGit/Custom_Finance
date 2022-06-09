@@ -1,5 +1,5 @@
 import frappe
-from kp_edtec.ed_tec.utils import duplicate_row_validation
+from ed_tec.ed_tec.utils import duplicate_row_validation
 
 def validate(doc, method):
 	validate_academic_year(doc)
