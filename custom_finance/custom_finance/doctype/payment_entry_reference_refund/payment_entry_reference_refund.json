@@ -7,6 +7,7 @@
  "field_order": [
   "fees_category",
   "account_paid_from",
+  "account_paid_to",
   "allocated_amount",
   "total_amount",
   "exchange_rate",
@@ -17,7 +18,8 @@
    "fieldname": "fees_category",
    "fieldtype": "Link",
    "label": "Fees Category",
-   "options": "Fee Category"
+   "options": "Fee Category",
+   "reqd": 1
   },
   {
    "columns": 2,
@@ -56,12 +58,18 @@
    "fieldtype": "Link",
    "label": "Account Paid From",
    "options": "Account"
+  },
+  {
+   "fieldname": "account_paid_to",
+   "fieldtype": "Link",
+   "label": "Account Paid To",
+   "options": "Account"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2022-06-03 18:22:00.635872",
+ "modified": "2022-06-10 18:21:25.015926",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Payment Entry Reference Refund",
