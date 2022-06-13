@@ -3,7 +3,16 @@
 
 frappe.ui.form.on('Payment Refund', {
 	onload: function(frm) {
+		
 		frm.set_query("account_paid_from","references", function(_doc, cdt, cdn) {
+			var d = locals[cdt][cdn];
+			return {
+				filters: {
+					'name': "Fees Refundable / Adjustable - KP",
+				}
+			};
+		});
+		frm.set_query("account_paid_to","references", function(_doc, cdt, cdn) {
 			var d = locals[cdt][cdn];
 			return {
 				filters: {
@@ -20,7 +29,22 @@ frappe.ui.form.on('Payment Refund', {
 			};
 		});
 	},
-
+	hide_n_show_child_table_fields(frm){
+		var df = frappe.meta.get_docfield("Payment Entry Reference Refund","account_paid_from", frm.doc.name);
+		df.reqd = 1
+	},
+	hide_n_show_child_table_fields1(frm){
+		var df = frappe.meta.get_docfield("Payment Entry Reference Refund","account_paid_to", frm.doc.name);
+		df.reqd = 1
+	},
+	payment_type: function(frm) {
+		if (frm.doc.payment_type=="Pay"){
+			frm.trigger("hide_n_show_child_table_fields");
+		} else if(frm.doc.payment_type == "Receive"){
+			frm.trigger("hide_n_show_child_table_fields1");
+		}
+	
+    },
 	refresh: function(frm) {
 		erpnext.toggle_naming_series();
 
@@ -50,7 +74,18 @@ frappe.ui.form.on("Payment Refund","mode_of_payment", function(frm){
 			},
 			callback: function(r) {
 				var res=r.message;
-				frm.set_value("paid_from",res);
+				if(frm.doc.payment_type == "Pay"){
+					frm.set_value("paid_to",null);
+					frm.set_value("paid_to_account_type",null);
+					frm.set_value("paid_to_account_currency",null);
+					frm.set_value("paid_from",res);
+				}
+				else if(frm.doc.payment_type == "Receive"){
+					frm.set_value("paid_from",null);
+					frm.set_value("paid_from_account_type",null);
+					frm.set_value("paid_from_account_currency",null);
+					frm.set_value("paid_to",res);
+				}
 			}
 		});
 });
