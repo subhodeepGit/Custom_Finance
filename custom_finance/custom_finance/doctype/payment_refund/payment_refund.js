@@ -43,7 +43,6 @@ frappe.ui.form.on('Payment Refund', {
 		} else if(frm.doc.payment_type == "Receive"){
 			frm.trigger("hide_n_show_child_table_fields1");
 		}
-	
     },
 	refresh: function(frm) {
 		erpnext.toggle_naming_series();
@@ -75,16 +74,16 @@ frappe.ui.form.on("Payment Refund","mode_of_payment", function(frm){
 			callback: function(r) {
 				var res=r.message;
 				if(frm.doc.payment_type == "Pay"){
-					frm.set_value("paid_to",null);
-					frm.set_value("paid_to_account_type",null);
-					frm.set_value("paid_to_account_currency",null);
-					frm.set_value("paid_from",res);
-				}
-				else if(frm.doc.payment_type == "Receive"){
 					frm.set_value("paid_from",null);
 					frm.set_value("paid_from_account_type",null);
-					frm.set_value("paid_from_account_currency",null);
+					// frm.set_value("paid_from_account_currency",null);
 					frm.set_value("paid_to",res);
+				}
+				else if(frm.doc.payment_type == "Receive"){
+					frm.set_value("paid_to",null);
+					frm.set_value("paid_to_account_type",null);
+					// frm.set_value("paid_to_account_currency",null);
+					frm.set_value("paid_from",res);
 				}
 			}
 		});

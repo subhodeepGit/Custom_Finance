@@ -36,6 +36,11 @@ class PaymentRefund(Document):
         elif self.payment_type == "Receive":
             je_receive(self)
         recon_rtgs_neft_on_submit(self)
+
+    def on_cancel(self):
+        cancel_doc = frappe.get_doc("Journal Entry",self.jv_entry_voucher_no)
+        cancel_doc.cancel()
+
         
 
 @frappe.whitelist()
@@ -101,65 +106,127 @@ def recon_rtgs_neft_on_submit(self):
             frappe.db.set_value("Payment Details Upload",st_upload_data[0]['name'],"payment_id",self.name)  
 
 
+# def je_pay(self):
+#     je = frappe.new_doc("Journal Entry")
+#     je.posting_date = self.posting_date
+#     ref_details = frappe.get_all("Payment Refund",{"name":self.name},['party_type','party','paid_from','cost_center','paid_from_account_currency'])
+#     ref_details_cd = frappe.get_all("Payment Entry Reference Refund",filters={"parent":self.name},fields=['account_paid_from','total_amount'])
+#     ################################Cash Entry###################################
+#     je.append("accounts",{
+#     'account' : ref_details[0]['paid_from'],
+#     'party_type' : ref_details[0]['party_type'],
+#     'party' : ref_details[0]['party'],
+#     'credit_in_account_currency' : ref_details_cd[0]['total_amount'],
+#     'cost_center' : ref_details[0]['cost_center'],
+#     'account_currency': ref_details[0]['paid_from_account_currency'],
+#     'balance': get_balance_on(ref_details[0]['paid_from'], self.posting_date, cost_center=ref_details[0]['cost_center'])
+#     })
+#     #################################Refundable Entry##############################
+#     je.append("accounts",{
+#     'account' : ref_details_cd[0]['account_paid_from'],
+#     'party_type' : ref_details[0]['party_type'],
+#     'party' : ref_details[0]['party'],
+#     'debit_in_account_currency' : ref_details_cd[0]['total_amount'],
+#     'cost_center' : ref_details[0]['cost_center'],
+#     'account_currency': ref_details[0]['paid_from_account_currency'],
+#     'balance': get_balance_on(ref_details_cd[0]['account_paid_from'], self.posting_date, cost_center=ref_details[0]['cost_center'])
+#     })
+#     je.save()
+#     je.submit()
+#     self.jv_entry_voucher_no=je.name
+#     frappe.db.set_value("Payment Refund",self.name,"jv_entry_voucher_no",je.name)
+
+
 def je_pay(self):
+    for d in self.get("references"):
+        t=d.total_amount
+        acc=d.account_paid_from
     je = frappe.new_doc("Journal Entry")
     je.posting_date = self.posting_date
-    ref_details = frappe.get_all("Payment Refund",{"name":self.name},['party_type','party','paid_from','cost_center','paid_from_account_currency'])
-    ref_details_cd = frappe.get_all("Payment Entry Reference Refund",filters={"parent":self.name},fields=['account_paid_from','total_amount'])
-    ################################Cash Entry###################################
     je.append("accounts",{
-    'account' : ref_details[0]['paid_from'],
-    'party_type' : ref_details[0]['party_type'],
-    'party' : ref_details[0]['party'],
-    'credit_in_account_currency' : ref_details_cd[0]['total_amount'],
-    'cost_center' : ref_details[0]['cost_center'],
-    'account_currency': ref_details[0]['paid_from_account_currency'],
-    'balance': get_balance_on(ref_details[0]['paid_from'], self.posting_date, cost_center=ref_details[0]['cost_center'])
+    'account' : self.paid_to,
+    'party_type' : self.party_type,
+    'party' : self.party,
+    'credit_in_account_currency' : t,
+    'cost_center' : self.cost_center,
+    'account_currency': self.paid_to_account_currency,
+    'balance': get_balance_on(self.paid_to, self.posting_date, cost_center=self.cost_center)
     })
-    #################################Refundable Entry##############################
+    
     je.append("accounts",{
-    'account' : ref_details_cd[0]['account_paid_from'],
-    'party_type' : ref_details[0]['party_type'],
-    'party' : ref_details[0]['party'],
-    'debit_in_account_currency' : ref_details_cd[0]['total_amount'],
-    'cost_center' : ref_details[0]['cost_center'],
-    'account_currency': ref_details[0]['paid_from_account_currency'],
-    'balance': get_balance_on(ref_details_cd[0]['account_paid_from'], self.posting_date, cost_center=ref_details[0]['cost_center'])
+    'account' : acc,
+    'party_type' : self.party_type,
+    'party' : self.party,
+    'debit_in_account_currency' : t,
+    'cost_center' : self.cost_center,
+    'account_currency': self.paid_to_account_currency,
+    'balance': get_balance_on(acc, self.posting_date, cost_center=self.cost_center)
     })
     je.save()
     je.submit()
     self.jv_entry_voucher_no=je.name
     frappe.db.set_value("Payment Refund",self.name,"jv_entry_voucher_no",je.name)
+
+
+
+# def je_receive(self):
+#     je = frappe.new_doc("Journal Entry")
+#     je.posting_date = self.posting_date
+#     ref_details = frappe.get_all("Payment Refund",{"name":self.name},['party_type','party','paid_to','cost_center','paid_to_account_currency'])
+#     ref_details_cd = frappe.get_all("Payment Entry Reference Refund",filters={"parent":self.name},fields=['account_paid_to','total_amount'])
+#     ################################Cash Entry###################################
+#     je.append("accounts",{
+#     'account' : ref_details_cd[0]['account_paid_to'],
+#     'party_type' : ref_details[0]['party_type'],
+#     'party' : ref_details[0]['party'],
+#     'credit_in_account_currency' : ref_details_cd[0]['total_amount'],
+#     'cost_center' : ref_details[0]['cost_center'],
+#     'account_currency': ref_details[0]['paid_to_account_currency'],
+#     'balance': get_balance_on(ref_details_cd[0]['account_paid_to'], self.posting_date, cost_center=ref_details[0]['cost_center'])
+#     })
+#     #################################Refundable Entry##############################
+#     je.append("accounts",{
+#     'account' : ref_details[0]['paid_to'],
+#     'party_type' : ref_details[0]['party_type'],
+#     'party' : ref_details[0]['party'],
+#     'debit_in_account_currency' : ref_details_cd[0]['total_amount'],
+#     'cost_center' : ref_details[0]['cost_center'],
+#     'account_currency': ref_details[0]['paid_to_account_currency'],
+#     'balance': get_balance_on(ref_details[0]['paid_to'], self.posting_date, cost_center=ref_details[0]['cost_center'])
+#     })
+#     je.save()
+#     je.submit()
+#     self.jv_entry_voucher_no=je.name
+#     frappe.db.set_value("Payment Refund",self.name,"jv_entry_voucher_no",je.name)
 
 
 def je_receive(self):
+    for d in self.get("references"):
+        t=d.total_amount
+        acc=d.account_paid_to
     je = frappe.new_doc("Journal Entry")
     je.posting_date = self.posting_date
-    ref_details = frappe.get_all("Payment Refund",{"name":self.name},['party_type','party','paid_to','cost_center','paid_to_account_currency'])
-    ref_details_cd = frappe.get_all("Payment Entry Reference Refund",filters={"parent":self.name},fields=['account_paid_to','total_amount'])
-    ################################Cash Entry###################################
     je.append("accounts",{
-    'account' : ref_details_cd[0]['account_paid_to'],
-    'party_type' : ref_details[0]['party_type'],
-    'party' : ref_details[0]['party'],
-    'credit_in_account_currency' : ref_details_cd[0]['total_amount'],
-    'cost_center' : ref_details[0]['cost_center'],
-    'account_currency': ref_details[0]['paid_to_account_currency'],
-    'balance': get_balance_on(ref_details_cd[0]['account_paid_to'], self.posting_date, cost_center=ref_details[0]['cost_center'])
+    'account' : self.paid_from,
+    'party_type' : self.party_type,
+    'party' : self.party,
+    'debit_in_account_currency' : t,
+    'cost_center' : self.cost_center,
+    'account_currency': self.paid_from_account_currency,
+    'balance': get_balance_on(self.paid_from, self.posting_date, cost_center=self.cost_center)
     })
-    #################################Refundable Entry##############################
+    
     je.append("accounts",{
-    'account' : ref_details[0]['paid_to'],
-    'party_type' : ref_details[0]['party_type'],
-    'party' : ref_details[0]['party'],
-    'debit_in_account_currency' : ref_details_cd[0]['total_amount'],
-    'cost_center' : ref_details[0]['cost_center'],
-    'account_currency': ref_details[0]['paid_to_account_currency'],
-    'balance': get_balance_on(ref_details[0]['paid_to'], self.posting_date, cost_center=ref_details[0]['cost_center'])
+    'account' : acc,
+    'party_type' : self.party_type,
+    'party' : self.party,
+    'credit_in_account_currency' : t,
+    'cost_center' : self.cost_center,
+    'account_currency': self.paid_from_account_currency,
+    'balance': get_balance_on(acc, self.posting_date, cost_center=self.cost_center)
     })
     je.save()
     je.submit()
     self.jv_entry_voucher_no=je.name
     frappe.db.set_value("Payment Refund",self.name,"jv_entry_voucher_no",je.name)
-
 
