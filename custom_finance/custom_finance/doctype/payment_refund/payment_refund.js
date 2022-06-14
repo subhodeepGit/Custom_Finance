@@ -79,6 +79,24 @@ frappe.ui.form.on('Payment Refund', {
             frm.set_df_property('references', 'cannot_delete_rows', true);
 		}
 	},
+	after_save: function(frm) {
+		if (frm.doc.payment_type == "Receive"){
+			var df = frappe.meta.get_docfield("Payment Entry Reference Refund","account_paid_from", frm.doc.name);
+			df.read_only = 1
+			df.reqd = 0
+			var df1 = frappe.meta.get_docfield("Payment Entry Reference Refund","account_paid_to", frm.doc.name);
+			df1.read_only = 0
+			df1.reqd = 1
+		} else if (frm.doc.payment_type == "Pay"){
+			var df = frappe.meta.get_docfield("Payment Entry Reference Refund","account_paid_to", frm.doc.name);
+			df.read_only = 1
+			df.reqd = 0
+			var df1 = frappe.meta.get_docfield("Payment Entry Reference Refund","account_paid_from", frm.doc.name);
+			df1.read_only = 0
+			df1.reqd = 1
+		}
+
+	},
 	refresh: function(frm) {
 		erpnext.toggle_naming_series();
 
