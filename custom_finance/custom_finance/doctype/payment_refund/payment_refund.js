@@ -3,7 +3,8 @@
 
 frappe.ui.form.on('Payment Refund', {
 	onload: function(frm) {
-		
+		frm.set_df_property('references', 'cannot_add_rows', true);
+		frm.set_df_property('references', 'cannot_delete_rows', true);
 		frm.set_query("account_paid_from","references", function(_doc, cdt, cdn) {
 			var d = locals[cdt][cdn];
 			return {
@@ -29,21 +30,55 @@ frappe.ui.form.on('Payment Refund', {
 			};
 		});
 	},
-	hide_n_show_child_table_fields(frm){
-		var df = frappe.meta.get_docfield("Payment Entry Reference Refund","account_paid_from", frm.doc.name);
-		df.reqd = 1
-	},
-	hide_n_show_child_table_fields1(frm){
-		var df = frappe.meta.get_docfield("Payment Entry Reference Refund","account_paid_to", frm.doc.name);
-		df.reqd = 1
-	},
 	payment_type: function(frm) {
-		if (frm.doc.payment_type=="Pay"){
-			frm.trigger("hide_n_show_child_table_fields");
-		} else if(frm.doc.payment_type == "Receive"){
-			frm.trigger("hide_n_show_child_table_fields1");
+		if (frm.doc.payment_type == "Receive"){	
+			var df = frappe.meta.get_docfield("Payment Entry Reference Refund","account_paid_from", frm.doc.name);
+			df.read_only = 1
+			df.reqd = 0
+			frm.clear_table("references");
+			frm.refresh_field('references');
+			frm.refresh_field('account_paid_to');
+			frm.refresh_field('account_paid_from');
+			frm.set_df_property('references', 'cannot_add_rows', false);
+            frm.set_df_property('references', 'cannot_delete_rows', false);
+			var df1 = frappe.meta.get_docfield("Payment Entry Reference Refund","account_paid_to", frm.doc.name);
+			df1.read_only = 0
+			df1.reqd = 1		
+			frm.clear_table("references");
+			frm.refresh_field('references');
+			frm.refresh_field('account_paid_to');
+			frm.refresh_field('account_paid_from');
+			frm.set_df_property('references', 'cannot_add_rows', false);
+            frm.set_df_property('references', 'cannot_delete_rows', false);
+		} else if (frm.doc.payment_type == "Pay"){
+			var df = frappe.meta.get_docfield("Payment Entry Reference Refund","account_paid_to", frm.doc.name);
+			df.read_only = 1
+			df.reqd = 0
+			frm.clear_table("references");
+			frm.refresh_field('references');
+			frm.refresh_field('account_paid_to');
+			frm.refresh_field('account_paid_from');
+			frm.set_df_property('references', 'cannot_add_rows', false);
+            frm.set_df_property('references', 'cannot_delete_rows', false);
+			var df1 = frappe.meta.get_docfield("Payment Entry Reference Refund","account_paid_from", frm.doc.name);
+			df1.read_only = 0
+			df1.reqd = 1	
+			frm.clear_table("references");
+			frm.refresh_field('references');
+			frm.refresh_field('account_paid_to');
+			frm.refresh_field('account_paid_from');
+			frm.set_df_property('references', 'cannot_add_rows', false);
+            frm.set_df_property('references', 'cannot_delete_rows', false);
 		}
-    },
+		else if (frm.doc.payment_type == ""){
+			frm.clear_table("references");
+			frm.refresh_field('references');
+			frm.refresh_field('account_paid_to');
+			frm.refresh_field('account_paid_from');
+			frm.set_df_property('references', 'cannot_add_rows', true);
+            frm.set_df_property('references', 'cannot_delete_rows', true);
+		}
+	},
 	refresh: function(frm) {
 		erpnext.toggle_naming_series();
 

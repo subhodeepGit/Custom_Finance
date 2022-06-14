@@ -1,6 +1,7 @@
 # Copyright (c) 2022, SOUL and contributors
 # For license information, please see license.txt
 
+from jinja2 import Undefined
 import frappe
 from frappe.model.document import Document
 from erpnext.accounts.utils import get_balance_on
@@ -27,6 +28,13 @@ class PaymentRefund(Document):
                 frappe.throw("Outstanding Amount is present for this party. Please clear the Outstanding Amount first!")
             else:
                 pass
+        # print("\n\n\n\n\n\n\n\n")
+        # print(len(self.get("references")))
+        if(self.get("references") == []):
+            frappe.throw("Please fill the Payment References table")
+        for d in self.get("references"):
+            if d.allocated_amount < 0:
+                frappe.throw("Allocated amount cannot be negative")
 
 
 
