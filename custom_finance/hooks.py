@@ -218,9 +218,6 @@ user_data_fields = [
 	}
 ]
 
-# fixtures = [
-#     {"dt": "Mode of Payment"},
-# ]
 
 # Authentication and authorization
 # --------------------------------
@@ -229,3 +226,19 @@ user_data_fields = [
 # 	"custom_finance.auth.validate"
 # ]
 
+# fixtures = [
+# 	{"dt": "Custom DocPerm", "filters": [
+# 		[
+# 			"parent", "not in", [
+# 				"DocType"
+# 			]
+# 		]
+# 	]},
+#     {"dt": "Role"},
+#     {"dt": "Role Profile"},
+#     {"dt": "Module Profile"},
+# ]
+after_migrate = [
+        'custom_finance.patches.migrate_patch.add_roles',
+        'custom_finance.patches.migrate_patch.set_custom_role_permission',
+]

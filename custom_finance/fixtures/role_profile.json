@@ -1,0 +1,98 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2021-12-13 22:44:52.544054",
+  "name": "Student",
+  "parent": null,
+  "parentfield": null,
+  "parenttype": null,
+  "role_profile": "Student",
+  "roles": [
+   {
+    "parent": "Student",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Student"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2022-05-16 16:29:58.804413",
+  "name": "Education Administrator",
+  "parent": null,
+  "parentfield": null,
+  "parenttype": null,
+  "role_profile": "Education Administrator",
+  "roles": [
+   {
+    "parent": "Education Administrator",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Education Administrator"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2021-12-13 23:58:16.012231",
+  "name": "Employee Role",
+  "parent": null,
+  "parentfield": null,
+  "parenttype": null,
+  "role_profile": "Employee Role",
+  "roles": [
+   {
+    "parent": "Employee Role",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Instructor"
+   },
+   {
+    "parent": "Employee Role",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2022-06-14 14:57:26.942800",
+  "name": "Accounts User",
+  "parent": null,
+  "parentfield": null,
+  "parenttype": null,
+  "role_profile": "Accounts User",
+  "roles": [
+   {
+    "parent": "Accounts User",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Accounts User"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2022-06-14 16:14:52.383328",
+  "name": "Accounts Officer",
+  "parent": null,
+  "parentfield": null,
+  "parenttype": null,
+  "role_profile": "Accounts Officer",
+  "roles": [
+   {
+    "parent": "Accounts Officer",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Accounts Manager"
+   }
+  ]
+ }
+]
