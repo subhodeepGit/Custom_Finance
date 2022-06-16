@@ -3,7 +3,7 @@ frappe.ui.form.on('Fee Structure', {
         frm.clear_table("course_wise_fees");
         if (frm.doc.program){
                 frappe.call({
-                    method: "ed_tec.ed_tec.doctype.fee_structure.get_courses",
+                    method: "kp_edtec.kp_edtec.doctype.fee_structure.get_courses",
                     args: {
                         program: frm.doc.program,
                     },
@@ -29,7 +29,7 @@ frappe.ui.form.on('Fee Structure', {
     },
   //   refresh(frm){
   //       frappe.call({
-		// 	method: "ed_tec.ed_tec.doctype.fee_structure.get_fee_types",
+		// 	method: "kp_edtec.kp_edtec.doctype.fee_structure.get_fee_types",
 		// 	callback: function(r) {
 		// 		frm.set_df_property("fee_type", "options", r.message);
 		// 	}

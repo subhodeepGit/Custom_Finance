@@ -46,7 +46,7 @@ frappe.ui.form.on('Student Reregistration Tool Fees', {
 		frm.set_query("additional_course_1","students", function(frm, cdt, cdn) {
 			var d = locals[cdt][cdn];
 			return {
-				query: 'ed_tec.ed_tec.doctype.student_reregistration_tool.student_reregistration_tool.get_optional_courses',
+				query: 'kp_edtec.kp_edtec.doctype.student_reregistration_tool.student_reregistration_tool.get_optional_courses',
 				filters: {
 					"new_semester":frm.new_semester,
 				    "additional_course_2":d.additional_course_2,
@@ -57,7 +57,7 @@ frappe.ui.form.on('Student Reregistration Tool Fees', {
 		frm.set_query("additional_course_2","students", function(frm, cdt, cdn) {
 			var d = locals[cdt][cdn];
 			return {
-				query: 'ed_tec.ed_tec.doctype.student_reregistration_tool.student_reregistration_tool.get_optional_courses',
+				query: 'kp_edtec.kp_edtec.doctype.student_reregistration_tool.student_reregistration_tool.get_optional_courses',
 				filters: {
 					"new_semester":frm.new_semester,
 				    "additional_course_1":d.additional_course_1,
@@ -68,7 +68,7 @@ frappe.ui.form.on('Student Reregistration Tool Fees', {
 		frm.set_query("additional_course_3","students", function(frm, cdt, cdn) {
 			var d = locals[cdt][cdn];
 			return {
-				query: 'ed_tec.ed_tec.doctype.student_reregistration_tool.student_reregistration_tool.get_optional_courses',
+				query: 'kp_edtec.kp_edtec.doctype.student_reregistration_tool.student_reregistration_tool.get_optional_courses',
 				filters: {
 					"new_semester":frm.new_semester,
 				    "additional_course_1":d.additional_course_1,
