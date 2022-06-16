@@ -65,14 +65,19 @@ frappe.ui.form.on('Fees', {
 
 	//////////////////////////// end of my Code //////////////////////////
     refresh(frm){
-        if(frm.doc.docstatus===1 && frm.doc.outstanding_amount==0) {
+        if( frappe.user.has_role(["Accounts User","Student"]) && !frappe.user.has_role(["Education Administrator"])){
+            frm.remove_custom_button(__("Return/Refund"));
+        }
+        else if(frm.doc.docstatus===1 && frm.doc.outstanding_amount==0) {
 			frm.add_custom_button(__("Return/Refund"), function() {
                 frappe.model.open_mapped_doc({
-					method: "kp_edtec.kp_edtec.doctype.fees.make_refund_fees",
+					method: "ed_tec.ed_tec.doctype.fees.make_refund_fees",
 					frm: frm,
 				});
 			});
 		}
+        else{
+        }
         if(frm.doc.docstatus > 0) {
 			frm.add_custom_button(__('General Ledger w/ Cancellation'), function() {
 				frappe.route_options = {
@@ -387,6 +392,16 @@ frappe.ui.form.on('Fees', {
   			frm.remove_custom_button('Payment Request','Create');
         }
 	}
+
+
+);
+frappe.ui.form.on('Fees', {
+    onload:function(frm) {
+		if(frappe.user.has_role(["Accounts User","Student"]) && !frappe.user.has_role(["Education Administrator"])){
+  			frm.remove_custom_button('Payment','Create');
+        }
+	}
+}
 
 
 );
