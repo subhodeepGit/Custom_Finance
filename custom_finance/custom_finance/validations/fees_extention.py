@@ -8,7 +8,7 @@ def validate(self,method):
     allocation_amount(self)
     if self.mode_of_payment=="Fees Refundable / Adjustable":   
         refundable_amount(self)
-    calucate_total(self)  
+    calucate_total(self) 
 
 def on_update(self,method):
     pass
@@ -224,25 +224,38 @@ def refundable_fees_outsatnding(self,cancel):
 
 def refundable_amount(self):
     student=self.party
-    gl_entry_fees=frappe.db.get_all("GL Entry",filters=[["party","=",student],["voucher_type","=",'Payment Entry'],['against_voucher_type','=','Fees'],['account','like','%Fees Refundable / Adjustable%']],
-                                 fields=["name","voucher_type","account","credit",'voucher_no'])
+    gl_entry_fees=frappe.db.get_all("GL Entry",filters=[["party","=",student],["voucher_type","=",'Payment Entry'],['against_voucher_type','=','Fees'],
+                            ['account','like','%Fees Refundable / Adjustable%'],["is_cancelled","=",0]],fields=["name","voucher_type","account","credit",'voucher_no'])
                         
-    gl_entry_payment=frappe.db.get_all("GL Entry",filters=[["against","=",student],['voucher_type',"=","Payment Entry"],['account','like','%Fees Refundable / Adjustable %']],
-                            fields=["name","voucher_type","account","debit",'voucher_no'])
-                            
+    gl_entry_payment=frappe.db.get_all("GL Entry",filters=[["against","=",student],['voucher_type',"=","Payment Entry"],['account','like','%Fees Refundable / Adjustable %'],
+                                    ["is_cancelled","=",0]],fields=["name","voucher_type","account","debit",'voucher_no'])
+    gl_entry_payment_refund=frappe.db.get_all("GL Entry",filters=[["against","=",student],['voucher_type',"=","Journal Entry"],['account','like','%Fees Refundable / Adjustable %'],
+                                            ["is_cancelled","=",0]],fields=["name","voucher_type","account","credit",'debit','voucher_no']) 
+    ########################### Journal Entry
+    recev_amount=0
+    paid_amount=0
+    for t in gl_entry_payment_refund:
+        if t["debit"]!=0:
+            paid_amount=paid_amount+t["debit"]
+        if t["credit"]!=0:
+            recev_amount=recev_amount+t["credit"]
+
+    ############################### Fees type payment for Fees Refundable / Adjustable
     extra_amount_paid=0
     for t in gl_entry_fees:
         extra_amount_paid=extra_amount_paid+t['credit']
+    extra_amount_paid=extra_amount_paid+recev_amount
 
+    ################################## Adjustment voucher payment entry
     ref_amount_adjusted=0    
     for t in gl_entry_payment:
         ref_amount_adjusted=ref_amount_adjusted+t['debit']
 
-    total_ref_amount_adjusted=ref_amount_adjusted+self.paid_amount
-
+    total_ref_amount_adjusted=ref_amount_adjusted+self.total_allocated_amount+paid_amount
+    ##################################################################
     adjusted_amount=extra_amount_paid-total_ref_amount_adjusted
     if adjusted_amount>0:
-        if extra_amount_paid >= self.paid_amount:
+        if extra_amount_paid >= self.total_allocated_amount:
             pass
         # elif extra_amount_paid <= self.paid_amount:
         #     total_paid_amount=0
