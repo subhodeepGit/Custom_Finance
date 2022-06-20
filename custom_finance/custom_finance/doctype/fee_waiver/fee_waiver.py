@@ -755,8 +755,11 @@ def get_program_enrollment(student):
 
 @frappe.whitelist()
 def get_outstanding_fees(args):
+
 	if isinstance(args, string_types):
 		args = json.loads(args)
+	print("\n\n\n\n\n")
+	print(args.get('Clearing'))		
 	################ Fee Component
 	filter=[]
 
@@ -795,6 +798,6 @@ def get_outstanding_fees(args):
 
 	if not data:
 		frappe.msgprint(_("No outstanding invoices found for the {0} {1} which qualify the filters you have specified.")
-			.format(_(args.get("party_type")).lower(), frappe.bold(args.get("party"))))
+			.format(_(args.get("party_type")), frappe.bold(args.get("party"))))
 
 	return data		
