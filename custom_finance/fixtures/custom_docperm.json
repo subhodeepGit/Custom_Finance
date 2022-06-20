@@ -6023,7 +6023,7 @@
  {
   "amend": 0,
   "cancel": 0,
-  "create": 0,
+  "create": 1,
   "delete": 0,
   "docstatus": 0,
   "doctype": "Custom DocPerm",
@@ -6039,13 +6039,13 @@
   "permlevel": 0,
   "print": 0,
   "read": 1,
-  "report": 0,
+  "report": 1,
   "role": "Accounts User",
   "select": 0,
   "set_user_permissions": 0,
   "share": 0,
-  "submit": 0,
-  "write": 0
+  "submit": 1,
+  "write": 1
  },
  {
   "amend": 1,
@@ -73955,7 +73955,7 @@
  {
   "amend": 0,
   "cancel": 0,
-  "create": 0,
+  "create": 1,
   "delete": 0,
   "docstatus": 0,
   "doctype": "Custom DocPerm",
@@ -73976,8 +73976,8 @@
   "select": 0,
   "set_user_permissions": 0,
   "share": 0,
-  "submit": 0,
-  "write": 0
+  "submit": 1,
+  "write": 1
  },
  {
   "amend": 0,
