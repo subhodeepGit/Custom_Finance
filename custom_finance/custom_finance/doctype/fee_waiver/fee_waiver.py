@@ -670,8 +670,6 @@ def set_as_cancel_payment(voucher_type, voucher_no):
 		(now(), frappe.session.user, voucher_type, voucher_no))
 
 def make_entry(args, adv_adj, update_outstanding, from_repost=False):
-	print("\n\n\n\n\n\n\n")
-	print(args)
 	gle = frappe.new_doc("GL Entry")
 	gle.update(args)
 	gle.flags.ignore_permissions = 1
