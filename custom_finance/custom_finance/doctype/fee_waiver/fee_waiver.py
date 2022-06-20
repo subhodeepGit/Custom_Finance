@@ -670,6 +670,8 @@ def set_as_cancel_payment(voucher_type, voucher_no):
 		(now(), frappe.session.user, voucher_type, voucher_no))
 
 def make_entry(args, adv_adj, update_outstanding, from_repost=False):
+	print("\n\n\n\n\n\n\n")
+	print(args)
 	gle = frappe.new_doc("GL Entry")
 	gle.update(args)
 	gle.flags.ignore_permissions = 1
@@ -758,20 +760,25 @@ def get_outstanding_fees(args):
 
 	if isinstance(args, string_types):
 		args = json.loads(args)
-	print("\n\n\n\n\n")
-	print(args.get('Clearing'))		
 	################ Fee Component
 	filter=[]
 
 	filter.append(["Student","=",args.get('party')])
 	filter.append(['posting_date', 'between',[args.get('from_posting_date'),args.get('to_posting_date')]])
-	filter.append(["outstanding_amount",">",0])	
+	if args.get('Clearing')=='Non Paid Item':
+		filter.append(["outstanding_amount",">",0])
+	if args.get('Clearing')=='Paid Item':
+		filter.append(["outstanding_amount","=",0])		
+
 	filter.append(["docstatus","=",1])
 
-	if args.get('outstanding_amt_greater_than') > 0:
-		filter.append(["outstanding_amount",">",args.get('outstanding_amt_greater_than')])
-	if args.get('outstanding_amt_less_than') >0:
-		filter.append(["outstanding_amount","<",args.get('outstanding_amt_less_than')])	
+	if args.get('Clearing')=='Non Paid Item':
+		if args.get('outstanding_amt_greater_than') > 0:
+			filter.append(["outstanding_amount",">",args.get('outstanding_amt_greater_than')])
+		if args.get('outstanding_amt_less_than') >0:
+			filter.append(["outstanding_amount","<",args.get('outstanding_amt_less_than')])	
+
+
 	if args.get('cost_center'):
 		filter.append(['cost_center',"=",args.get('cost_center')])	
 	
@@ -779,20 +786,20 @@ def get_outstanding_fees(args):
 		filter.append(['valid From','between',[args.get('from_due_date'),args.get('to_due_date')]])
 		filter.append(['valid_to','between',[args.get('from_due_date'),args.get('to_due_date')]])
 
+
 	fees_info=frappe.db.get_all("Fees",filter,['name','posting_date'])
 	######################### end fees
 	fee_component_info=[]
 	for t in fees_info:
-
 		fee_component=frappe.db.get_all("Fee Component", {"parent":t['name']},
 									["name","fees_category","outstanding_fees","receivable_account","income_account","amount","description",
 									'grand_fee_amount','percentage','total_waiver_amount','waiver_type','waiver_amount'])
 		for j in fee_component:
-			if j["outstanding_fees"]>0:	
-				j['posting_date']=t['posting_date']
-				j['Type']='Fees'
-				j['fee_voucher_no']=t['name']
-				fee_component_info.append(j)	
+			# if j["outstanding_fees"]>0:	
+			j['posting_date']=t['posting_date']
+			j['Type']='Fees'
+			j['fee_voucher_no']=t['name']
+			fee_component_info.append(j)	
 	data=fee_component_info
 	# fee_component_info [{'name': '46914acb77', 'fees_category': 'Development Fees', 'outstanding_fees': 5800.0, 'receivable_account': 'Development Fees - KP', 'income_account': 'Development Fees Income - KP', 'amount': 5800.0, 'posting_date': datetime.date(2022, 4, 27), 'Type': 'Fees', 'reference_name': 'EDU-FEE-2022-00051'}, {'name': '21f7da294d', 'fees_category': 'Development Fees', 'outstanding_fees': 5800.0, 'receivable_account': 'Development Fees - KP', 'income_account': 'Development Fees Income - KP', 'amount': 5800.0, 'posting_date': datetime.date(2022, 4, 21), 'Type': 'Fees', 'reference_name': 'EDU-FEE-2022-00010'}]
 
@@ -800,4 +807,4 @@ def get_outstanding_fees(args):
 		frappe.msgprint(_("No outstanding invoices found for the {0} {1} which qualify the filters you have specified.")
 			.format(_(args.get("party_type")), frappe.bold(args.get("party"))))
 
-	return data		
+	return data

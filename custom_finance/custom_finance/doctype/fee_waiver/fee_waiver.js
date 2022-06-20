@@ -152,7 +152,7 @@ frappe.ui.form.on('Fee Waiver', {
 
 			
 			{fieldtype:"Section Break",label: __("Outstanding Amount Filter")},
-			{fieldtype:"Select",options: ['All Item', 'Paid Item', 'Non Paid Item'].join('\n'), fieldname:'Clearing', label:__('Clearing'),default:"Non Paid Item"},
+			{fieldtype:"Select",options: ['All Item', 'Paid Item', 'Non Paid Item'].join('\n'), fieldname:'Clearing', label:__('Clearing Item'),default:"All Item"},
 			{fieldtype:"Column Break"},
 		];
 
