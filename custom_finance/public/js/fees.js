@@ -65,7 +65,7 @@ frappe.ui.form.on('Fees', {
 
 	//////////////////////////// end of my Code //////////////////////////
     refresh(frm){
-        if( frappe.user.has_role(["Accounts User","Student"]) && !frappe.user.has_role(["Education Administrator"])){
+        if( frappe.user.has_role(["Student"]) && !frappe.user.has_role(["Education Administrator"])){
             frm.remove_custom_button(__("Return/Refund"));
         }
         else if(frm.doc.docstatus===1 && frm.doc.outstanding_amount==0) {
@@ -397,7 +397,7 @@ frappe.ui.form.on('Fees', {
 );
 frappe.ui.form.on('Fees', {
     onload:function(frm) {
-		if(frappe.user.has_role(["Accounts User","Student"]) && !frappe.user.has_role(["Education Administrator"])){
+		if(frappe.user.has_role(["Student"]) && !frappe.user.has_role(["Education Administrator"])){
   			frm.remove_custom_button('Payment','Create');
         }
 	}
