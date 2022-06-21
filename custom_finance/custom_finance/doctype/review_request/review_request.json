@@ -1,0 +1,110 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2022-06-21 11:12:13.111897",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "emp_id",
+  "emp_code",
+  "emp_name",
+  "doc_type_names",
+  "document_name",
+  "posting_date",
+  "remarks",
+  "status"
+ ],
+ "fields": [
+  {
+   "fetch_from": "emp_id.employee_name",
+   "fieldname": "emp_name",
+   "fieldtype": "Data",
+   "label": "Emp Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "document_name",
+   "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
+   "label": "Document Name",
+   "options": "doc_type_names",
+   "reqd": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Text",
+   "in_list_view": 1,
+   "label": "Remarks ",
+   "reqd": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "emp_id",
+   "fieldtype": "Link",
+   "label": "Emp ID",
+   "options": "Employee",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "emp_id.employee_number",
+   "fieldname": "emp_code",
+   "fieldtype": "Data",
+   "label": "Emp Code",
+   "read_only": 1
+  },
+  {
+   "fieldname": "doc_type_names",
+   "fieldtype": "Link",
+   "label": "Doc Type Names",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Doc No",
+   "options": "RR-.YYYY.-"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2022-06-21 15:47:43.526116",
+ "modified_by": "Administrator",
+ "module": "Custom Finance",
+ "name": "Review Request",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1,
+ "track_seen": 1,
+ "track_views": 1
+}
