@@ -37,6 +37,8 @@
   "count_rows",
   "accounting_dimensions_section",
   "cost_center",
+  "bank_draft_id",
+  "bank_draft_references",
   "transaction_references",
   "reference_no",
   "column_break_34",
@@ -181,7 +183,6 @@
   },
   {
    "bold": 1,
-   "depends_on": "eval:doc.paid_from",
    "fieldname": "reference_no",
    "fieldtype": "Data",
    "label": "Cheque/Reference No",
@@ -192,7 +193,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "depends_on": "eval:doc.paid_from",
    "fieldname": "reference_date",
    "fieldtype": "Date",
    "label": "Cheque/Reference Date",
@@ -301,12 +301,24 @@
    "label": "Account Currency",
    "options": "Currency",
    "print_hide": 1
+  },
+  {
+   "depends_on": "eval:doc.mode_of_payment=='Bank Draft'",
+   "fieldname": "bank_draft_id",
+   "fieldtype": "Section Break",
+   "label": "Bank Draft ID"
+  },
+  {
+   "fieldname": "bank_draft_references",
+   "fieldtype": "Table",
+   "label": "Bank Draft References",
+   "options": "Bank Draft Reference"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-06-14 16:27:16.875063",
+ "modified": "2022-06-22 16:11:51.674610",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Payment Refund",
