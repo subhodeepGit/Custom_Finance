@@ -11,12 +11,21 @@ frappe.ui.form.on('Auto Reconciliation', {
 				"date": frm.doc.data_of_clearing,
 				"type_of_transaction":frm.doc.type_of_transaction
 			},
-			// callback: function(r) {
-			// 	if(r.message){
-			// 		var utr=r.message;
-			// 		frm.set_value("reference_no",utr)
-			// 	}
-			// }
+			callback: function(r) {
+				// alert(r.message)
+				if(r.message){
+					frappe.model.clear_table(frm.doc, 'student_reference');
+					(r.message).forEach(element => {
+						var c = frm.add_child("student_reference")
+						c.student=element.student
+						c.student_name=element.student_name
+						c.utr_no=element.unique_transaction_reference_utr
+						c.amount=element.amount
+					});
+				}
+				frm.refresh();
+				frm.refresh_field("student_reference")
+			}
 		})
 	}
 });

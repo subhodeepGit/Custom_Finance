@@ -25,13 +25,12 @@
    "fieldname": "student_reference",
    "fieldtype": "Table",
    "label": "Student Reference",
-   "options": "Auto Reconciliation child",
-   "read_only": 1
+   "options": "Auto Reconciliation child"
   },
   {
    "fieldname": "get_studnet",
    "fieldtype": "Button",
-   "label": "Get Studnet"
+   "label": "Get Students"
   },
   {
    "fieldname": "section_break_3",
@@ -56,7 +55,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-06-22 15:35:09.765182",
+ "modified": "2022-06-23 11:03:40.217193",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Auto Reconciliation",

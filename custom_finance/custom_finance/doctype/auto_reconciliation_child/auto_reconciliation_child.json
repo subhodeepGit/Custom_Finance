@@ -11,8 +11,8 @@
   "utr_no",
   "amount",
   "outstanding_amount",
-  "remaks",
-  "reconciliation_status"
+  "reconciliation_status",
+  "remarks"
  ],
  "fields": [
   {
@@ -42,12 +42,6 @@
    "label": "Amount"
   },
   {
-   "fieldname": "remaks",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Remaks"
-  },
-  {
    "default": "0",
    "fieldname": "reconciliation_status",
    "fieldtype": "Check",
@@ -58,12 +52,17 @@
    "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Outstanding Amount"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Data",
+   "label": "Remarks"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2022-06-22 08:37:06.561336",
+ "modified": "2022-06-23 10:43:48.896342",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Auto Reconciliation child",
