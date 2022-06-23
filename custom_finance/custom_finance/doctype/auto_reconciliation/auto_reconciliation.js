@@ -2,6 +2,10 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Auto Reconciliation', {
+	onload: function(frm) {
+		frm.set_df_property('student_reference', 'cannot_add_rows', true);
+		frm.set_df_property('student_reference', 'cannot_delete_rows', true);
+	},
 	get_studnet: function(frm) {
 		frm.clear_table("student_reference");
 		frappe.call({
@@ -30,4 +34,5 @@ frappe.ui.form.on('Auto Reconciliation', {
 			}
 		})
 	}
+	
 });
