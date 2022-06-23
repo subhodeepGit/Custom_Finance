@@ -1,11 +1,13 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "naming_series:",
  "creation": "2022-06-22 13:15:06.410942",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "naming_series",
   "data_of_clearing",
   "type_of_transaction",
   "get_studnet",
@@ -49,13 +51,20 @@
    "fieldname": "type_of_transaction",
    "fieldtype": "Select",
    "label": "Type of Transaction",
-   "options": "\nRTGS\nNEFT\nIMPS"
+   "options": "\nRTGS\nNEFT\nIMPS",
+   "reqd": 1
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Doc No",
+   "options": "Auto-.YYYY.-"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-06-23 11:03:40.217193",
+ "modified": "2022-06-23 15:11:53.560913",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Auto Reconciliation",

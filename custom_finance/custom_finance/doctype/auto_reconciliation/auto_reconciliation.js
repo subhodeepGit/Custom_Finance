@@ -3,7 +3,6 @@
 
 frappe.ui.form.on('Auto Reconciliation', {
 	get_studnet: function(frm) {
-		alert("ok")
 		frm.clear_table("student_reference");
 		frappe.call({
 			method: "custom_finance.custom_finance.doctype.auto_reconciliation.auto_reconciliation.get_fees",                
@@ -21,6 +20,9 @@ frappe.ui.form.on('Auto Reconciliation', {
 						c.student_name=element.student_name
 						c.utr_no=element.unique_transaction_reference_utr
 						c.amount=element.amount
+						c.outstanding_amount=element.outstanding_amount
+						c.reconciliation_status=element.reconciliation_status
+						c.remarks=element.remarks
 					});
 				}
 				frm.refresh();
