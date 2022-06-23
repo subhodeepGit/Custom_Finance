@@ -3,13 +3,39 @@
 
 from dataclasses import fields
 import frappe
+from frappe import _
 from frappe.model.document import Document
+from frappe.utils.background_jobs import enqueue
 
 class AutoReconciliation(Document):
 	def validate(self):
 		student_reference=self.get("student_reference")
 		if not student_reference:
 			frappe.throw("No record found in Student Reference Table")
+	
+	@frappe.whitelist()		
+	def create_payment_entry(self):
+		self.db_set("payment_status", "In Process")
+		frappe.publish_realtime("fee_schedule_progress",
+			{"progress": "0", "reload": 1}, user=frappe.session.user)
+		total_records=len(self.get("student_reference"))
+		if total_records > 10:
+			frappe.msgprint(_('''Payment records will be created in the background.
+				In case of any error the error message will be updated in the Schedule.'''))
+			enqueue(generate_payment, queue='default', timeout=6000, event='generate_payment',
+				fee_schedule=self.name)
+		else:
+			generate_payment(self.name)	
+					
+def generate_payment(payment_schedule):
+	print("\n\n\n\n\n\n")
+	print(payment_schedule)
+	pass
+
+
+
+
+
 
 
 @frappe.whitelist()
