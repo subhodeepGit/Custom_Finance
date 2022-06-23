@@ -1,0 +1,80 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-06-22 13:15:06.410942",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "data_of_clearing",
+  "type_of_transaction",
+  "get_studnet",
+  "section_break_3",
+  "student_reference",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "data_of_clearing",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Data of Clearing",
+   "reqd": 1
+  },
+  {
+   "fieldname": "student_reference",
+   "fieldtype": "Table",
+   "label": "Student Reference",
+   "options": "Auto Reconciliation child",
+   "read_only": 1
+  },
+  {
+   "fieldname": "get_studnet",
+   "fieldtype": "Button",
+   "label": "Get Studnet"
+  },
+  {
+   "fieldname": "section_break_3",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Auto Reconciliation",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "type_of_transaction",
+   "fieldtype": "Select",
+   "label": "Type of Transaction",
+   "options": "\nRTGS\nNEFT\nIMPS"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2022-06-22 15:35:09.765182",
+ "modified_by": "Administrator",
+ "module": "Custom Finance",
+ "name": "Auto Reconciliation",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

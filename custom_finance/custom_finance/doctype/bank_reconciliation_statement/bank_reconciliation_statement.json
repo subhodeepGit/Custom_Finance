@@ -117,13 +117,13 @@
   {
    "fieldname": "bank_holder_name",
    "fieldtype": "Data",
-   "label": "Bank Holder Name "
+   "label": "Account Holder Name "
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-05-26 12:14:55.594478",
+ "modified": "2022-06-21 16:57:24.473073",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Bank Reconciliation Statement",

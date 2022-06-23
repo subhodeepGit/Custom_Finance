@@ -1,0 +1,74 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-06-22 13:18:02.235094",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "student",
+  "student_name",
+  "utr_no",
+  "amount",
+  "outstanding_amount",
+  "remaks",
+  "reconciliation_status"
+ ],
+ "fields": [
+  {
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Student",
+   "options": "Student"
+  },
+  {
+   "fetch_from": "student.title",
+   "fieldname": "student_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Student Name"
+  },
+  {
+   "fieldname": "utr_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "UTR No"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount"
+  },
+  {
+   "fieldname": "remaks",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Remaks"
+  },
+  {
+   "default": "0",
+   "fieldname": "reconciliation_status",
+   "fieldtype": "Check",
+   "label": "Reconciliation Status"
+  },
+  {
+   "fieldname": "outstanding_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Outstanding Amount"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2022-06-22 08:37:06.561336",
+ "modified_by": "Administrator",
+ "module": "Custom Finance",
+ "name": "Auto Reconciliation child",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

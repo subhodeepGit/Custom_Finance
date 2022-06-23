@@ -114,7 +114,24 @@ frappe.ui.form.on('Payment Refund', {
 				frappe.set_route("query-report", "General Ledger");
 			}, __('View'));
 		}
-	}
+	},
+	mode_of_payment: function(frm) {
+		if(frm.doc.mode_of_payment==("RTGS"||"NEFT"||"IMPS")) {
+			frappe.call({
+				method: "custom_finance.custom_finance.doctype.payment_details_upload.payment_details_upload.utr_callback",                
+				args: {
+					"party": frm.doc.party,
+					"mode_of_payment": frm.doc.mode_of_payment
+				},
+				callback: function(r) {
+					if(r.message){
+						var utr=r.message;
+						frm.set_value("reference_no",utr)
+					}
+				}
+			});
+		}
+	}	
 });
 
 frappe.ui.form.on("Payment Refund","mode_of_payment", function(frm){
@@ -176,4 +193,29 @@ frappe.ui.form.on("Payment Refund","reference_no", function(frm){
 		});
 	}
 
+});
+frappe.ui.form.on("Payment Refund","mode_of_payment", function(frm){
+    var mop = frm.doc.mode_of_payment
+    if(mop == "Bank Draft"){
+        frm.doc.reference_no = "Bank Draft"
+        frm.set_value("reference_no",frm.doc.reference_no)
+        frm.set_value("reference_date", frappe.datetime.nowdate());
+        frm.refresh();
+    };
+	if(frm.doc.mode_of_payment == "Cash"){
+		frm.set_df_property('references', 'cannot_add_rows', true);
+		frm.set_df_property('references', 'cannot_delete_rows', true);
+	}	 else if(frm.doc.mode_of_payment !="Cash"){
+		frm.set_df_property('references', 'cannot_add_rows', false);
+		frm.set_df_property('references', 'cannot_delete_rows', false);
+	}
+})
+frappe.ui.form.on("Payment Refund","mode_of_payment", function(frm){
+    var mop = frm.doc.mode_of_payment
+    if(mop == "Online Payment"){
+        frm.doc.reference_no = "Online Payment"
+        frm.set_value("reference_no",frm.doc.reference_no)
+        frm.set_value("reference_date", frappe.datetime.nowdate());
+        frm.refresh();
+    };
 });
