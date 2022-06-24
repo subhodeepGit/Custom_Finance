@@ -39,7 +39,7 @@ class PaymentDetailsUpload(Document):
 			frappe.throw("Payment status Updated for the UTR no. So it can't be canceled")			
 
 @frappe.whitelist()
-def utr_callback(party, mode_of_payment):
+def utr_callback(party=None, mode_of_payment=None):
 	get_utr=frappe.get_all("Payment Details Upload",{"student":party,"docstatus":1,"payment_status":0,"reconciliation_status":1,"type_of_transaction":mode_of_payment},['unique_transaction_reference_utr'])
 	if len(get_utr)!=0:
 		return get_utr[0]['unique_transaction_reference_utr']
