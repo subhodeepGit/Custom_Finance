@@ -1,9 +1,9 @@
 {
  "actions": [],
- "allow_copy": 1,
  "autoname": "naming_series:",
  "creation": "2022-06-22 12:18:58.084367",
  "doctype": "DocType",
+ "document_type": "Document",
  "engine": "InnoDB",
  "field_order": [
   "naming_series",
@@ -15,7 +15,7 @@
   "section_break_5",
   "get_students",
   "studentss",
-  "send_email"
+  "amended_from"
  ],
  "fields": [
   {
@@ -49,7 +49,8 @@
    "fieldname": "academic_term",
    "fieldtype": "Link",
    "label": "Academic Term",
-   "options": "Academic Term"
+   "options": "Academic Term",
+   "reqd": 1
   },
   {
    "fieldname": "section_break_5",
@@ -59,11 +60,6 @@
    "fieldname": "get_students",
    "fieldtype": "Button",
    "label": "Get Students"
-  },
-  {
-   "fieldname": "send_email",
-   "fieldtype": "Button",
-   "label": "Send Email"
   },
   {
    "fieldname": "naming_series",
@@ -76,12 +72,22 @@
    "fieldname": "studentss",
    "fieldtype": "Table",
    "label": "Students",
-   "options": "Fees Due Student"
+   "options": "Fees Due Student",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Fees Due Tool",
+   "print_hide": 1,
+   "read_only": 1
   }
  ],
- "hide_toolbar": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2022-06-22 17:49:35.493466",
+ "modified": "2022-06-24 15:45:10.298110",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Fees Due Tool",
@@ -96,6 +102,5 @@
  ],
  "restrict_to_domain": "Education",
  "sort_field": "modified",
- "sort_order": "DESC",
- "track_changes": 1
+ "sort_order": "DESC"
 }

@@ -7,7 +7,6 @@ import erpnext
 from erpnext.accounts.doctype.payment_request.payment_request import make_payment_request
 from erpnext.accounts.general_ledger import make_reverse_gl_entries
 from erpnext.controllers.accounts_controller import AccountsController
-# from custom_finance.custom_finance.notification.custom_notification import fees
 from datetime import date, timedelta, datetime
 
 
@@ -73,12 +72,6 @@ class Fees(AccountsController):
 
 	def on_submit(self):
 		self.make_gl_entries()
-		# max_due_date = (datetime.strptime(self.due_date, '%Y-%m-%d')+timedelta(days=1)).isoformat()
-		# print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
-		# print(max_due_date)
-		# print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")   
-		# if self.outstanding_amount > 0 and self.due_date==max_due_date:
-		# 	fees(self)
 
 		if self.send_payment_request and self.student_email:
 			pr = make_payment_request(party_type="Student", party=self.student, dt="Fees",
