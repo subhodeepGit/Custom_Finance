@@ -6,6 +6,7 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 from frappe.utils.background_jobs import enqueue
+from frappe.utils import cstr
 
 class AutoReconciliation(Document):
 	def validate(self):
@@ -30,7 +31,32 @@ class AutoReconciliation(Document):
 def generate_payment(payment_schedule):
 	print("\n\n\n\n\n\n")
 	print(payment_schedule)
-	pass
+	doc = frappe.get_doc("Auto Reconciliation", payment_schedule)
+	print(doc)
+	error = False
+	print(doc.name)
+	for t in doc.get("student_reference"):
+		outstanding_amount=t.outstanding_amount
+		if outstanding_amount!=0:
+			pass
+		elif outstanding_amount!=0:
+			try:
+				pass
+			except Exception as e:
+				error = True
+				err_msg = frappe.local.message_log and "\n\n".join(frappe.local.message_log) or cstr(e)
+
+	if error:
+		frappe.db.rollback()
+		frappe.db.set_value("Auto Reconciliation", payment_schedule, "payment_status", "Failed")
+		frappe.db.set_value("Fee Schedule", payment_schedule, "error_log", err_msg)
+
+	else:
+		frappe.db.set_value("Auto Reconciliation", payment_schedule, "payment_status", "Successful")
+		frappe.db.set_value("Auto Reconciliation", payment_schedule, "error_log", None)
+
+	frappe.publish_realtime("fee_schedule_progress",
+		{"progress": "100", "reload": 1}, user=frappe.session.user)
 
 
 
