@@ -1,0 +1,101 @@
+{
+ "actions": [],
+ "allow_copy": 1,
+ "autoname": "naming_series:",
+ "creation": "2022-06-22 12:18:58.084367",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "programs",
+  "program",
+  "column_break_3",
+  "academic_year",
+  "academic_term",
+  "section_break_5",
+  "get_students",
+  "studentss",
+  "send_email"
+ ],
+ "fields": [
+  {
+   "fieldname": "programs",
+   "fieldtype": "Link",
+   "label": "Programs",
+   "options": "Programs",
+   "reqd": 1
+  },
+  {
+   "fieldname": "program",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Program",
+   "options": "Program",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "academic_year",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Academic Year",
+   "options": "Academic Year",
+   "reqd": 1
+  },
+  {
+   "fieldname": "academic_term",
+   "fieldtype": "Link",
+   "label": "Academic Term",
+   "options": "Academic Term"
+  },
+  {
+   "fieldname": "section_break_5",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "get_students",
+   "fieldtype": "Button",
+   "label": "Get Students"
+  },
+  {
+   "fieldname": "send_email",
+   "fieldtype": "Button",
+   "label": "Send Email"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "no_copy": 1,
+   "options": "FEE-DUE-.YYYY.-"
+  },
+  {
+   "fieldname": "studentss",
+   "fieldtype": "Table",
+   "label": "Students",
+   "options": "Fees Due Student"
+  }
+ ],
+ "hide_toolbar": 1,
+ "links": [],
+ "modified": "2022-06-22 17:49:35.493466",
+ "modified_by": "Administrator",
+ "module": "Custom Finance",
+ "name": "Fees Due Tool",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "read": 1,
+   "role": "Education Manager",
+   "write": 1
+  }
+ ],
+ "restrict_to_domain": "Education",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

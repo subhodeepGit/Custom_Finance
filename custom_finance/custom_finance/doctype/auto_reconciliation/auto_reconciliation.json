@@ -1,17 +1,20 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "naming_series:",
  "creation": "2022-06-22 13:15:06.410942",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "naming_series",
   "data_of_clearing",
   "type_of_transaction",
   "get_studnet",
   "section_break_3",
   "student_reference",
-  "amended_from"
+  "amended_from",
+  "payment_status"
  ],
  "fields": [
   {
@@ -25,17 +28,29 @@
    "fieldname": "student_reference",
    "fieldtype": "Table",
    "label": "Student Reference",
-   "options": "Auto Reconciliation child",
-   "read_only": 1
+   "options": "Auto Reconciliation child"
   },
   {
    "fieldname": "get_studnet",
    "fieldtype": "Button",
-   "label": "Get Studnet"
+   "label": "Get Students"
   },
   {
    "fieldname": "section_break_3",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "type_of_transaction",
+   "fieldtype": "Select",
+   "label": "Type of Transaction",
+   "options": "\nRTGS\nNEFT\nIMPS",
+   "reqd": 1
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Doc No",
+   "options": "Auto-.YYYY.-"
   },
   {
    "fieldname": "amended_from",
@@ -47,16 +62,16 @@
    "read_only": 1
   },
   {
-   "fieldname": "type_of_transaction",
+   "fieldname": "payment_status",
    "fieldtype": "Select",
-   "label": "Type of Transaction",
-   "options": "\nRTGS\nNEFT\nIMPS"
+   "label": "Payment Status",
+   "options": "\nIn Process\nFailed\nSuccessful"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-06-22 15:35:09.765182",
+ "modified": "2022-06-23 16:25:02.536580",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Auto Reconciliation",
