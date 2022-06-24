@@ -56,7 +56,6 @@ def create_conduct_certificate(exam_declaration):
             result.program_enrollment=enroll.name
         for fee_stu in doc.get("fee_structure"):
             result.fee_structure=fee_stu.fee_structure
-            print(fee_stu.fee_structure)
             result.due_date=fee_stu.due_date
             ref_details = frappe.get_all("Fee Component",{"parent":fee_stu.fee_structure},['fees_category','amount','receivable_account','income_account','company','grand_fee_amount','outstanding_fees'],order_by="idx asc")
             for i in ref_details:
