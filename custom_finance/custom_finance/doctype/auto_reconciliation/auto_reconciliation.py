@@ -38,12 +38,59 @@ def generate_payment(payment_schedule):
 	data_of_clearing=doc.data_of_clearing
 	error = False
 	for t in doc.get("student_reference"):
+		print("\n\n\n\n\n\n\n")
 		outstanding_amount=t.outstanding_amount
 		amount=t.amount
 		if outstanding_amount!=0:
-			pass
-		elif outstanding_amount==0:
-			student_email_id
+			############################################### Data entry in Payment entry
+			payment_entry=frappe.new_doc("Payment Entry")
+			"""Type of Payment"""
+			payment_entry.payment_type="Receive"
+			payment_entry.posting_date=utils.today()
+			payment_entry.mode_of_payment=doc.type_of_transaction
+			"""Payment From / To"""
+			# student_email_id=frappe.get_all("Student",{"name":t.student},["student_email_id","sams_portal_id","roll_no"])
+			payment_entry.party_type="Student"
+			payment_entry.party=t.student
+			payment_entry.party_name=t.student_name
+			# payment_entry.student_email=student_email_id[0]["student_email_id"]
+			# payment_entry.sams_portal_id=student_email_id[0]["sams_portal_id"]
+			"""Accounts"""
+			mode_of_payment=frappe.get_all("Mode of Payment Account",{"parent":doc.type_of_transaction},["name","parent","default_account"])
+			account_cur=frappe.get_all("Account",{"name":mode_of_payment[0]["default_account"]},['account_currency',"account_type"])
+			payment_entry.paid_to=mode_of_payment[0]['default_account']
+			payment_entry.paid_to_account_currency=account_cur[0]['account_currency']
+			payment_entry.paid_to_account_type=account_cur[0]['account_type']
+			payment_entry.source_exchange_rate=1
+			# Cash - KP  paid_from_account_type
+			paid_from="Cash - KP"
+			account_cur=frappe.get_all("Account",{"name":paid_from},['account_currency',"account_type"])
+			payment_entry.paid_from=paid_from
+			payment_entry.paid_from_account_type=account_cur[0]['account_currency']
+			payment_entry.paid_from_account_currency=account_cur[0]['account_type']
+			payment_entry.target_exchange_rate=1
+			"""Amount"""
+			payment_entry.paid_amount=amount
+			"""Reference"""
+			############### structured fees
+			fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t.student],["outstanding_amount","!=",0],["fee_structure","!=",""]],order_by="due_date asc")
+			print(fee_voucher_list)	
+			# a=[{'name': 'Bart', 'age': 10}, {'name': 'Abhishek', 'age': 39}]
+			# newlist = sorted(a, key=lambda d: d['name']) 
+			# print(newlist)
+			
+			"""Writeoff"""
+			payment_entry.total_allocated_amount=amount
+			payment_entry.unallocated_amount=0
+			payment_entry.difference_amount=0
+			payment_entry.base_total_taxes_and_charges=0
+			"""Cost Center"""
+			payment_entry.cost_center="Main - KP"
+			# payment_entry.save()
+			# payment_entry.submit()
+			# frappe.db.set_value("Auto Reconciliation child",t.name,"payment_voucher",payment_entry.name)
+			###################### end 
+		elif outstanding_amount==9999993333333: ##### testing correction
 			try:
 				############################# data entry in payment Refund Entry 
 				payment_refund=frappe.new_doc("Payment Refund")
@@ -79,6 +126,7 @@ def generate_payment(payment_schedule):
 				payment_refund.reference_date=data_of_clearing
 				payment_refund.save()
 				payment_refund.submit()
+				frappe.db.set_value("Auto Reconciliation child",t.name,"payment_voucher",payment_refund.name)
 				############################## End 
 			except Exception as e:
 				error = True
