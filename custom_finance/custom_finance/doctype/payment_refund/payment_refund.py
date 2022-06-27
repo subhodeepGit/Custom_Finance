@@ -28,8 +28,6 @@ class PaymentRefund(Document):
                 frappe.throw("Outstanding Amount is present for this party. Please clear the Outstanding Amount first!")
             else:
                 pass
-        # print("\n\n\n\n\n\n\n\n")
-        # print(len(self.get("references")))
         if(self.get("references") == []):
             frappe.throw("Please fill the Payment References table")
         for d in self.get("references"):
@@ -48,6 +46,7 @@ class PaymentRefund(Document):
     def on_cancel(self):
         cancel_doc = frappe.get_doc("Journal Entry",self.jv_entry_voucher_no)
         cancel_doc.cancel()
+        recon_rtgs_neft_on_cancel(self)
 
         
 
@@ -238,3 +237,22 @@ def je_receive(self):
     self.jv_entry_voucher_no=je.name
     frappe.db.set_value("Payment Refund",self.name,"jv_entry_voucher_no",je.name)
 
+def recon_rtgs_neft_on_cancel(self):
+    total_allocated_amount=0
+    for i in self.get("references"):
+        total_allocated_amount=total_allocated_amount+i.total_amount
+    if self.mode_of_payment=="NEFT" or self.mode_of_payment=="RTGS" or self.mode_of_payment=="IMPS":
+        Recon_info=frappe.get_all("Bank Reconciliation Statement",{"unique_transaction_reference_utr":self.reference_no,"type_of_transaction":self.mode_of_payment},
+                                ["name","amount","total_allocated_amount","date","count"])
+        Recon_info=Recon_info[0]
+        if int(Recon_info["count"])==1:
+            frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"party_name",None)
+        Grant_total_amount=Recon_info['total_allocated_amount']+total_allocated_amount
+
+        frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"total_allocated_amount",Grant_total_amount) 
+        count=int(Recon_info["count"])-1
+        frappe.db.set_value("Bank Reconciliation Statement",Recon_info['name'],"count",count)
+        st_upload_data=frappe.get_all("Payment Details Upload",{"brs_name":Recon_info['name'],"docstatus":1},['name'])
+        if len(st_upload_data)!=0:
+            frappe.db.set_value("Payment Details Upload",st_upload_data[0]['name'],"payment_status",0)
+            frappe.db.set_value("Payment Details Upload",st_upload_data[0]['name'],"payment_id",'') 
