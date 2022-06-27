@@ -1,0 +1,61 @@
+{
+ "actions": [],
+ "creation": "2022-06-22 11:17:59.271174",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "fees_id",
+  "students",
+  "student_name",
+  "student_email_id",
+  "outstanding_amounts"
+ ],
+ "fields": [
+  {
+   "fieldname": "fees_id",
+   "fieldtype": "Link",
+   "label": "Fees Id",
+   "options": "Fees",
+   "read_only": 1
+  },
+  {
+   "fieldname": "students",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Student",
+   "read_only": 1
+  },
+  {
+   "fieldname": "student_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Student Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "student_email_id",
+   "fieldtype": "Data",
+   "label": "Student Email Id",
+   "read_only": 1
+  },
+  {
+   "fieldname": "outstanding_amounts",
+   "fieldtype": "Data",
+   "label": "Outstanding Amount",
+   "read_only": 1
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2022-06-24 16:27:46.463368",
+ "modified_by": "Administrator",
+ "module": "Custom Finance",
+ "name": "Fees Due Student",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "restrict_to_domain": "Education",
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}
