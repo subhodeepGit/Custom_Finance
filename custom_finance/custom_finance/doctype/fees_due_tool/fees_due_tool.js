@@ -26,15 +26,12 @@ frappe.ui.form.on('Fees Due Tool', {
 							c.student_email_id=element.student_email
 							c.outstanding_amounts=element.outstanding_amount
                         });
-                    }
+                    } 
                     frm.refresh();
                     frm.refresh_field("studentss")
 				}
 			});	
-	}
-
-	
-	
+	}	
 });
 frappe.ui.form.on("Fees Due Tool", {
 	// Filter semester according to program
@@ -47,9 +44,9 @@ frappe.ui.form.on("Fees Due Tool", {
 			};
 		});
 	},
-	// Bulk Email
+	// Bulk Email For Student
     refresh:function(frm){
-		if(cur_frm.doc.studentss){
+		if(cur_frm.doc.studentss && frm.doc.email_to=="Student"){
 			if((cur_frm.doc.studentss).length!=0 && frm.doc.docstatus===1){
 				frm.add_custom_button(__("Bulk Email","View"), function() {
 					frappe.call({
@@ -75,8 +72,66 @@ frappe.ui.form.on("Fees Due Tool", {
 				});
 			}
 		}
-
-
+	}
+});
+frappe.ui.form.on("Fees Due Tool", {
+	refresh:function(frm){
+		// Bulk Email For Guardian
+		if(cur_frm.doc.studentss && frm.doc.email_to=="Guardian"){
+			if((cur_frm.doc.studentss).length!=0 && frm.doc.docstatus===1){
+				frm.add_custom_button(__("Bulk Email","View"), function() {
+					frappe.call({
+						method: 'custom_finance.custom_finance.doctype.fees_due_tool.fees_due_tool.get_guardian_emails',
+						args: {
+							studentss: frm.doc.studentss
+						},
+						
+						callback: function(resp){
+							if(resp.message){
+								new frappe.views.CommunicationComposer({
+								
+									doc: cur_frm.doc,
+									frm: cur_frm,
+									subject: "Fees is Due",
+									recipients:resp.message, 
+									attach_document_print: false,
+							});
+							}
+						}
+					})
+				});
+			}
+		}
+	}
+});
+frappe.ui.form.on("Fees Due Tool", {
+	refresh:function(frm){
+		// Bulk Email For Both
+		if(cur_frm.doc.studentss && frm.doc.email_to=="Both"){
+			if((cur_frm.doc.studentss).length!=0 && frm.doc.docstatus===1){
+				frm.add_custom_button(__("Bulk Email","View"), function() {
+					frappe.call({
+						method: 'custom_finance.custom_finance.doctype.fees_due_tool.fees_due_tool.get_both_emails',
+						args: {
+							studentss: frm.doc.studentss
+						},
+						
+						callback: function(resp){
+							if(resp.message){
+								new frappe.views.CommunicationComposer({
+								
+									doc: cur_frm.doc,
+									frm: cur_frm,
+									subject: "Fees is Due",
+									recipients:resp.message, 
+									attach_document_print: false,
+							});
+							}
+						}
+					})
+				});
+			}
+		}
 	}
 });
 	
