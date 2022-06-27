@@ -20,6 +20,22 @@ def set_custom_role_permission():
                     role.set(k,d.get(k))
                 role.save()
 
+def get_translation(site=None):
+    if sys.argv[2]=='--site':
+        os.system("bench --site {0} export-fixtures".format(sys.argv[3]))
+    else:
+        os.system("bench export-fixtures")
+
+#   bench execute custom_finance.patches.migrate_patch.set_custom_role_permission
+def set_translation():
+    with open(frappe.get_app_path("custom_finance","fixtures","translation.json")) as f:
+        for d in json.load(f):
+            if len(frappe.get_all('Translation',{'source_text':d.get('source_text')}))==0:
+                trans=frappe.new_doc('Translation')
+                for k in d.keys():
+                    trans.set(k,d.get(k))
+                trans.save()
+
 
 
 #   bench execute custom_finance.patches.migrate_patch.add_roles

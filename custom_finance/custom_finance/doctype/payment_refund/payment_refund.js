@@ -29,6 +29,13 @@ frappe.ui.form.on('Payment Refund', {
 				}
 			};
 		});
+		frm.set_query("mode_of_payment", function(_doc, cdt, cdn) {
+			return {
+				filters: {
+					'is_refundable_or_adjustable': 1,
+				}
+			};
+		});
 	},
 	payment_type: function(frm) {
 		if (frm.doc.payment_type == "Receive"){	

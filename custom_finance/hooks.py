@@ -234,11 +234,13 @@ user_data_fields = [
 # 			]
 # 		]
 # 	]},
+	# {"dt": "Translation"},
 #     {"dt": "Role"},
 #     {"dt": "Role Profile"},
 #     {"dt": "Module Profile"},
 # ]
 after_migrate = [
+		'custom_finance.patches.migrate_patch.set_translation',
         'custom_finance.patches.migrate_patch.add_roles',
         'custom_finance.patches.migrate_patch.set_custom_role_permission',
 ]
