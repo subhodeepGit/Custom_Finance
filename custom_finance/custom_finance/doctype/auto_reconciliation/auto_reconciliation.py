@@ -70,15 +70,16 @@ def generate_payment(payment_schedule):
 			payment_entry.target_exchange_rate=1
 			"""Amount"""
 			payment_entry.paid_amount=amount
+			payment_entry.received_amount = amount
 			"""Reference"""
 			############### structured fees
 			fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t.student],["outstanding_amount","!=",0],
 														["fee_structure","!=",""]],fields=['name','due_date','program'],order_by="due_date asc")									
 			structured_fees=[]
-			for t in fee_voucher_list:
+			for t1 in fee_voucher_list:
 				due_date=t['due_date']
 				program=t['program']
-				fee_comp=frappe.get_all("Fee Component",filters=[["parent","=",t['name']]],fields=['name','idx','parent','fees_category','description','amount','waiver_type',
+				fee_comp=frappe.get_all("Fee Component",filters=[["parent","=",t1['name']]],fields=['name','idx','parent','fees_category','description','amount','waiver_type',
 																									'percentage','waiver_amount','total_waiver_amount','receivable_account','income_account',
 																									'company','grand_fee_amount','outstanding_fees'])
 				for z in fee_comp:
@@ -90,10 +91,10 @@ def generate_payment(payment_schedule):
 			structured_fees_hostel=[]
 			hostel_fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t.student],["outstanding_amount","!=",0],
 														["hostel_fee_structure","!=",""]],fields=['name','due_date'],order_by="due_date asc")
-			for t in hostel_fee_voucher_list:
+			for t1 in hostel_fee_voucher_list:
 				due_date=t['due_date']
 				program=t['program']
-				fee_comp=frappe.get_all("Fee Component",filters=[["parent","=",t['name']]],fields=['name','idx','parent','fees_category','description','amount','waiver_type',
+				fee_comp=frappe.get_all("Fee Component",filters=[["parent","=",t1['name']]],fields=['name','idx','parent','fees_category','description','amount','waiver_type',
 																									'percentage','waiver_amount','total_waiver_amount','receivable_account','income_account',
 																									'company','grand_fee_amount','outstanding_fees'])
 				for z in fee_comp:
@@ -110,10 +111,10 @@ def generate_payment(payment_schedule):
 			unstructured_fees_hostel=[]
 			hostel_fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t.student],["outstanding_amount","!=",0],
 														["hostel_fee_structure","=",""]],fields=['name','due_date'],order_by="due_date asc")
-			for t in hostel_fee_voucher_list:
+			for t1 in hostel_fee_voucher_list:
 				due_date=t['due_date']
 				program=t['program']
-				fee_comp=frappe.get_all("Fee Component",filters=[["parent","=",t['name']]],fields=['name','idx','parent','fees_category','description','amount','waiver_type',
+				fee_comp=frappe.get_all("Fee Component",filters=[["parent","=",t1['name']]],fields=['name','idx','parent','fees_category','description','amount','waiver_type',
 																									'percentage','waiver_amount','total_waiver_amount','receivable_account','income_account',
 																									'company','grand_fee_amount','outstanding_fees'])
 				for z in fee_comp:
@@ -126,34 +127,34 @@ def generate_payment(payment_schedule):
 
 			########################################## end unstructured fees hostel
 			allocate_amount=amount
-			for t in structured_fees:
-				outstanding_fees_allocation=allocate_amount-t['outstanding_fees']
+			for t1 in structured_fees:
+				outstanding_fees_allocation=allocate_amount-t1['outstanding_fees']
 				if outstanding_fees_allocation>0:
 					allocate_amount=outstanding_fees_allocation
 					payment_entry.append("references", {
 							'reference_doctype': "Fees",
-							'reference_name': t['parent'],
+							'reference_name': t1['parent'],
 							"bill_no": "",
-							"due_date":t['due_date'],
-							'total_amount': t["grand_fee_amount"],
-							'outstanding_amount': t["grand_fee_amount"],
-							'allocated_amount': t["outstanding_fees"],
-							'program':t["program"],
-							'fees_category':t['fees_category'],
-							'account_paid_from':t['receivable_account'],
+							"due_date":t1['due_date'],
+							'total_amount': t1["grand_fee_amount"],
+							'outstanding_amount': t1["grand_fee_amount"],
+							'allocated_amount': t1["outstanding_fees"],
+							'program':t1["program"],
+							'fees_category':t1['fees_category'],
+							'account_paid_from':t1['receivable_account'],
 						})
 				elif outstanding_fees_allocation<=0:
 					payment_entry.append("references", {
 							'reference_doctype': "Fees",
-							'reference_name': t['parent'],
+							'reference_name': t1['parent'],
 							"bill_no": "",
-							"due_date":t['due_date'],
-							'total_amount': t["grand_fee_amount"],
-							'outstanding_amount': t["grand_fee_amount"],
+							"due_date":t1['due_date'],
+							'total_amount': t1["grand_fee_amount"],
+							'outstanding_amount': t1["grand_fee_amount"],
 							'allocated_amount': allocate_amount,
-							'program':t["program"],
-							'fees_category':t['fees_category'],
-							'account_paid_from':t['receivable_account'],
+							'program':t1["program"],
+							'fees_category':t1['fees_category'],
+							'account_paid_from':t1['receivable_account'],
 						})
 					break
 
@@ -165,6 +166,11 @@ def generate_payment(payment_schedule):
 			payment_entry.unallocated_amount=0
 			payment_entry.difference_amount=0
 			payment_entry.base_total_taxes_and_charges=0
+			"""Transaction ID"""
+			print("\n\n\n\n\n\n")
+			print(t.utr_no,data_of_clearing)
+			payment_entry.reference_no=t.utr_no
+			payment_entry.reference_date=data_of_clearing
 			"""Cost Center"""
 			payment_entry.cost_center="Main - KP"
 			payment_entry.save()
