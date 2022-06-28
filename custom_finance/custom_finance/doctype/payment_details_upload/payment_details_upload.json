@@ -68,7 +68,7 @@
   {
    "fieldname": "bank_holder_name",
    "fieldtype": "Data",
-   "label": "Bank Holder Name",
+   "label": "Account Holder Name",
    "reqd": 1
   },
   {
@@ -126,7 +126,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-06-21 16:48:54.284891",
+ "modified": "2022-06-28 17:39:54.511455",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Payment Details Upload",
