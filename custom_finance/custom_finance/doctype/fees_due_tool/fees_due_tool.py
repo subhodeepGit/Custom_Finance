@@ -21,12 +21,30 @@ def get_students(academic_term=None, programs=None, program=None, academic_year=
 	
 	return fees
 	
-# Bulk Email
+# Bulk Email For Student
 @frappe.whitelist()
 def get_student_emails(studentss):
 	studentss=json.loads(studentss)
 	recipients=""
 	for stu in studentss:
-		recipients=recipients+","+stu['student_email_id']
+			recipients+=(frappe.db.get_value("Student",{"name":stu.get("students")},"student_email_id")+",")
 	return recipients
 
+# Bulk Email For Guardian
+@frappe.whitelist()
+def get_guardian_emails(studentss):
+	studentss=json.loads(studentss)
+	recipients=""
+	for stu in studentss:
+			recipients+=(frappe.db.get_value("Student",{"name":stu.get("students")},"guardian_email_address")+",")
+	return recipients
+
+# Bulk Email For Both
+@frappe.whitelist()
+def get_both_emails(studentss):
+	studentss=json.loads(studentss)
+	recipients=""
+	for stu in studentss:
+			recipients+=(frappe.db.get_value("Student",{"name":stu.get("students")},"student_email_id")+",")
+			recipients+=(frappe.db.get_value("Student",{"name":stu.get("students")},"guardian_email_address")+",")
+	return recipients

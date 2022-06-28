@@ -73,8 +73,22 @@ def generate_payment(payment_schedule):
 			payment_entry.paid_amount=amount
 			"""Reference"""
 			############### structured fees
-			fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t.student],["outstanding_amount","!=",0],["fee_structure","!=",""]],order_by="due_date asc")
-			print(fee_voucher_list)	
+			fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t.student],["outstanding_amount","!=",0],
+														["fee_structure","!=",""]],fields=['name','due_date'],order_by="due_date asc")
+			print("\n\n\n\n\n")
+			print(fee_voucher_list)
+			structured_fees=[]
+			for t in fee_voucher_list:
+				due_date=t['due_date']
+				fee_comp=frappe.get_all("Fee Component",filters=[["parent","=",t['name']]],fields=['name','idx','parent','fees_category','description','amount','waiver_type',
+																									'percentage','waiver_amount','total_waiver_amount','receivable_account','income_account',
+																									'company','grand_fee_amount','outstanding_fees'])
+				for z in fee_comp:
+					z['due_date']=due_date
+					structured_fees.append(z)
+			structured_fees = sorted(structured_fees , key=lambda elem: "%02d %s" % (elem['idx'], elem['due_date']))
+			print("\n\n\n\n\n")
+			print("structured_fees",structured_fees)		
 			# a=[{'name': 'Bart', 'age': 10}, {'name': 'Abhishek', 'age': 39}]
 			# newlist = sorted(a, key=lambda d: d['name']) 
 			# print(newlist)
@@ -90,7 +104,7 @@ def generate_payment(payment_schedule):
 			# payment_entry.submit()
 			# frappe.db.set_value("Auto Reconciliation child",t.name,"payment_voucher",payment_entry.name)
 			###################### end 
-		elif outstanding_amount==9999993333333: ##### testing correction
+		elif outstanding_amount==0: ##### testing correction
 			try:
 				############################# data entry in payment Refund Entry 
 				payment_refund=frappe.new_doc("Payment Refund")
