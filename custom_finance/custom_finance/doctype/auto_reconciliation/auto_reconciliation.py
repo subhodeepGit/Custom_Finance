@@ -38,7 +38,6 @@ def generate_payment(payment_schedule):
 	data_of_clearing=doc.data_of_clearing
 	error = False
 	for t in doc.get("student_reference"):
-		print("\n\n\n\n\n\n\n")
 		outstanding_amount=t.outstanding_amount
 		amount=t.amount
 		if outstanding_amount!=0:
@@ -66,33 +65,101 @@ def generate_payment(payment_schedule):
 			paid_from="Cash - KP"
 			account_cur=frappe.get_all("Account",{"name":paid_from},['account_currency',"account_type"])
 			payment_entry.paid_from=paid_from
-			payment_entry.paid_from_account_type=account_cur[0]['account_currency']
-			payment_entry.paid_from_account_currency=account_cur[0]['account_type']
+			payment_entry.paid_from_account_type=account_cur[0]['account_type']
+			payment_entry.paid_from_account_currency=account_cur[0]['account_currency']
 			payment_entry.target_exchange_rate=1
 			"""Amount"""
 			payment_entry.paid_amount=amount
 			"""Reference"""
 			############### structured fees
 			fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t.student],["outstanding_amount","!=",0],
-														["fee_structure","!=",""]],fields=['name','due_date'],order_by="due_date asc")
-			print("\n\n\n\n\n")
-			print(fee_voucher_list)
+														["fee_structure","!=",""]],fields=['name','due_date','program'],order_by="due_date asc")									
 			structured_fees=[]
 			for t in fee_voucher_list:
 				due_date=t['due_date']
+				program=t['program']
 				fee_comp=frappe.get_all("Fee Component",filters=[["parent","=",t['name']]],fields=['name','idx','parent','fees_category','description','amount','waiver_type',
 																									'percentage','waiver_amount','total_waiver_amount','receivable_account','income_account',
 																									'company','grand_fee_amount','outstanding_fees'])
 				for z in fee_comp:
 					z['due_date']=due_date
+					z['program']=program
 					structured_fees.append(z)
-			structured_fees = sorted(structured_fees , key=lambda elem: "%02d %s" % (elem['idx'], elem['due_date']))
-			print("\n\n\n\n\n")
-			print("structured_fees",structured_fees)		
-			# a=[{'name': 'Bart', 'age': 10}, {'name': 'Abhishek', 'age': 39}]
-			# newlist = sorted(a, key=lambda d: d['name']) 
-			# print(newlist)
-			
+			if fee_voucher_list:		
+				structured_fees = sorted(structured_fees , key=lambda elem: "%02d %s" % (elem['idx'], elem['due_date']))		
+			structured_fees_hostel=[]
+			hostel_fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t.student],["outstanding_amount","!=",0],
+														["hostel_fee_structure","!=",""]],fields=['name','due_date'],order_by="due_date asc")
+			for t in hostel_fee_voucher_list:
+				due_date=t['due_date']
+				program=t['program']
+				fee_comp=frappe.get_all("Fee Component",filters=[["parent","=",t['name']]],fields=['name','idx','parent','fees_category','description','amount','waiver_type',
+																									'percentage','waiver_amount','total_waiver_amount','receivable_account','income_account',
+																									'company','grand_fee_amount','outstanding_fees'])
+				for z in fee_comp:
+					z['due_date']=due_date
+					z['program']=program
+					structured_fees_hostel.append(z)
+			if 	hostel_fee_voucher_list:	
+				structured_fees_hostel = sorted(hostel_fee_voucher_list , key=lambda elem: "%02d %s" % (elem['idx'], elem['due_date']))
+			structured_fees=structured_fees+structured_fees_hostel
+
+
+			########################################## end of structured fees
+			#################### unstructured fees hostel
+			unstructured_fees_hostel=[]
+			hostel_fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t.student],["outstanding_amount","!=",0],
+														["hostel_fee_structure","=",""]],fields=['name','due_date'],order_by="due_date asc")
+			for t in hostel_fee_voucher_list:
+				due_date=t['due_date']
+				program=t['program']
+				fee_comp=frappe.get_all("Fee Component",filters=[["parent","=",t['name']]],fields=['name','idx','parent','fees_category','description','amount','waiver_type',
+																									'percentage','waiver_amount','total_waiver_amount','receivable_account','income_account',
+																									'company','grand_fee_amount','outstanding_fees'])
+				for z in fee_comp:
+					z['due_date']=due_date
+					z['program']=program
+					unstructured_fees_hostel.append(z)
+			if 	hostel_fee_voucher_list:	
+				unstructured_fees_hostel = sorted(hostel_fee_voucher_list , key=lambda elem: "%02d %s" % (elem['idx'], elem['due_date']))
+			structured_fees=structured_fees+unstructured_fees_hostel
+
+			########################################## end unstructured fees hostel
+			allocate_amount=amount
+			for t in structured_fees:
+				outstanding_fees_allocation=allocate_amount-t['outstanding_fees']
+				if outstanding_fees_allocation>0:
+					allocate_amount=outstanding_fees_allocation
+					payment_entry.append("references", {
+							'reference_doctype': "Fees",
+							'reference_name': t['parent'],
+							"bill_no": "",
+							"due_date":t['due_date'],
+							'total_amount': t["grand_fee_amount"],
+							'outstanding_amount': t["grand_fee_amount"],
+							'allocated_amount': t["outstanding_fees"],
+							'program':t["program"],
+							'fees_category':t['fees_category'],
+							'account_paid_from':t['receivable_account'],
+						})
+				elif outstanding_fees_allocation<=0:
+					payment_entry.append("references", {
+							'reference_doctype': "Fees",
+							'reference_name': t['parent'],
+							"bill_no": "",
+							"due_date":t['due_date'],
+							'total_amount': t["grand_fee_amount"],
+							'outstanding_amount': t["grand_fee_amount"],
+							'allocated_amount': allocate_amount,
+							'program':t["program"],
+							'fees_category':t['fees_category'],
+							'account_paid_from':t['receivable_account'],
+						})
+					break
+
+
+			# "references"-- table name	 Payment Entry Reference		
+
 			"""Writeoff"""
 			payment_entry.total_allocated_amount=amount
 			payment_entry.unallocated_amount=0
@@ -100,9 +167,10 @@ def generate_payment(payment_schedule):
 			payment_entry.base_total_taxes_and_charges=0
 			"""Cost Center"""
 			payment_entry.cost_center="Main - KP"
-			# payment_entry.save()
-			# payment_entry.submit()
-			# frappe.db.set_value("Auto Reconciliation child",t.name,"payment_voucher",payment_entry.name)
+			payment_entry.save()
+			payment_entry.submit()
+			frappe.db.set_value("Auto Reconciliation child",t.name,"payment_voucher",payment_entry.name)
+			print("ok")
 			###################### end 
 		elif outstanding_amount==0: ##### testing correction
 			try:
