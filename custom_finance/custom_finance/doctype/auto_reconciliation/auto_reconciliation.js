@@ -50,8 +50,8 @@ frappe.ui.form.on('Auto Reconciliation', {
 });
 frappe.ui.form.on('Auto Reconciliation', {
 	refresh: function(frm) {
-		// if (frm.doc.docstatus === 1 && !frm.doc.payment_status || frm.doc.payment_status === 'Failed') {
-			if (frm.doc.docstatus === 1 ) {	
+		if (frm.doc.docstatus === 1 && !frm.doc.payment_status || frm.doc.payment_status === 'Failed') {
+			// if (frm.doc.docstatus === 1 ) {	
 			frm.add_custom_button(__('Create Payment Entry'), function() {
 				frappe.call({
 					method: 'create_payment_entry',
