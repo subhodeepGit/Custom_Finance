@@ -19,8 +19,12 @@ def get_students(academic_term=None, programs=None, program=None, academic_year=
 	where outstanding_amount > 0 and programs="%s" and program="%s" and academic_term="%s" and academic_year="%s"
 	"""%(programs,program,academic_term,academic_year),as_dict = True)
 	
-	return fees
-	
+	# return fees
+	if len(fees)!=0:
+		return fees
+	else:
+		frappe.throw("All Due Fees is Clear/Fees is not created")
+		
 # Bulk Email For Student
 @frappe.whitelist()
 def get_student_emails(studentss):
@@ -36,7 +40,11 @@ def get_guardian_emails(studentss):
 	studentss=json.loads(studentss)
 	recipients=""
 	for stu in studentss:
-			recipients+=(frappe.db.get_value("Student",{"name":stu.get("students")},"guardian_email_address")+",")
+			gud_info=frappe.db.get_value("Student",{"name":stu.get("students")},"guardian_email_address")
+			if gud_info!=None:
+				recipients+=(frappe.db.get_value("Student",{"name":stu.get("students")},"guardian_email_address")+",")
+	if recipients=="":
+		frappe.throw("Guardian Email id not Found (Please mention in Student Data)")			
 	return recipients
 
 # Bulk Email For Both
@@ -45,6 +53,10 @@ def get_both_emails(studentss):
 	studentss=json.loads(studentss)
 	recipients=""
 	for stu in studentss:
+		gud_info=frappe.db.get_value("Student",{"name":stu.get("students")},"guardian_email_address")
+		if gud_info!=None:
 			recipients+=(frappe.db.get_value("Student",{"name":stu.get("students")},"student_email_id")+",")
 			recipients+=(frappe.db.get_value("Student",{"name":stu.get("students")},"guardian_email_address")+",")
+	if recipients=="":
+		frappe.throw("Guardian Email id not Found (Please mention in Student Data)")			
 	return recipients
