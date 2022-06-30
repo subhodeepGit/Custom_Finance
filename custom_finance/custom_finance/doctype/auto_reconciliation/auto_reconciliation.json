@@ -67,7 +67,8 @@
    "fieldname": "payment_status",
    "fieldtype": "Select",
    "label": "Payment Status",
-   "options": "\nIn Process\nFailed\nSuccessful"
+   "options": "\nIn Process\nFailed\nSuccessful",
+   "read_only": 1
   },
   {
    "fieldname": "error_log_section",
@@ -83,7 +84,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-06-24 12:00:08.220836",
+ "modified": "2022-06-29 06:40:33.926548",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Auto Reconciliation",

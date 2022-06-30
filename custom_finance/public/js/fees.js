@@ -190,9 +190,9 @@ frappe.ui.form.on('Fees', {
     setup(frm){
         frm.set_query("fees_category","components", function() {
             return {
-                query: 'kp_edtec.kp_edtec.doctype.fees.get_fees_category',
+                // query: 'kp_edtec.kp_edtec.doctype.fees.get_fees_category',
                 filters: {
-                    "fee_structure":frm.doc.fee_structure
+                    "is_refundable_or_adjustable":0,
                 }
             };
         });
