@@ -41,7 +41,7 @@ def generate_payment(payment_schedule):
 		outstanding_amount=t.outstanding_amount
 		amount=t.amount
 		if outstanding_amount!=0:
-			try:
+			# try:
 				############################################### Data entry in Payment entry
 				payment_entry=frappe.new_doc("Payment Entry")
 				"""Type of Payment"""
@@ -75,14 +75,15 @@ def generate_payment(payment_schedule):
 				"""Reference"""
 				############### structured fees
 				fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t.student],["outstanding_amount","!=",0],
-															["fee_structure","!=",""]],fields=['name','due_date','program'],order_by="due_date asc")																		
+															["fee_structure","!=",""],["hostel_fee_structure","=",""]],fields=['name','due_date','program'],order_by="due_date asc")																		
 				structured_fees=[]
 				for t1 in fee_voucher_list:
 					due_date=t1['due_date']
 					program=t1['program']
-					fee_comp=frappe.get_all("Fee Component",filters=[["parent","=",t1['name']]],fields=['name','idx','parent','fees_category','description','amount','waiver_type',
-																										'percentage','waiver_amount','total_waiver_amount','receivable_account','income_account',
-																										'company','grand_fee_amount','outstanding_fees'])
+					fee_comp=frappe.get_all("Fee Component",filters=[["parent","=",t1['name']],["outstanding_fees","!=",0]],
+											fields=['name','idx','parent','fees_category','description','amount','waiver_type',
+													'percentage','waiver_amount','total_waiver_amount','receivable_account','income_account',
+													'company','grand_fee_amount','outstanding_fees'])
 					for z in fee_comp:
 						z['due_date']=due_date
 						z['program']=program
@@ -91,16 +92,14 @@ def generate_payment(payment_schedule):
 					structured_fees = sorted(structured_fees , key=lambda elem: "%02d %s" % (elem['idx'], elem['due_date']))		
 				structured_fees_hostel=[]
 				hostel_fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t.student],["outstanding_amount","!=",0],
-															["hostel_fee_structure","!=",""]],fields=['name','due_date','program'],order_by="due_date asc")
-				print("\n\n\n\n\n\n")
-				print(hostel_fee_voucher_list)											
+															["hostel_fee_structure","!=",""],["fee_structure","=",""],],fields=['name','due_date','program'],order_by="due_date asc")										
 				for t1 in hostel_fee_voucher_list:
 					due_date=t1['due_date']
 					program=t1['program']
-					fee_comp=frappe.get_all("Fee Component",filters=[["parent","=",t1['name']]],fields=['name','idx','parent','fees_category','description','amount','waiver_type',
-																										'percentage','waiver_amount','total_waiver_amount','receivable_account','income_account',
-																										'company','grand_fee_amount','outstanding_fees'])
-					print(fee_comp)
+					fee_comp=frappe.get_all("Fee Component",filters=[["parent","=",t1['name']],["outstanding_fees","!=",0]],
+											fields=['name','idx','parent','fees_category','description','amount','waiver_type',
+													'percentage','waiver_amount','total_waiver_amount','receivable_account','income_account',
+													'company','grand_fee_amount','outstanding_fees'])
 					for z in fee_comp:
 						z['due_date']=due_date
 						z['program']=program
@@ -114,13 +113,14 @@ def generate_payment(payment_schedule):
 				#################### unstructured fees hostel
 				unstructured_fees_hostel=[]
 				unstructured_fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t.student],["outstanding_amount","!=",0],
-															["hostel_fee_structure","=",""]],fields=['name','due_date','program'],order_by="due_date asc")
+															["hostel_fee_structure","=",""],["fee_structure","=",""]],fields=['name','due_date','program'],order_by="due_date asc")											
 				for t1 in unstructured_fee_voucher_list:
 					due_date=t1['due_date']
 					program=t1['program']
-					fee_comp=frappe.get_all("Fee Component",filters=[["parent","=",t1['name']]],fields=['name','idx','parent','fees_category','description','amount','waiver_type',
-																										'percentage','waiver_amount','total_waiver_amount','receivable_account','income_account',
-																										'company','grand_fee_amount','outstanding_fees'])
+					fee_comp=frappe.get_all("Fee Component",filters=[["parent","=",t1['name']],["outstanding_fees","!=",0]],
+											fields=['name','idx','parent','fees_category','description','amount','waiver_type',
+													'percentage','waiver_amount','total_waiver_amount','receivable_account','income_account',
+													'company','grand_fee_amount','outstanding_fees'])
 					for z in fee_comp:
 						z['due_date']=due_date
 						z['program']=program
@@ -140,7 +140,7 @@ def generate_payment(payment_schedule):
 								'reference_name': t1['parent'],
 								"bill_no": "",
 								"due_date":t1['due_date'],
-								'total_amount': t1["grand_fee_amount"],
+								'total_amount': t1["outstanding_fees"],
 								'outstanding_amount': t1["grand_fee_amount"],
 								'allocated_amount': t1["outstanding_fees"],
 								'program':t1["program"],
@@ -153,8 +153,8 @@ def generate_payment(payment_schedule):
 								'reference_name': t1['parent'],
 								"bill_no": "",
 								"due_date":t1['due_date'],
-								'total_amount': t1["grand_fee_amount"],
-								'outstanding_amount': t1["grand_fee_amount"],
+								'total_amount': t1["outstanding_fees"],
+								'outstanding_amount': t1["outstanding_fees"],
 								'allocated_amount': allocate_amount,
 								'program':t1["program"],
 								'fees_category':t1['fees_category'],
@@ -179,9 +179,9 @@ def generate_payment(payment_schedule):
 				payment_entry.submit()
 				frappe.db.set_value("Auto Reconciliation child",t.name,"payment_voucher",payment_entry.name)
 				###################### end
-			except Exception as e:
-				error = True
-				err_msg = frappe.local.message_log and "\n\n".join(frappe.local.message_log) or cstr(e)
+			# except Exception as e:
+			# 	error = True
+			# 	err_msg = frappe.local.message_log and "\n\n".join(frappe.local.message_log) or cstr(e)
  
 		elif outstanding_amount==0: ##### testing correction
 			try:
