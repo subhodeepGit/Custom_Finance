@@ -28,7 +28,8 @@ frappe.ui.form.on('Fees', {
 				filters: {
 					'company': d.company,
 					'account_type': d.account_type = 'Income Account',
-					'is_group': d.is_group = 0
+					'is_group': d.is_group = 0,
+                    "liability":0,
 				}
 			};
 		});
@@ -196,7 +197,6 @@ frappe.ui.form.on('Fees', {
                 }
             };
         });
-
     }
 })
 // frappe.ui.form.on("Fee Component", "amount", function(frm, cdt, cdn) {
