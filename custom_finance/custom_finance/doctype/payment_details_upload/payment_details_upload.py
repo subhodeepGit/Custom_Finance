@@ -33,7 +33,7 @@ class PaymentDetailsUpload(Document):
 				frappe.db.set_value("Payment Details Upload",self.name,'reconciliation_status',0)
 				frappe.db.set_value("Payment Details Upload",self.name,'brs_name','')
 				frappe.msgprint("paid amount does not match with Bank Data")
-		frappe.msgprint("Please Wait for 24 hr-48 hr for Reconciled if Not-Reconciled")
+		frappe.msgprint("Please Wait for 24 hr-48 hr for Money Receipt")
 	def on_cancel(self):
 		if self.payment_status==1:
 			frappe.throw("Payment status Updated for the UTR no. So it can't be canceled")			
