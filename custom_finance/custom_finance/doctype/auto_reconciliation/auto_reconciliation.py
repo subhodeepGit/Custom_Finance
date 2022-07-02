@@ -75,7 +75,8 @@ def generate_payment(payment_schedule):
 				"""Reference"""
 				############### structured fees
 				fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t.student],["outstanding_amount","!=",0],
-															["fee_structure","!=",""],["hostel_fee_structure","=",""]],fields=['name','due_date','program'],order_by="due_date asc")																		
+															["fee_structure","!=",""],["hostel_fee_structure","=",""]],fields=['name','due_date','program','company'],
+															order_by="due_date asc")																		
 				structured_fees=[]
 				for t1 in fee_voucher_list:
 					due_date=t1['due_date']
@@ -141,7 +142,7 @@ def generate_payment(payment_schedule):
 								"bill_no": "",
 								"due_date":t1['due_date'],
 								'total_amount': t1["outstanding_fees"],
-								'outstanding_amount': t1["grand_fee_amount"],
+								'outstanding_amount': t1["outstanding_fees"],
 								'allocated_amount': t1["outstanding_fees"],
 								'program':t1["program"],
 								'fees_category':t1['fees_category'],
@@ -174,7 +175,9 @@ def generate_payment(payment_schedule):
 				payment_entry.reference_no=t.utr_no
 				payment_entry.reference_date=data_of_clearing
 				"""Cost Center"""
-				payment_entry.cost_center="Main - KP"
+				company_name=fee_voucher_list[0]['company']
+				cost_cente=frappe.get_all("Company",{'name':company_name},['cost_center'])
+				payment_entry.cost_center=cost_cente[0]['cost_center']
 				payment_entry.save()
 				payment_entry.submit()
 				frappe.db.set_value("Auto Reconciliation child",t.name,"payment_voucher",payment_entry.name)
@@ -213,7 +216,8 @@ def generate_payment(payment_schedule):
 					"total_amount":amount
 				})
 				"""Accounting Dimensions"""
-				payment_refund.cost_center="Main - KP"
+				cost_cente=frappe.get_all("Company",['cost_center'])
+				payment_refund.cost_center=cost_cente[0]['cost_center']
 				"""Transaction ID"""
 				payment_refund.reference_no=t.utr_no
 				payment_refund.reference_date=data_of_clearing
