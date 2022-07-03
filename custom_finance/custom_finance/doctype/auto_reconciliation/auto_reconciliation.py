@@ -41,7 +41,7 @@ def generate_payment(payment_schedule):
 		outstanding_amount=t.outstanding_amount
 		amount=t.amount
 		if outstanding_amount!=0:
-			# try:
+			try:
 				############################################### Data entry in Payment entry
 				payment_entry=frappe.new_doc("Payment Entry")
 				"""Type of Payment"""
@@ -175,16 +175,15 @@ def generate_payment(payment_schedule):
 				payment_entry.reference_no=t.utr_no
 				payment_entry.reference_date=data_of_clearing
 				"""Cost Center"""
-				company_name=fee_voucher_list[0]['company']
-				cost_cente=frappe.get_all("Company",{'name':company_name},['cost_center'])
+				cost_cente=frappe.get_all("Company",['cost_center'])
 				payment_entry.cost_center=cost_cente[0]['cost_center']
 				payment_entry.save()
 				payment_entry.submit()
 				frappe.db.set_value("Auto Reconciliation child",t.name,"payment_voucher",payment_entry.name)
 				###################### end
-			# except Exception as e:
-			# 	error = True
-			# 	err_msg = frappe.local.message_log and "\n\n".join(frappe.local.message_log) or cstr(e)
+			except Exception as e:
+				error = True
+				err_msg = frappe.local.message_log and "\n\n".join(frappe.local.message_log) or cstr(e)
  
 		elif outstanding_amount==0: ##### testing correction
 			try:
