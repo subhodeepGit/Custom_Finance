@@ -54,6 +54,7 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Unique Transaction Reference (UTR) ",
+   "length": 25,
    "reqd": 1,
    "unique": 1
   },
@@ -123,7 +124,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-06-21 16:57:24.473073",
+ "modified": "2022-07-08 11:11:29.246390",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Bank Reconciliation Statement",
