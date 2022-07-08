@@ -1,154 +1,155 @@
 {
- "actions": [],
- "allow_rename": 1,
- "autoname": "naming_series:",
- "creation": "2022-05-29 18:34:04.624931",
- "doctype": "DocType",
- "editable_grid": 1,
- "engine": "InnoDB",
- "field_order": [
-  "naming_series",
-  "student",
-  "student_name",
-  "amended_from",
-  "type_of_transaction",
-  "unique_transaction_reference_utr",
-  "amount",
-  "bank_holder_name",
-  "bank_name",
-  "date_of_transaction",
-  "remarks",
-  "reconciliation_status",
-  "payment_status",
-  "payment_id",
-  "brs_name"
- ],
- "fields": [
-  {
-   "fieldname": "naming_series",
-   "fieldtype": "Select",
-   "label": "Series",
-   "options": "ACC-PMD-.YYYY.-"
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "Payment Details Upload",
-   "print_hide": 1,
-   "read_only": 1
-  },
-  {
-   "fieldname": "type_of_transaction",
-   "fieldtype": "Select",
-   "label": "Type of Transaction",
-   "options": "RTGS\nNEFT\nIMPS",
-   "reqd": 1
-  },
-  {
-   "fieldname": "unique_transaction_reference_utr",
-   "fieldtype": "Data",
-   "label": "Unique Transaction Reference (UTR) ",
-   "length": 25,
-   "reqd": 1
-  },
-  {
-   "fieldname": "amount",
-   "fieldtype": "Currency",
-   "label": "Amount",
-   "reqd": 1
-  },
-  {
-   "fetch_from": "student.title",
-   "fieldname": "student_name",
-   "fieldtype": "Data",
-   "label": "Student Name",
-   "read_only": 1
-  },
-  {
-   "fieldname": "bank_holder_name",
-   "fieldtype": "Data",
-   "label": "Account Holder Name",
-   "reqd": 1
-  },
-  {
-   "fieldname": "bank_name",
-   "fieldtype": "Select",
-   "label": "Bank Name",
-   "options": "\nBank of Baroda\nBank of India\nBank of Maharashtra\nCanara Bank\nCentral Bank of India\nIndian Bank\nIndian Overseas Bank\nPunjab and Sind Bank\nPunjab National Bank\nState Bank of India\nUCO Bank\nUnion Bank of India\nAxis Bank\nBandhan Bank\nCSB Bank\nCity Union Bank\nDCB Bank\nDhanlaxmi Bank\nFederal Bank\nHDFC Bank\nICICI Bank\nIDBI Bank\nIDFC First Bank\nIndusInd Bank\nKarnataka Bank\nKarur Vysya Bank\nKotak Mahindra Bank\nNainital Bank\nRBL Bank\nSouth Indian Bank\nTamilnad Mercantile Bank\nYes Bank"
-  },
-  {
-   "fieldname": "date_of_transaction",
-   "fieldtype": "Date",
-   "label": "Date of Transaction",
-   "reqd": 1
-  },
-  {
-   "fieldname": "student",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Student",
-   "options": "Student",
-   "reqd": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "reconciliation_status",
-   "fieldtype": "Check",
-   "label": "Reconciliation Status",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "payment_status",
-   "fieldtype": "Check",
-   "label": "Payment Status",
-   "read_only": 1
-  },
-  {
-   "fieldname": "payment_id",
-   "fieldtype": "Data",
-   "label": "Payment id",
-   "read_only": 1
-  },
-  {
-   "fieldname": "brs_name",
-   "fieldtype": "Data",
-   "label": "BRS Name",
-   "read_only": 1
-  },
-  {
-   "fieldname": "remarks",
-   "fieldtype": "Text",
-   "label": "Remarks "
-  }
- ],
- "index_web_pages_for_search": 1,
- "is_submittable": 1,
- "links": [],
- "modified": "2022-07-08 11:13:30.587424",
- "modified_by": "Administrator",
- "module": "Custom Finance",
- "name": "Payment Details Upload",
- "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  }
- ],
- "sort_field": "modified",
- "sort_order": "DESC",
- "track_changes": 1,
- "track_seen": 1,
- "track_views": 1
-}
+    "actions": [],
+    "allow_rename": 1,
+    "autoname": "naming_series:",
+    "creation": "2022-05-29 18:34:04.624931",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+     "naming_series",
+     "student",
+     "student_name",
+     "amended_from",
+     "type_of_transaction",
+     "unique_transaction_reference_utr",
+     "amount",
+     "bank_holder_name",
+     "bank_name",
+     "date_of_transaction",
+     "remarks",
+     "reconciliation_status",
+     "payment_status",
+     "payment_id",
+     "brs_name"
+    ],
+    "fields": [
+     {
+      "fieldname": "naming_series",
+      "fieldtype": "Select",
+      "label": "Series",
+      "options": "ACC-PMD-.YYYY.-"
+     },
+     {
+      "fieldname": "amended_from",
+      "fieldtype": "Link",
+      "label": "Amended From",
+      "no_copy": 1,
+      "options": "Payment Details Upload",
+      "print_hide": 1,
+      "read_only": 1
+     },
+     {
+      "fieldname": "type_of_transaction",
+      "fieldtype": "Select",
+      "label": "Type of Transaction",
+      "options": "RTGS\nNEFT\nIMPS",
+      "reqd": 1
+     },
+     {
+      "allow_on_submit": 1,
+      "fieldname": "unique_transaction_reference_utr",
+      "fieldtype": "Data",
+      "label": "Unique Transaction Reference (UTR) ",
+      "reqd": 1,
+      "unique": 1
+     },
+     {
+      "fieldname": "amount",
+      "fieldtype": "Currency",
+      "label": "Amount",
+      "reqd": 1
+     },
+     {
+      "fetch_from": "student.title",
+      "fieldname": "student_name",
+      "fieldtype": "Data",
+      "label": "Student Name",
+      "read_only": 1
+     },
+     {
+      "fieldname": "bank_holder_name",
+      "fieldtype": "Data",
+      "label": "Account Holder Name",
+      "reqd": 1
+     },
+     {
+      "fieldname": "bank_name",
+      "fieldtype": "Select",
+      "label": "Bank Name",
+      "options": "\nBank of Baroda\nBank of India\nBank of Maharashtra\nCanara Bank\nCentral Bank of India\nIndian Bank\nIndian Overseas Bank\nPunjab and Sind Bank\nPunjab National Bank\nState Bank of India\nUCO Bank\nUnion Bank of India\nAxis Bank\nBandhan Bank\nCSB Bank\nCity Union Bank\nDCB Bank\nDhanlaxmi Bank\nFederal Bank\nHDFC Bank\nICICI Bank\nIDBI Bank\nIDFC First Bank\nIndusInd Bank\nKarnataka Bank\nKarur Vysya Bank\nKotak Mahindra Bank\nNainital Bank\nRBL Bank\nSouth Indian Bank\nTamilnad Mercantile Bank\nYes Bank"
+     },
+     {
+      "fieldname": "date_of_transaction",
+      "fieldtype": "Date",
+      "label": "Date of Transaction",
+      "reqd": 1
+     },
+     {
+      "fieldname": "student",
+      "fieldtype": "Link",
+      "in_list_view": 1,
+      "label": "Student",
+      "options": "Student",
+      "reqd": 1
+     },
+     {
+      "default": "0",
+      "fieldname": "reconciliation_status",
+      "fieldtype": "Check",
+      "label": "Reconciliation Status",
+      "read_only": 1
+     },
+     {
+      "default": "0",
+      "fieldname": "payment_status",
+      "fieldtype": "Check",
+      "label": "Payment Status",
+      "read_only": 1
+     },
+     {
+      "fieldname": "payment_id",
+      "fieldtype": "Data",
+      "label": "Payment id",
+      "read_only": 1
+     },
+     {
+      "fieldname": "brs_name",
+      "fieldtype": "Data",
+      "label": "BRS Name",
+      "read_only": 1
+     },
+     {
+      "fieldname": "remarks",
+      "fieldtype": "Text",
+      "label": "Remarks "
+     }
+    ],
+    "index_web_pages_for_search": 1,
+    "is_submittable": 1,
+    "links": [],
+    "modified": "2022-07-08 15:25:57.488279",
+    "modified_by": "Administrator",
+    "module": "Custom Finance",
+    "name": "Payment Details Upload",
+    "owner": "Administrator",
+    "permissions": [
+     {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+     }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1,
+    "track_seen": 1,
+    "track_views": 1
+   }

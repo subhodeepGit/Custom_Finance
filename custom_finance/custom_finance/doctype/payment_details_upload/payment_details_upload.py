@@ -14,9 +14,9 @@ class PaymentDetailsUpload(Document):
 			pass
 		else:
 			frappe.throw("Posting date can't in future")
+		# self.set_value()	
 	def on_submit(self):
-		brs_info=frappe.db.get_all("Bank Reconciliation Statement",{'docstatus':1,'unique_transaction_reference_utr':self.unique_transaction_reference_utr,
-																	"type_of_transaction":self.type_of_transaction},['name','amount','date'])
+		brs_info=frappe.db.get_all("Bank Reconciliation Statement",{'docstatus':1,'unique_transaction_reference_utr':self.unique_transaction_reference_utr},['name','amount','date','type_of_transaction'])
 		if not brs_info:
 			self.reconciliation_status=0
 		else:
@@ -24,15 +24,30 @@ class PaymentDetailsUpload(Document):
 				self.reconciliation_status=1
 				self.brs_name=brs_info[0]['name']
 				self.date_of_transaction=brs_info[0]['date']
+				# self.type_of_transaction=brs_info[0]['type_of_transaction']
 				frappe.db.set_value("Payment Details Upload",self.name,'reconciliation_status',1)
 				frappe.db.set_value("Payment Details Upload",self.name,'brs_name',brs_info[0]['name'])
-				frappe.db.set_value("Payment Details Upload",self.name,'date_of_transaction',brs_info[0]['date'])
+				
+				
+
 			else:
 				self.reconciliation_status=0
 				self.brs_name=''
 				frappe.db.set_value("Payment Details Upload",self.name,'reconciliation_status',0)
 				frappe.db.set_value("Payment Details Upload",self.name,'brs_name','')
 				frappe.msgprint("paid amount does not match with Bank Data")
+		
+		pay_info=frappe.db.get_all("Bank Reconciliation Statement",{'docstatus':1,'unique_transaction_reference_utr':self.unique_transaction_reference_utr},['name','amount'])	
+		if len(pay_info)>0:															
+			if pay_info[0]['amount']==self.amount or pay_info[0]['unique_transaction_reference_utr']==self.unique_transaction_reference_utr:
+				frappe.db.set_value("Bank Reconciliation Statement",pay_info[0]['name'],'type_of_transaction',self.type_of_transaction)	
+				
+	# def set_value(self):	
+	# 	pay_info=frappe.db.get_all("Bank Reconciliation Statement",{'docstatus':1,'unique_transaction_reference_utr':'self.unique_transaction_reference_utr'},['name','amount'])	
+	# 	if len(pay_info)>0:															
+	# 		if pay_info[0]['amount']==self.amount:
+	# 			frappe.db.set_value("Payment Details Upload",pay_info[0]['name'],'type_of_transaction',self.type_of_transaction)	
+		
 		frappe.msgprint("Please Wait for 24 hr-48 hr for Money Receipt. Money Receipt will be sent to your mail.")
 	def on_cancel(self):
 		if self.payment_status==1:
