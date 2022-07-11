@@ -5,6 +5,7 @@ import frappe
 from frappe.model.document import Document
 from datetime import date 
 import pandas as pd
+from custom_finance.custom_finance.notification.custom_notification import unreconciled_utr
 
 class PaymentDetailsUpload(Document):
 	def validate(self):
@@ -16,6 +17,7 @@ class PaymentDetailsUpload(Document):
 			frappe.throw("Posting date can't in future")
 		# self.set_value()	
 	def on_submit(self):
+		unreconciled_utr(self)
 		brs_info=frappe.db.get_all("Bank Reconciliation Statement",{'docstatus':1,'unique_transaction_reference_utr':self.unique_transaction_reference_utr},['name','amount','date','type_of_transaction'])
 		if not brs_info:
 			self.reconciliation_status=0
@@ -60,4 +62,5 @@ def utr_callback(party=None, mode_of_payment=None):
 		return get_utr[0]['unique_transaction_reference_utr']
 	else:
 		return ''	
+
 

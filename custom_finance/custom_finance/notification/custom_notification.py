@@ -19,6 +19,20 @@ def payment_entry_submit(doc):
     attachments = [frappe.attach_print(doc.doctype, doc.name, file_name=doc.name, print_format='Payment Entry Money Recipt')]
     send_mail(recipients,'Payment Successful',msg,attachments)
 
+
+def unreconciled_utr(doc):
+    msg="""<p><b>Payment Reconciled</b></p><br>"""
+    msg+="""<b>Dear Student,</b><br>"""
+    msg+="""<p>Your Payment details Upload are not reconciled yet. You can check your UTR No. if Your UTR No. and all details are correct then ignore this mail. </p><br>"""
+    unreconciliated_data= frappe.get_all("Payment Details Upload",{"name":doc.get('name'),"reconciliation_status":0,"payment_status":0}, ["student"])
+    # [{"student_email_id":"adas@kiit.ac"}]
+    recipients=[]
+    for t in unreconciliated_data:
+        data= frappe.db.get_value("Student",{"name":t['student']},"student_email_id")
+        recipients.append(data)
+    attachments = [frappe.attach_print(doc.doctype, doc.name, file_name=doc.name, print_format='')]
+    send_mail(recipients,'Payment Reconciled',msg,attachments)
+
 def send_mail(recipients,subject,message,attachments):
     if has_default_email_acc():
         frappe.sendmail(recipients=recipients,subject=subject,message=message,attachments=attachments,with_container=True)

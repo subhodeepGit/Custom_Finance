@@ -142,7 +142,12 @@ doc_events = {
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
+scheduler_events = {
+	"cron": {
+		"00 09 * * 1,3,5": [
+			"custom_finance.custom_finance.doctype.payment_details_upload.payment_details_upload.on_submit"
+		]
+	}
 # 	"all": [
 # 		"custom_finance.tasks.all"
 # 	],
@@ -158,7 +163,7 @@ doc_events = {
 # 	"monthly": [
 # 		"custom_finance.tasks.monthly"
 # 	]
-# }
+}
 
 # Testing
 # -------
@@ -244,3 +249,12 @@ after_migrate = [
         'custom_finance.patches.migrate_patch.add_roles',
         'custom_finance.patches.migrate_patch.set_custom_role_permission',
 ]
+
+default_mail_footer = """
+	<span>
+		Sent via
+		<a class="text-muted" href="https://soulunileaders.com" target="_blank">
+			SOUL
+		</a>
+	</span>
+"""
