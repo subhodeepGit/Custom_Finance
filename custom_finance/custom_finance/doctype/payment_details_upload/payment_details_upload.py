@@ -9,6 +9,7 @@ from custom_finance.custom_finance.notification.custom_notification import unrec
 
 class PaymentDetailsUpload(Document):
 	def validate(self):
+		validate_urt(self)
 		today = date.today()
 		date_of_transaction=pd.to_datetime(pd.to_datetime(self.date_of_transaction).date())
 		if date_of_transaction<=today:
@@ -63,4 +64,7 @@ def utr_callback(party=None, mode_of_payment=None):
 	else:
 		return ''	
 
-
+def validate_urt(self):
+	data=frappe.get_all("Payment Details Upload",{"unique_transaction_reference_utr":self.unique_transaction_reference_utr,"docstatus":1})
+	if len(data)!=0:
+		frappe.throw("UTR should be Unique")
