@@ -39,7 +39,7 @@ frappe.ui.form.on('Fees', {
 		frm.set_value("components" ,"");
 		if (frm.doc.fee_structure) {
 			frappe.call({
-				method: "custom_finance.custom_finance.validations.fees.py",
+				method: "custom_finance.custom_finance.validations.fees.get_fee_components",
 				args: {
 					"fee_structure": frm.doc.fee_structure
 				},
@@ -52,9 +52,14 @@ frappe.ui.form.on('Fees', {
 							row.income_account = d.income_account;
 							row.description = d.description;
 							row.amount = d.amount;
-							row.receivable_account=d.receivable_account;
                             row.grand_fee_amount=d.grand_fee_amount;
                             row.outstanding_fees=d.outstanding_fees;
+                            
+                            row.waiver_type=d.waiver_type;
+                            row.percentage=d.percentage;
+                            row.waiver_amount=d.waiver_amount;
+                            row.total_waiver_amount=d.total_waiver_amount;
+                            
 						});
 					}
 					refresh_field("components");

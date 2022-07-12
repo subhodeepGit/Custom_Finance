@@ -152,12 +152,15 @@ def make_refund_fees(source_name, target_doc=None):
     return doclist
 @frappe.whitelist()
 def get_fee_components(fee_structure):
-	"""Returns Fee Components.
+    """Returns Fee Components.
 
-	:param fee_structure: Fee Structure.
-	"""
-	if fee_structure:
-		fs = frappe.get_all("Fee Component", fields=["fees_category", "description", "amount"] , filters={"parent": fee_structure}, order_by= "idx asc")
-		return fs
+    :param fee_structure: Fee Structure.
+    """
+    if fee_structure:
+        fs = frappe.get_all("Fee Component", fields=["fees_category", "description", "amount","receivable_account",
+                                                    "income_account","grand_fee_amount","outstanding_fees","waiver_type","percentage","waiver_amount",
+                                                    "total_waiver_amount"] , 
+                                                filters={"parent": fee_structure}, order_by= "idx asc")
+        return fs
 
 
