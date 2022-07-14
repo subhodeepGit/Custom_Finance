@@ -4,7 +4,7 @@ import frappe
 def cron():
 
     msg="""<b>Dear Student,</b><br>"""
-    msg+="""<p>Your Payment Details Upload are not reconciled yet. You can check your UTR No. If your UTR No. and all details are correct then ignore this mail. </p><br>"""
+    msg+="""<p>Your Payment Details Upload are not reconciled yet. You can check your UTR number If your UTR number and all details are correct then ignore this mail. </p><br>"""
     unreconciliated_data= frappe.get_all("Payment Details Upload",{"reconciliation_status":0,"payment_status":0,"docstatus":1}, ["student"])
     recipients=[]
     for t in unreconciliated_data:

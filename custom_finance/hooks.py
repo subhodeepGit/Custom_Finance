@@ -166,7 +166,7 @@ doc_events = {
 # }
 scheduler_events = {
 	"cron": {
-		"* * * * *": [
+		"00 09 * * 1,3,5": [
 			"custom_finance.tasks.cron"
 		]
 	},
