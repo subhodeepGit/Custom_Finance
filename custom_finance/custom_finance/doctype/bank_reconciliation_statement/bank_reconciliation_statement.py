@@ -6,6 +6,7 @@ from frappe.model.document import Document
 
 class BankReconciliationStatement(Document):
 	def validate(doc):
+		urt_varification(doc)
 		doc.total_allocated_amount=doc.amount
 	def on_submit(doc):
 		st_payment_upload=frappe.db.get_all("Payment Details Upload",{'docstatus':1,'unique_transaction_reference_utr':doc.unique_transaction_reference_utr},['name','amount'])
@@ -28,4 +29,9 @@ class BankReconciliationStatement(Document):
 			else:
 				frappe.throw("Payment status Updated for the UTR no. So it can't be canceled")	
 		if doc.total_allocated_amount==0:
-			frappe.throw("Payment status Updated for the UTR no. So it can't be canceled")																		
+			frappe.throw("Payment status Updated for the UTR no. So it can't be canceled")	
+
+def urt_varification(doc):
+	utr_data=frappe.get_all("Bank Reconciliation Statement",{"unique_transaction_reference_utr":doc.unique_transaction_reference_utr,"docstatus":1})
+	if utr_data:
+		frappe.throw("Urt Should be unique")																	
