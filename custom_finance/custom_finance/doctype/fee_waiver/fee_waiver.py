@@ -594,23 +594,23 @@ def make_reverse_gl_entries(gl_entries=None, voucher_type=None, voucher_no=None,
 		for t in gl_entries:
 			gl_name.append(t['name'])	
 		set_as_cancel(gl_entries[0]['voucher_type'], gl_entries[0]['voucher_no'],gl_name)
-		for entry in gl_entries:
-			entry['name'] = None
-			debit = entry.get('debit', 0)
-			credit = entry.get('credit', 0)
-			debit_in_account_currency = entry.get('debit_in_account_currency', 0)
-			credit_in_account_currency = entry.get('credit_in_account_currency', 0)
+		# for entry in gl_entries:
+		# 	entry['name'] = None
+		# 	debit = entry.get('debit', 0)
+		# 	credit = entry.get('credit', 0)
+		# 	debit_in_account_currency = entry.get('debit_in_account_currency', 0)
+		# 	credit_in_account_currency = entry.get('credit_in_account_currency', 0)
 
-			entry['debit'] = credit
-			entry['credit'] = debit
-			entry['debit_in_account_currency'] = credit_in_account_currency
-			entry['credit_in_account_currency'] = debit_in_account_currency
+		# 	entry['debit'] = credit
+		# 	entry['credit'] = debit
+		# 	entry['debit_in_account_currency'] = credit_in_account_currency
+		# 	entry['credit_in_account_currency'] = debit_in_account_currency
 
-			entry['remarks'] = "On cancellation of " + entry['voucher_no']
-			entry['is_cancelled'] = 1
+		# 	entry['remarks'] = "On cancellation of " + entry['voucher_no']
+		# 	entry['is_cancelled'] = 1
 
-			if entry['debit'] or entry['credit']:
-				make_entry(entry, adv_adj, "Yes")
+		# 	if entry['debit'] or entry['credit']:
+		# 		make_entry(entry, adv_adj, "Yes")
 
 def validate_accounting_period(gl_map):
 	accounting_periods = frappe.db.sql(""" SELECT
@@ -655,10 +655,16 @@ def set_as_cancel(voucher_type, voucher_no,gl_name):
 		Set is_cancelled=1 for perticular gl entries for the voucher
 	"""
 	for t in gl_name:
+		# frappe.set_value("GL Entry",t,"is_cancelled",1) 
 		frappe.db.sql("""UPDATE `tabGL Entry` SET is_cancelled = 1,
 			modified=%s, modified_by=%s
-			where voucher_type=%s and voucher_no=%s and name=%s and is_cancelled = 0""",
-			(now(), frappe.session.user, voucher_type,t,voucher_no))
+			where name=%s """,
+			(now(), frappe.session.user,t))
+	# for t in gl_name:
+	# 	frappe.db.sql("""UPDATE `tabGL Entry` SET is_cancelled = 1,
+	# 		modified=%s, modified_by=%s
+	# 		where voucher_type=%s and voucher_no=%s and name=%s and is_cancelled = 0""",
+	# 		(now(), frappe.session.user, voucher_type,t,voucher_no))
 
 def set_as_cancel_payment(voucher_type, voucher_no):
 	"""
