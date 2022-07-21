@@ -567,265 +567,265 @@
   "block_modules": [
    {
     "module": "Core",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Workflow",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Custom",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Desk",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Printing",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Data Migration",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Social",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Event Streaming",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Buying",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Selling",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "HR",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Stock",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Utilities",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Website",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Email",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Geo",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Integrations",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Contacts",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Chat",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Automation",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "ui_customization",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Projects",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "CRM",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Setup",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Manufacturing",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Support",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Shopping Cart",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Portal",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Regional",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Restaurant",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Hotels",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Quality Management",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Loan Management",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Telephony",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Assets",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Maintenance",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "ERPNext Integrations",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Healthcare",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Hub Node",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Communication",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Payroll",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Agriculture",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Non Profit",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "E-commerce",
-    "parent": "Education Administartor",
+    "parent": "Education Administrator",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    }
@@ -833,8 +833,8 @@
   "docstatus": 0,
   "doctype": "Module Profile",
   "modified": "2022-05-16 16:31:05.363626",
-  "module_profile_name": "Education Administartor",
-  "name": "Education Administartor",
+  "module_profile_name": "Education Administrator",
+  "name": "Education Administrator",
   "parent": null,
   "parentfield": null,
   "parenttype": null
