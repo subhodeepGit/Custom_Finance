@@ -256,3 +256,10 @@ def recon_rtgs_neft_on_cancel(self):
         if len(st_upload_data)!=0:
             frappe.db.set_value("Payment Details Upload",st_upload_data[0]['name'],"payment_status",0)
             frappe.db.set_value("Payment Details Upload",st_upload_data[0]['name'],"payment_id",'') 
+
+
+@frappe.whitelist()
+def get_cost_center():
+	a=frappe.get_all("Company",['cost_center'])
+	data = a[0]['cost_center']
+	return data

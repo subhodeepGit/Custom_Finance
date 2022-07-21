@@ -759,6 +759,12 @@ def get_program_enrollment(student):
 	if len(data)>0:
 		return data[0]
 
+@frappe.whitelist()
+def get_cost_center():
+	a=frappe.get_all("Company",['cost_center'])
+	data = a[0]['cost_center']
+	return data
+
 
 @frappe.whitelist()
 def get_outstanding_fees(args):

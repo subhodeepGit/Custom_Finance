@@ -138,6 +138,17 @@ frappe.ui.form.on('Payment Refund', {
 				}
 			});
 		}
+	},
+	company: function(frm) {
+		frappe.call({
+            method: "custom_finance.custom_finance.doctype.fee_waiver.fee_waiver.get_cost_center",
+            callback: function(r) { 
+                if (r.message){
+                    frm.set_value("cost_center",r.message)
+                }
+            } 
+            
+        });
 	}	
 });
 
