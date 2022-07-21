@@ -654,12 +654,13 @@ def set_as_cancel(voucher_type, voucher_no,gl_name):
 	"""
 		Set is_cancelled=1 for perticular gl entries for the voucher
 	"""
+	remarks= "On cancellation of " + voucher_no
 	for t in gl_name:
 		# frappe.set_value("GL Entry",t,"is_cancelled",1) 
-		frappe.db.sql("""UPDATE `tabGL Entry` SET is_cancelled = 1,
+		frappe.db.sql("""UPDATE `tabGL Entry` SET is_cancelled = 1, remarks="%s", 
 			modified=%s, modified_by=%s
 			where name=%s """,
-			(now(), frappe.session.user,t))
+			(now(), frappe.session.user,t,remarks))
 	# for t in gl_name:
 	# 	frappe.db.sql("""UPDATE `tabGL Entry` SET is_cancelled = 1,
 	# 		modified=%s, modified_by=%s
