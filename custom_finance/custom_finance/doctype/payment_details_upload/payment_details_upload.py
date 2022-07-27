@@ -5,6 +5,7 @@ import frappe
 from frappe.model.document import Document
 from datetime import date 
 import pandas as pd
+from kp_edtec.kp_edtec.doctype.user_permission import add_user_permission
 
 class PaymentDetailsUpload(Document):
 	def validate(self):
@@ -15,7 +16,9 @@ class PaymentDetailsUpload(Document):
 			pass
 		else:
 			frappe.throw("Posting date can't in future")
-		# self.set_value()	
+		# self.set_value()
+		if not self.get("__islocal"):
+			set_user_permission(self)	
 	def on_submit(self):
 		brs_info=frappe.db.get_all("Bank Reconciliation Statement",{'docstatus':1,'unique_transaction_reference_utr':self.unique_transaction_reference_utr},['name','amount','date','type_of_transaction'])
 		if not brs_info:
@@ -66,3 +69,7 @@ def validate_urt(self):
 	data=frappe.get_all("Payment Details Upload",{"unique_transaction_reference_utr":self.unique_transaction_reference_utr,"docstatus":1})
 	if len(data)!=0:
 		frappe.throw("UTR should be Unique")
+
+def set_user_permission(self):
+    for stu in frappe.get_all("Student",{"name":self.student},['student_email_id']):
+        add_user_permission("Payment Details Upload",self.name, stu.student_email_id, self)

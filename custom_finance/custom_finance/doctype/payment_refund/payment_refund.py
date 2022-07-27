@@ -9,9 +9,12 @@ from frappe import ValidationError, _, scrub, throw
 from frappe.utils import cint, comma_or, flt, getdate, nowdate
 from numpy import append
 from six import iteritems, string_types
+from kp_edtec.kp_edtec.doctype.user_permission import add_user_permission
 
 class PaymentRefund(Document):
     def validate(self):
+        if not self.get("__islocal"):
+            set_user_permission(self)
         recon_rtgs_neft(self)
         if self.payment_type == "Pay":
             tot = 0
@@ -34,21 +37,27 @@ class PaymentRefund(Document):
             if d.allocated_amount < 0:
                 frappe.throw("Allocated amount cannot be negative")
 
-
-
+###############################
     def on_submit(self):
+        # set_user_permission(self)
         if self.payment_type == "Pay":
             je_pay(self)
         elif self.payment_type == "Receive":
             je_receive(self)
         recon_rtgs_neft_on_submit(self)
+        # create_user_permission(self)
 
     def on_cancel(self):
         cancel_doc = frappe.get_doc("Journal Entry",self.jv_entry_voucher_no)
         cancel_doc.cancel()
         recon_rtgs_neft_on_cancel(self)
 
-        
+
+
+def set_user_permission(self):
+    for stu in frappe.get_all("Student",{"name":self.party},['student_email_id']):
+        add_user_permission("Payment Refund",self.name, stu.student_email_id, self)
+    
 
 @frappe.whitelist()
 def paid_from_fetch(mode_of_payment,company):
@@ -263,3 +272,12 @@ def get_cost_center():
 	a=frappe.get_all("Company",['cost_center'])
 	data = a[0]['cost_center']
 	return data
+
+# def create_user_permission(doc):
+#     print("\n\n\n\n\n\n")
+#     print(doc.student_email)
+#     if doc.student_email:
+#         a=frappe.get_all("Student Applicant",{"student_email_id":doc.student_email})
+#         print(a)
+#         for stu_appl in frappe.get_all("Student Applicant",{"student_email_id":doc.student_email}):
+#             add_user_permission("Payment Refund",stu_appl.name, doc.student_email,doc)
