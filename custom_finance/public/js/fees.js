@@ -402,7 +402,7 @@ frappe.ui.form.on('Fees', {
 );
 frappe.ui.form.on('Fees', {
     onload:function(frm) {
-		if(frappe.user.has_role(["Student"]) && !frappe.user.has_role(["Education Administrator"])){
+		if(frappe.user.has_role(["Student","Education Administrator"]) && !frappe.user.has_role(["Administrator"])){
   			frm.remove_custom_button('Payment','Create');
         }
 	}

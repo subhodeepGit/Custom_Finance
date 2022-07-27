@@ -45,6 +45,11 @@ frappe.ui.form.on("Payment Entry", "refresh", function(frm){
 			});
 	});
     }
+	else if( frappe.user.has_role(["Education Administrator"]) && !frappe.user.has_role(["Administrator"])){
+		frm.remove_custom_button("Online Payment");
+	}
+	else{
+	}
 });
 
 frappe.ui.form.on('Payment Entry', {
@@ -361,8 +366,6 @@ frappe.ui.form.on("Payment Entry","mode_of_payment", function(frm){
 	}
 
 })
-
-	
 
 
 

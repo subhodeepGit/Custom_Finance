@@ -43,7 +43,7 @@ frappe.ui.form.on('Fee Schedule',{
 })
 frappe.ui.form.on('Fee Schedule', {
     refresh:function(frm) {
-		if(frappe.user.has_role(["Accounts User","Student"]) && !frappe.user.has_role(["Education Administrator"])){
+		if(frappe.user.has_role(["Accounts User","Student","Education Administrator"]) && !frappe.user.has_role(["Administrator"])){
   			frm.remove_custom_button('Create Fees');
         }
 	}

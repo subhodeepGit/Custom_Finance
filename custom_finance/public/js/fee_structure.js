@@ -110,7 +110,7 @@ frappe.ui.form.on('Fee Structure', {
 });
 frappe.ui.form.on('Fee Structure', {
     onload:function(frm) {
-		if(frappe.user.has_role(["Accounts User","Student"]) && !frappe.user.has_role(["Education Administrator"])){
+		if(frappe.user.has_role(["Accounts User","Student","Education Administrator"]) && !frappe.user.has_role(["Administrator"])){
   			frm.remove_custom_button('Create Fee Schedule');
         }
 	}
