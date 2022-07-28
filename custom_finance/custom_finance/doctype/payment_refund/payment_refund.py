@@ -19,9 +19,9 @@ class PaymentRefund(Document):
             refund_fee_info=frappe.get_all("GL Entry",filters=[["account","like","%Fees Refundable / Adjustable%"],["party","like",self.party]],fields=['name','debit','credit'])
             for t in refund_fee_info:
                 tot += t['credit']-t['debit']
-            # for t in self.get("references"):
-            #     if t.allocated_amount > tot:
-            #         frappe.throw("Allocated Amount must be less than Refundable Amount")
+            for t in self.get("references"):
+                if t.allocated_amount > tot:
+                    frappe.throw("Allocated Amount must be less than Refundable Amount")
         elif self.payment_type == "Receive":
             tot = 0
             refund_fee_info=frappe.get_all("Fees",filters=[["outstanding_amount",">",0],["student","=",self.party]],fields=['name','outstanding_amount'])
