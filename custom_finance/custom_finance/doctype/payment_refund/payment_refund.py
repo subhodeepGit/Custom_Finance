@@ -13,17 +13,15 @@ from kp_edtec.kp_edtec.doctype.user_permission import add_user_permission
 
 class PaymentRefund(Document):
     def validate(self):
-        if not self.get("__islocal"):
-            set_user_permission(self)
         recon_rtgs_neft(self)
         if self.payment_type == "Pay":
             tot = 0
             refund_fee_info=frappe.get_all("GL Entry",filters=[["account","like","%Fees Refundable / Adjustable%"],["party","like",self.party]],fields=['name','debit','credit'])
             for t in refund_fee_info:
                 tot += t['credit']-t['debit']
-            for t in self.get("references"):
-                if t.allocated_amount > tot:
-                    frappe.throw("Allocated Amount must be less than Refundable Amount")
+            # for t in self.get("references"):
+            #     if t.allocated_amount > tot:
+            #         frappe.throw("Allocated Amount must be less than Refundable Amount")
         elif self.payment_type == "Receive":
             tot = 0
             refund_fee_info=frappe.get_all("Fees",filters=[["outstanding_amount",">",0],["student","=",self.party]],fields=['name','outstanding_amount'])
@@ -39,7 +37,6 @@ class PaymentRefund(Document):
 
 ###############################
     def on_submit(self):
-        # set_user_permission(self)
         if self.payment_type == "Pay":
             je_pay(self)
         elif self.payment_type == "Receive":
@@ -51,6 +48,9 @@ class PaymentRefund(Document):
         cancel_doc = frappe.get_doc("Journal Entry",self.jv_entry_voucher_no)
         cancel_doc.cancel()
         recon_rtgs_neft_on_cancel(self)
+
+    def after_insert(self):
+        set_user_permission(self)	
 
 
 
