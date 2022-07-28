@@ -5,7 +5,6 @@ import frappe
 from frappe.model.document import Document
 from datetime import date 
 import pandas as pd
-from kp_edtec.kp_edtec.doctype.user_permission import add_user_permission
 
 class PaymentDetailsUpload(Document):
 	def validate(self):
@@ -73,3 +72,24 @@ def validate_urt(self):
 def set_user_permission(self):
     for stu in frappe.get_all("Student",{"name":self.student},['student_email_id']):
         add_user_permission("Payment Details Upload",self.name, stu.student_email_id, self)
+
+def add_user_permission(doctype, name, user,ref, ignore_permissions=True, applicable_for=None,is_default=0, hide_descendants=0, apply_to_all_doctypes=1):
+	'''Add user permission'''
+	from frappe.core.doctype.user_permission.user_permission import user_permission_exists
+
+	if not user_permission_exists(user, doctype, name, applicable_for):
+		if not frappe.db.exists(doctype, name):
+			frappe.throw(_("{0} {1} not found").format(_(doctype), name), frappe.DoesNotExistError)
+
+		frappe.get_doc(dict(
+			doctype='User Permission',
+			user=user,
+			allow=doctype,
+			for_value=name,
+			is_default=is_default,
+			applicable_for=applicable_for,
+			hide_descendants=hide_descendants,
+			reference_doctype=ref.get("doctype"),
+			reference_docname=ref.get("name"),
+			apply_to_all_doctypes = apply_to_all_doctypes
+		)).insert(ignore_permissions=ignore_permissions)
