@@ -812,7 +812,7 @@
  {
   "amend": 0,
   "cancel": 0,
-  "create": 0,
+  "create": 1,
   "delete": 0,
   "docstatus": 0,
   "doctype": "Custom DocPerm",
@@ -833,7 +833,7 @@
   "select": 1,
   "set_user_permissions": 0,
   "share": 0,
-  "submit": 0,
+  "submit": 1,
   "write": 0
  },
  {
