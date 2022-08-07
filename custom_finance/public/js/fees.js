@@ -180,7 +180,8 @@ frappe.ui.form.on('Fees', {
     },
 	set_program_enrollment(frm) {
         frappe.call({
-            method: "kp_edtec.kp_edtec.doctype.program_enrollment.get_program_enrollment",
+            method: "custom_finance.custom_finance.validations.fees.get_program_enrollment",
+            // method: "kp_edtec.kp_edtec.doctype.program_enrollment.get_program_enrollment",
             args: {
                 student: frm.doc.student,
             },

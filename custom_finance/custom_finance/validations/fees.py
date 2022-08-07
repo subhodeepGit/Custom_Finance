@@ -163,4 +163,9 @@ def get_fee_components(fee_structure):
                                                 filters={"parent": fee_structure}, order_by= "idx asc")
         return fs
 
+@frappe.whitelist()
+def get_program_enrollment(student):
+    data=frappe.get_all("Program Enrollment",{'student':student,'docstatus':1},['name','program','programs'],order_by= "name desc")
+    if len(data)>0:
+        return data[0]
 
