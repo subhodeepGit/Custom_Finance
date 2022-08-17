@@ -21,6 +21,7 @@
   "party",
   "party_name",
   "roll_no",
+  "permanent_registration_number",
   "student_email",
   "sams_portal_id",
   "vidyarthi_portal_id",
@@ -116,6 +117,7 @@
   },
   {
    "depends_on": "eval:in_list([\"Receive\", \"Pay\"], doc.payment_type) && doc.party_type",
+   "fetch_from": "party.roll_no",
    "fieldname": "roll_no",
    "fieldtype": "Data",
    "label": "Roll No",
@@ -236,14 +238,16 @@
    "fieldname": "party_name",
    "fieldtype": "Data",
    "in_global_search": 1,
-   "label": "Party Name"
+   "label": "Party Name",
+   "read_only": 1
   },
   {
    "depends_on": "eval:in_list([\"Receive\", \"Pay\"], doc.payment_type) && doc.party_type",
    "fetch_from": "party.user",
    "fieldname": "student_email",
    "fieldtype": "Data",
-   "label": "Student Email"
+   "label": "Student Email",
+   "read_only": 1
   },
   {
    "fetch_from": "party.sams_portal_id",
@@ -314,12 +318,20 @@
    "fieldtype": "Table",
    "label": "Bank Draft References",
    "options": "Bank Draft Reference"
+  },
+  {
+   "depends_on": "eval:in_list([\"Receive\", \"Pay\"], doc.payment_type) && doc.party_type",
+   "fetch_from": "party.permanant_registration_number",
+   "fieldname": "permanent_registration_number",
+   "fieldtype": "Data",
+   "label": "Permanent Registration Number",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-08-16 15:58:45.124423",
+ "modified": "2022-08-17 17:48:42.246397",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Payment Refund",
