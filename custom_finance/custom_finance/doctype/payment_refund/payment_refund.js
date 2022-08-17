@@ -3,8 +3,8 @@
 
 frappe.ui.form.on('Payment Refund', {
 	onload: function(frm) {
-		frm.set_df_property('references', 'cannot_add_rows', true);
-		frm.set_df_property('references', 'cannot_delete_rows', true);
+		// frm.set_df_property('references', 'cannot_add_rows', true);
+		// frm.set_df_property('references', 'cannot_delete_rows', true);
 		frm.set_query("account_paid_from","references", function(_doc, cdt, cdn) {
 			var d = locals[cdt][cdn];
 			return {
@@ -38,7 +38,9 @@ frappe.ui.form.on('Payment Refund', {
 		});
 	},
 	payment_type: function(frm) {
-		if (frm.doc.payment_type == "Receive"){	
+		if (frm.doc.payment_type == "Receive"){
+			frm.doc.mode_of_payment = null;
+			frm.refresh_field("mode_of_payment");	
 			var df = frappe.meta.get_docfield("Payment Entry Reference Refund","account_paid_from", frm.doc.name);
 			df.read_only = 1
 			df.reqd = 0
@@ -46,8 +48,8 @@ frappe.ui.form.on('Payment Refund', {
 			frm.refresh_field('references');
 			frm.refresh_field('account_paid_to');
 			frm.refresh_field('account_paid_from');
-			frm.set_df_property('references', 'cannot_add_rows', false);
-            frm.set_df_property('references', 'cannot_delete_rows', false);
+			// frm.set_df_property('references', 'cannot_add_rows', false);
+            // frm.set_df_property('references', 'cannot_delete_rows', false);
 			var df1 = frappe.meta.get_docfield("Payment Entry Reference Refund","account_paid_to", frm.doc.name);
 			df1.read_only = 0
 			df1.reqd = 1		
@@ -55,9 +57,11 @@ frappe.ui.form.on('Payment Refund', {
 			frm.refresh_field('references');
 			frm.refresh_field('account_paid_to');
 			frm.refresh_field('account_paid_from');
-			frm.set_df_property('references', 'cannot_add_rows', false);
-            frm.set_df_property('references', 'cannot_delete_rows', false);
+			// frm.set_df_property('references', 'cannot_add_rows', false);
+            // frm.set_df_property('references', 'cannot_delete_rows', false);
 		} else if (frm.doc.payment_type == "Pay"){
+			frm.doc.mode_of_payment = null;
+			frm.refresh_field("mode_of_payment");
 			var df = frappe.meta.get_docfield("Payment Entry Reference Refund","account_paid_to", frm.doc.name);
 			df.read_only = 1
 			df.reqd = 0
@@ -65,8 +69,8 @@ frappe.ui.form.on('Payment Refund', {
 			frm.refresh_field('references');
 			frm.refresh_field('account_paid_to');
 			frm.refresh_field('account_paid_from');
-			frm.set_df_property('references', 'cannot_add_rows', false);
-            frm.set_df_property('references', 'cannot_delete_rows', false);
+			// frm.set_df_property('references', 'cannot_add_rows', false);
+            // frm.set_df_property('references', 'cannot_delete_rows', false);
 			var df1 = frappe.meta.get_docfield("Payment Entry Reference Refund","account_paid_from", frm.doc.name);
 			df1.read_only = 0
 			df1.reqd = 1	
@@ -74,16 +78,18 @@ frappe.ui.form.on('Payment Refund', {
 			frm.refresh_field('references');
 			frm.refresh_field('account_paid_to');
 			frm.refresh_field('account_paid_from');
-			frm.set_df_property('references', 'cannot_add_rows', false);
-            frm.set_df_property('references', 'cannot_delete_rows', false);
+			// frm.set_df_property('references', 'cannot_add_rows', false);
+            // frm.set_df_property('references', 'cannot_delete_rows', false);
 		}
 		else if (frm.doc.payment_type == ""){
+			frm.doc.mode_of_payment = null;
+			frm.refresh_field("mode_of_payment");
 			frm.clear_table("references");
 			frm.refresh_field('references');
 			frm.refresh_field('account_paid_to');
 			frm.refresh_field('account_paid_from');
-			frm.set_df_property('references', 'cannot_add_rows', true);
-            frm.set_df_property('references', 'cannot_delete_rows', true);
+			// frm.set_df_property('references', 'cannot_add_rows', true);
+            // frm.set_df_property('references', 'cannot_delete_rows', true);
 		}
 	},
 	after_save: function(frm) {
@@ -221,11 +227,11 @@ frappe.ui.form.on("Payment Refund","mode_of_payment", function(frm){
         frm.refresh();
     };
 	if(frm.doc.mode_of_payment == "Cash"){
-		frm.set_df_property('references', 'cannot_add_rows', true);
-		frm.set_df_property('references', 'cannot_delete_rows', true);
+		// frm.set_df_property('references', 'cannot_add_rows', true);
+		// frm.set_df_property('references', 'cannot_delete_rows', true);
 	}	 else if(frm.doc.mode_of_payment !="Cash"){
-		frm.set_df_property('references', 'cannot_add_rows', false);
-		frm.set_df_property('references', 'cannot_delete_rows', false);
+		// frm.set_df_property('references', 'cannot_add_rows', false);
+		// frm.set_df_property('references', 'cannot_delete_rows', false);
 	}
 })
 frappe.ui.form.on("Payment Refund","mode_of_payment", function(frm){
