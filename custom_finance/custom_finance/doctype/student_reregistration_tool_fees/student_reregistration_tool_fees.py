@@ -56,7 +56,7 @@ class StudentReregistrationToolFees(Document):
         if total > 100:
             frappe.msgprint(_('''Student Fees will be created in the background.
 						In case of any error the error message will be updated in the Schedule.'''))
-            enqueue(enroll_stud, queue='default', timeout=6000, event='enroll_stud',self=self)
+            enqueue(enroll_stud, queue='default', timeout=100000, event='enroll_stud',self=self)
         else:
             enroll_stud(self)
 
