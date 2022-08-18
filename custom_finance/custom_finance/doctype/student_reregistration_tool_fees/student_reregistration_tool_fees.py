@@ -53,7 +53,7 @@ class StudentReregistrationToolFees(Document):
         frappe.publish_realtime("student_reregistration_tool_fees",
 			{"progress": "0", "reload": 1}, user=frappe.session.user)
         total = len(self.students)
-        if total > 10:
+        if total > 100:
             frappe.msgprint(_('''Student Fees will be created in the background.
 						In case of any error the error message will be updated in the Schedule.'''))
             enqueue(enroll_stud, queue='default', timeout=6000, event='enroll_stud',self=self)
