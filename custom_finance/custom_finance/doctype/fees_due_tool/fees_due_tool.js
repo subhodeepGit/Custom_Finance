@@ -136,3 +136,9 @@ frappe.ui.form.on("Fees Due Tool", {
 });
 	
 
+frappe.ui.form.on("Fees Due Tool", {
+	onload:function(frm){
+		//cannot able to add rows
+		frm.set_df_property("studentss", "cannot_add_rows", true);
+	}
+});
