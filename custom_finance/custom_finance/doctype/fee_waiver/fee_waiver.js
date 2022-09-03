@@ -428,3 +428,10 @@ frappe.ui.form.on('Fee Waiver', {
 		});
 	}
 })
+
+frappe.ui.form.on('Fee Waiver', {
+	onload:function(frm){
+		frm.set_df_property('fee_componemts', 'cannot_add_rows', true);
+        // frm.set_df_property('fee_componemts', 'cannot_delete_rows', true);
+	} 	
+});
