@@ -75,7 +75,8 @@ def generate_payment(payment_schedule):
 				"""Reference"""
 				############### structured fees
 				fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t.student],["outstanding_amount","!=",0],
-															["fee_structure","!=",""],["hostel_fee_structure","=",""]],fields=['name','due_date','program','company'],
+															["fee_structure","!=",""],["hostel_fee_structure","=",""],["docstatus","=",1]],
+															fields=['name','due_date','program','company'],
 															order_by="due_date asc")																		
 				structured_fees=[]
 				for t1 in fee_voucher_list:
@@ -93,7 +94,8 @@ def generate_payment(payment_schedule):
 					structured_fees = sorted(structured_fees , key=lambda elem: "%02d %s" % (elem['idx'], elem['due_date']))		
 				structured_fees_hostel=[]
 				hostel_fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t.student],["outstanding_amount","!=",0],
-															["hostel_fee_structure","!=",""],["fee_structure","=",""],],fields=['name','due_date','program'],order_by="due_date asc")										
+															["hostel_fee_structure","!=",""],["fee_structure","=",""],["docstatus","=",1]],
+															fields=['name','due_date','program'],order_by="due_date asc")										
 				for t1 in hostel_fee_voucher_list:
 					due_date=t1['due_date']
 					program=t1['program']
@@ -114,7 +116,8 @@ def generate_payment(payment_schedule):
 				#################### unstructured fees hostel
 				unstructured_fees_hostel=[]
 				unstructured_fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t.student],["outstanding_amount","!=",0],
-															["hostel_fee_structure","=",""],["fee_structure","=",""]],fields=['name','due_date','program'],order_by="due_date asc")											
+															["hostel_fee_structure","=",""],["fee_structure","=",""],["docstatus","=",1]],
+															fields=['name','due_date','program'],order_by="due_date asc")											
 				for t1 in unstructured_fee_voucher_list:
 					due_date=t1['due_date']
 					program=t1['program']

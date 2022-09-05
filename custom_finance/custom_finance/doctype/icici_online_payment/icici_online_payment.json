@@ -23,20 +23,16 @@
   "student_email",
   "sams_portal_id",
   "vidyarthi_portal_id",
-  "payment_accounts_section",
-  "paid_from",
-  "paid_from_account_currency",
-  "column_break_21",
-  "jv_entry_voucher_no",
-  "reference_section",
-  "get_outstanding",
-  "references",
-  "accounting_dimensions_section",
-  "cost_center",
-  "transaction_references",
-  "reference_no",
-  "column_break_34",
-  "reference_date",
+  "payment_section",
+  "total_outstanding_amout",
+  "paying_amount",
+  "transaction_id",
+  "transaction_status",
+  "section_break_22",
+  "transaction_status_description",
+  "date_time_of_transaction",
+  "payment_status",
+  "payment_id",
   "amended_from"
  ],
  "fields": [
@@ -63,6 +59,7 @@
    "label": "Payment Type",
    "options": "Receive",
    "print_hide": 1,
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -170,83 +167,62 @@
    "read_only": 1
   },
   {
-   "collapsible": 1,
-   "fieldname": "payment_accounts_section",
+   "fieldname": "payment_section",
    "fieldtype": "Section Break",
-   "label": "Accounts"
+   "label": "Payment Section"
   },
   {
-   "bold": 1,
-   "depends_on": "eval:doc.payment_type==\"Receive\"",
-   "fieldname": "paid_from",
-   "fieldtype": "Data",
-   "in_global_search": 1,
-   "label": "Account Paid to",
-   "print_hide": 1,
+   "fieldname": "total_outstanding_amout",
+   "fieldtype": "Currency",
+   "label": "Total Outstanding Amout",
    "read_only": 1
   },
   {
-   "fieldname": "paid_from_account_currency",
-   "fieldtype": "Link",
-   "label": "Account Currency",
-   "options": "Currency",
-   "print_hide": 1
+   "fieldname": "paying_amount",
+   "fieldtype": "Currency",
+   "label": "Paying Amount"
   },
   {
-   "fieldname": "column_break_21",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "jv_entry_voucher_no",
+   "description": "ICICI Getaway Details ",
+   "fieldname": "transaction_id",
    "fieldtype": "Data",
-   "label": "JV Entry Voucher No.",
-   "read_only": 1
-  },
-  {
-   "fieldname": "reference_section",
-   "fieldtype": "Section Break",
-   "label": "Reference"
-  },
-  {
-   "fieldname": "references",
-   "fieldtype": "Table",
-   "label": "Payment References",
-   "options": "Payment Entry Reference Refund"
-  },
-  {
-   "collapsible": 1,
-   "fieldname": "accounting_dimensions_section",
-   "fieldtype": "Section Break",
-   "label": "Accounting Dimensions"
-  },
-  {
-   "fieldname": "cost_center",
-   "fieldtype": "Link",
-   "label": "Cost Center",
-   "options": "Cost Center",
-   "reqd": 1
-  },
-  {
-   "fieldname": "transaction_references",
-   "fieldtype": "Section Break",
    "label": "Transaction ID"
   },
   {
-   "bold": 1,
-   "fieldname": "reference_no",
+   "description": "ICICI Getaway Details ",
+   "fieldname": "transaction_status",
    "fieldtype": "Data",
-   "label": "Cheque/Reference No",
-   "mandatory_depends_on": "eval:(doc.paid_from_account_type == 'Bank' || doc.paid_to_account_type == 'Bank')"
+   "label": "Transaction Status"
   },
   {
-   "fieldname": "column_break_34",
+   "description": "ICICI Getaway Details ",
+   "fieldname": "transaction_status_description",
+   "fieldtype": "Data",
+   "label": "Transaction Status Description"
+  },
+  {
+   "description": "ICICI Getaway Details ",
+   "fieldname": "date_time_of_transaction",
+   "fieldtype": "Data",
+   "label": "Date Time of Transaction"
+  },
+  {
+   "default": "0",
+   "fieldname": "payment_status",
+   "fieldtype": "Check",
+   "label": "Payment Status",
+   "read_only": 1
+  },
+  {
+   "description": "Money Receipt  No",
+   "fieldname": "payment_id",
+   "fieldtype": "Data",
+   "label": "Payment id",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_22",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "reference_date",
-   "fieldtype": "Date",
-   "label": "Cheque/Reference Date",
-   "mandatory_depends_on": "eval:(doc.paid_from_account_type == 'Bank' || doc.paid_to_account_type == 'Bank')"
   },
   {
    "fieldname": "amended_from",
@@ -256,17 +232,12 @@
    "options": "ICICI Online Payment",
    "print_hide": 1,
    "read_only": 1
-  },
-  {
-   "fieldname": "get_outstanding",
-   "fieldtype": "Button",
-   "label": "Get Outstanding"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-08-15 21:26:31.198941",
+ "modified": "2022-09-05 16:30:11.747053",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "ICICI Online Payment",
