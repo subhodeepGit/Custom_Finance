@@ -45,7 +45,7 @@
    "fieldname": "type_of_transaction",
    "fieldtype": "Select",
    "label": "Type of Transaction",
-   "options": "\nRTGS\nNEFT\nIMPS",
+   "options": "\nRTGS\nNEFT\nIMPS\nOnline Payment",
    "reqd": 1
   },
   {
@@ -84,7 +84,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-06-29 06:40:33.926548",
+ "modified": "2022-09-05 17:22:09.522493",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Auto Reconciliation",

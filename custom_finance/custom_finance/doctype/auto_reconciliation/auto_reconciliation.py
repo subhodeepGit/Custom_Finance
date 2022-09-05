@@ -267,5 +267,11 @@ def get_fees(date=None,type_of_transaction=None):
 				outstanding_amount=outstanding_amount+z["outstanding_amount"]
 		for y in stud_payment_upload:
 			if y["student"]==t:
-				y['outstanding_amount']=outstanding_amount		
+				y['outstanding_amount']=outstanding_amount
+	if type_of_transaction=="Online Payment":
+		print("\n\n\n\n\n")
+		print(type_of_transaction)
+		stud_payment_upload_1=frappe.get_all("ICICI Online Payment",filters=[["name","=","ACC-ONLINE-2022-00001"]],
+									fields=["name","party","transaction_id","paying_amount","payment_status","party_name"])
+				
 	return stud_payment_upload										
