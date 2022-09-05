@@ -25,7 +25,7 @@ class AutoReconciliation(Document):
 		frappe.publish_realtime("fee_schedule_progress",
 			{"progress": "0", "reload": 1}, user=frappe.session.user)
 		total_records=len(self.get("student_reference"))
-		if total_records > 10:
+		if total_records > 100:
 			frappe.msgprint(_('''Payment records will be created in the background.
 				In case of any error the error message will be updated in the Schedule.'''))
 			enqueue(generate_payment, queue='default', timeout=6000, event='generate_payment',
