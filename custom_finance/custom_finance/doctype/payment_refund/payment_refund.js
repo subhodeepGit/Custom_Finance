@@ -203,7 +203,7 @@ frappe.ui.form.on("Payment Entry Reference Refund", "fees_category", function(fr
 });
 
 frappe.ui.form.on("Payment Refund","reference_no", function(frm){
-	if(frm.doc.mode_of_payment=="IMPS" || frm.doc.mode_of_payment=="RTGS" || frm.doc.mode_of_payment=="NEFT" ){
+	if(frm.doc.mode_of_payment=="IMPS" || frm.doc.mode_of_payment=="RTGS" || frm.doc.mode_of_payment=="NEFT" || frm.doc.mode_of_payment=="Online Payment"){
 		frappe.call({
 			method: "custom_finance.custom_finance.validations.online_fees.paid_from_account_type",								
 			args: {
@@ -234,12 +234,12 @@ frappe.ui.form.on("Payment Refund","mode_of_payment", function(frm){
 		// frm.set_df_property('references', 'cannot_delete_rows', false);
 	}
 })
-frappe.ui.form.on("Payment Refund","mode_of_payment", function(frm){
-    var mop = frm.doc.mode_of_payment
-    if(mop == "Online Payment"){
-        frm.doc.reference_no = "Online Payment"
-        frm.set_value("reference_no",frm.doc.reference_no)
-        frm.set_value("reference_date", frappe.datetime.nowdate());
-        frm.refresh();
-    };
-});
+// frappe.ui.form.on("Payment Refund","mode_of_payment", function(frm){
+//     var mop = frm.doc.mode_of_payment
+//     if(mop == "Online Payment"){
+//         frm.doc.reference_no = "Online Payment"
+//         frm.set_value("reference_no",frm.doc.reference_no)
+//         frm.set_value("reference_date", frappe.datetime.nowdate());
+//         frm.refresh();
+//     };
+// });

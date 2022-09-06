@@ -9,11 +9,11 @@ frappe.ui.form.on('ICICI Online Payment', {
 				student: frm.doc.party
 			},
 			callback: function(r){
-				if(r.message){
+				// if(r.message){
 					var result = r.message;
 					frm.set_value("total_outstanding_amout",result);
 					frm.set_value("paying_amount",result);
-				}
+				// }
 			}
 		})
 	}

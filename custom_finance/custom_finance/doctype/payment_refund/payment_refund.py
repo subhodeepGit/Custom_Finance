@@ -10,10 +10,12 @@ from frappe.utils import cint, comma_or, flt, getdate, nowdate
 from numpy import append
 from six import iteritems, string_types
 from kp_edtec.kp_edtec.doctype.user_permission import add_user_permission
+import datetime
 
 class PaymentRefund(Document):
     def validate(self):
         recon_rtgs_neft(self)
+        online_payment(self)
         if self.payment_type == "Pay":
             tot = 0
             refund_fee_info=frappe.get_all("GL Entry",filters=[["account","like","%Fees Refundable / Adjustable%"],["party","like",self.party]],fields=['name','debit','credit'])
@@ -42,12 +44,14 @@ class PaymentRefund(Document):
         elif self.payment_type == "Receive":
             je_receive(self)
         recon_rtgs_neft_on_submit(self)
+        online_payment_on_submit(self)
         # create_user_permission(self)
 
     def on_cancel(self):
         cancel_doc = frappe.get_doc("Journal Entry",self.jv_entry_voucher_no)
         cancel_doc.cancel()
         recon_rtgs_neft_on_cancel(self)
+        online_payment_on_cancel(self)
 
     def after_insert(self):
         set_user_permission(self)	
@@ -120,6 +124,53 @@ def recon_rtgs_neft_on_submit(self):
         if len(st_upload_data)!=0:
             frappe.db.set_value("Payment Details Upload",st_upload_data[0]['name'],"payment_status",1)
             frappe.db.set_value("Payment Details Upload",st_upload_data[0]['name'],"payment_id",self.name)  
+
+def online_payment(self):
+    if self.mode_of_payment=="Online Payment":
+        if self.reference_no==None:
+            frappe.throw("Reference Transaction ID. not maintaned")
+        else:
+            Recon_info=frappe.get_all("ICICI Online Payment",{"transaction_id":self.reference_no,"transaction_status":"SUCCESS","docstatus":1,"payment_status":0},
+                                                        ["name","date_time_of_transaction","paying_amount","total_outstanding_amout","party"])
+            if len(Recon_info)!=0:
+                Recon_info=Recon_info[0]
+                if self.party==Recon_info["party"]:
+                    allocated_amount=0
+                    for t in self.get("references"):
+                        allocated_amount=allocated_amount+t.allocated_amount
+
+                    if Recon_info['paying_amount']==allocated_amount:
+                        if Recon_info['paying_amount']>=allocated_amount:
+                            date_time_str = Recon_info["date_time_of_transaction"]
+                            date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S.%f')
+                            date=date_time_obj.date()
+                            self.reference_date=date
+                        else:
+                            frappe.throw("Paid Amount is more than Reconciled Amount")
+                    else:
+                        frappe.throw("Total Paid Amount in online payment is not matching with present Allocated amount") 
+
+                else:
+                    frappe.throw("Transaction ID. Belong to different studnet") 
+            else:
+                frappe.throw("Transaction ID. not Found")  
+
+def online_payment_on_submit(self):
+    if self.mode_of_payment=="Online Payment":
+        Recon_info=frappe.get_all("ICICI Online Payment",{"transaction_id":self.reference_no,"transaction_status":"SUCCESS","docstatus":1,"payment_status":0},
+                                                        ["name","date_time_of_transaction","paying_amount","total_outstanding_amout","party"])
+        Recon_info=Recon_info[0]
+        frappe.db.set_value("ICICI Online Payment",Recon_info['name'],"payment_status",1)
+        frappe.db.set_value("ICICI Online Payment",Recon_info['name'],"payment_id",self.name)
+
+
+def online_payment_on_cancel(self):
+    if self.mode_of_payment=="Online Payment":
+        Recon_info=frappe.get_all("ICICI Online Payment",{"transaction_id":self.reference_no},
+                                                        ["name","date_time_of_transaction","paying_amount","total_outstanding_amout","party"])
+        Recon_info=Recon_info[0]
+        frappe.db.set_value("ICICI Online Payment",Recon_info['name'],"payment_status",0)
+        frappe.db.set_value("ICICI Online Payment",Recon_info['name'],"payment_id","")
 
 
 # def je_pay(self):

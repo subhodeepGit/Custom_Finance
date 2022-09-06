@@ -6,6 +6,8 @@ from frappe.model.document import Document
 
 class ICICIOnlinePayment(Document):
 	pass
+	def on_cancel(self):
+		frappe.throw("Once form is submited it can't be canceled")
 
 
 @frappe.whitelist()

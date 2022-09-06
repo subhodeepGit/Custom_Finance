@@ -1,11 +1,13 @@
 from typing_extensions import Self
 from unicodedata import name
 import frappe
+import datetime
 
 def validate(self,method):
     bank_draft_amount(self)
     recon_rtgs_neft(self)
     allocation_amount(self)
+    online_payment(self)
     if self.mode_of_payment=="Fees Refundable / Adjustable":   
         refundable_amount(self)
     calucate_total(self) 
@@ -14,7 +16,8 @@ def on_update(self,method):
     pass
 
 def on_submit(self,method):
-    recon_rtgs_neft_on_submit(self)    
+    recon_rtgs_neft_on_submit(self)
+    online_payment_on_submit(self)    
     child_table_fees_outsatnding(self)
     refundable_fees_outsatnding(self,cancel=0)   
 
@@ -22,7 +25,114 @@ def on_cancel(self,method):
     child_table_fees_outsatnding(self)
     refundable_fees_outsatnding(self,cancel=1)
     recon_rtgs_neft_on_cancel(self)
+    online_payment_on_cancel(self)
 
+
+def online_payment(self):
+    if self.mode_of_payment=="Online Payment":
+        if self.reference_no==None:
+            frappe.throw("Reference Transaction ID. not maintaned")
+        else:
+            Recon_info=frappe.get_all("ICICI Online Payment",{"transaction_id":self.reference_no,"transaction_status":"SUCCESS","docstatus":1,"payment_status":0},
+                                                        ["name","date_time_of_transaction","paying_amount","total_outstanding_amout","party"])
+            if Recon_info:
+                Recon_info=Recon_info[0]
+                if self.party==Recon_info["party"]:
+                    if Recon_info['paying_amount']>=self.total_allocated_amount:
+                        date_time_str = Recon_info["date_time_of_transaction"]
+                        date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S.%f')
+                        date=date_time_obj.date()
+                        self.reference_date=date
+                        flag="pass"
+                        for t in self.get('references'):
+                            if t.fees_category=="Fees Refundable / Adjustable":
+                                flag="no_pass"
+                                break 
+                        if Recon_info['paying_amount']>self.total_allocated_amount and flag=="pass":
+                                Account=frappe.db.get_all("Account",filters=[['name','like','%Fees Refundable / Adjustable%'],['account_type','=','Income Account']],fields=['name'])
+                                if not Account:
+                                    frappe.throw("Fees Refundable / Adjustable not mantained for the comapny")
+                                reference_name=""
+                                allocated_excess_amount=0
+                                for t in self.get('references'):
+                                    allocated_excess_amount=allocated_excess_amount+t.allocated_amount 
+                                paid_amount=allocated_excess_amount      
+                                allocated_excess_amount=Recon_info['paying_amount']-allocated_excess_amount  
+                                paid_amount=paid_amount+allocated_excess_amount
+                                self.total_allocated_amount=paid_amount
+                                self.difference_amount=paid_amount-self.total_allocated_amount
+                                for t in self.get('references'):
+                                    reference_name=t.reference_name
+                                    due_date=t.due_date
+                                    break
+                                if self.payment_type=="Receive":
+                                    self.append("references",{
+                                        "reference_doctype":"Fees",
+                                        "fees_category":"Fees Refundable / Adjustable",
+                                        "account_paid_from":Account[0]['name'],
+                                        "reference_name":reference_name,
+                                        "allocated_amount":allocated_excess_amount,
+                                        "total_amount":allocated_excess_amount,
+                                        "outstanding_amount":allocated_excess_amount,
+                                        "due_date":due_date,
+                                        "exchange_rate":1,
+                                    })
+                        elif Recon_info['paying_amount']>self.total_allocated_amount and flag=="no_pass":
+                                Account=frappe.db.get_all("Account",filters=[['name','like','%Fees Refundable / Adjustable%'],['account_type','=','Income Account']],fields=['name'])
+                                if not Account:
+                                    frappe.throw("Fees Refundable / Adjustable not mantained for the comapny")
+                                reference_name=""
+                                allocated_excess_amount=0
+                                for t in self.get('references'):
+                                    if t.fees_category!="Fees Refundable / Adjustable":
+                                        allocated_excess_amount=allocated_excess_amount+t.allocated_amount  
+                                paid_amount=allocated_excess_amount      
+                                allocated_excess_amount=Recon_info['paying_amount']-allocated_excess_amount  
+                                paid_amount=paid_amount+allocated_excess_amount
+                                self.total_allocated_amount=paid_amount
+                                self.difference_amount=paid_amount-self.total_allocated_amount 
+
+                                # allocated_excess_amount=Recon_info['total_allocated_amount']-allocated_excess_amount
+                                for t in self.get('references'):
+                                    reference_name=t.reference_name
+                                    break 
+                                count=0
+                                for j in self.get('references'):
+                                    count=count+j.allocated_amount  
+                                for t in self.get('references'):
+                                    # reference_name=t.reference_name
+                                    if t.fees_category=="Fees Refundable / Adjustable":
+                                        t.reference_doctype=t.reference_doctype
+                                        t.fees_category="Fees Refundable / Adjustable"
+                                        t.account_paid_from=Account[0]['name']
+                                        t.reference_name=reference_name
+                                        t.allocated_amount=allocated_excess_amount
+                                        t.total_amount=allocated_excess_amount
+                                        t.outstanding_amount=allocated_excess_amount
+                        elif Recon_info['paying_amount']==self.total_allocated_amount:
+                                pass
+                    else:
+                        frappe.throw("Paid Amount is more than Reconciled Amount") 
+                else:
+                    frappe.throw("Transaction ID. Belong to different studnet") 
+            else:
+                frappe.throw("Transaction ID. not Found")     
+
+def online_payment_on_submit(self):
+    if self.mode_of_payment=="Online Payment":
+        Recon_info=frappe.get_all("ICICI Online Payment",{"transaction_id":self.reference_no,"transaction_status":"SUCCESS","docstatus":1,"payment_status":0},
+                                                        ["name","date_time_of_transaction","paying_amount","total_outstanding_amout","party"])
+        Recon_info=Recon_info[0]
+        frappe.db.set_value("ICICI Online Payment",Recon_info['name'],"payment_status",1)
+        frappe.db.set_value("ICICI Online Payment",Recon_info['name'],"payment_id",self.name)
+
+def online_payment_on_cancel(self):
+    if self.mode_of_payment=="Online Payment":
+        Recon_info=frappe.get_all("ICICI Online Payment",{"transaction_id":self.reference_no},
+                                                        ["name","date_time_of_transaction","paying_amount","total_outstanding_amout","party"])
+        Recon_info=Recon_info[0]
+        frappe.db.set_value("ICICI Online Payment",Recon_info['name'],"payment_status",0)
+        frappe.db.set_value("ICICI Online Payment",Recon_info['name'],"payment_id","")
 
 def recon_rtgs_neft(self):
     if self.mode_of_payment=="NEFT" or self.mode_of_payment=="RTGS" or self.mode_of_payment=="IMPS":
@@ -105,7 +215,6 @@ def recon_rtgs_neft(self):
                                         t.allocated_amount=allocated_excess_amount
                                         t.total_amount=allocated_excess_amount
                                         t.outstanding_amount=allocated_excess_amount
-
                             elif Recon_info['total_allocated_amount']==self.total_allocated_amount:
                                 pass
                         else:
