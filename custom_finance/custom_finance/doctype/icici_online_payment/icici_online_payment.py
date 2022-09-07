@@ -3,12 +3,23 @@
 
 import frappe
 from frappe.model.document import Document
+from jpype import startJVM, shutdownJVM, java, addClassPath, JClass, JInt
+addClassPath("/opt/bench/frappe-bench/apps/custom_finance/custom_finance/custom_finance/doctype/icici_online_payment/Java_Jar_File/TokenClass.jar")
+addClassPath("/opt/bench/frappe-bench/apps/custom_finance/custom_finance/custom_finance/doctype/icici_online_payment/Java_Jar_File/CommerceConnect.jar")
+startJVM(convertStrings=False)
+import webbrowser
+from urllib.request import urlopen
+from urllib.request import urlopen
+import json
+import datetime
 
 class ICICIOnlinePayment(Document):
-	pass
-	def on_cancel(self):
-		frappe.throw("Once form is submited it can't be canceled")
-
+	
+	def on_cancel(doc):
+		frappe.throw("Once form is submitted it can't be cancelled")
+	def on_submit(doc): 
+		getTransactionDetails(doc,doc.name)  
+		frappe.msgprint("Your Transaction is completed. Your Transaction Id is " + doc.transaction_id)
 
 @frappe.whitelist()
 def get_outstanding_amount(student):
@@ -18,4 +29,119 @@ def get_outstanding_amount(student):
 	outstanding_amount=0
 	for t in fee_voucher_list:
 		outstanding_amount=t['outstanding_amount']+outstanding_amount
+		print("outstanding_amount",outstanding_amount)
 	return outstanding_amount
+
+
+
+def getTransactionDetails(doc,name):   
+	getDoc=frappe.get_doc("ICICI Settings")
+	merchantId = getDoc.merchantid
+	key=getDoc.key
+	iv=getDoc.iv
+	merchantTxnId=name
+	fpTransactionId=""
+	apiURL="https://test.fdconnect.com/FirstPayL2Services/getTxnInquiryDetail" 
+	try: 
+		tokenclass = JClass('TokenClass')
+		transactionDetailsData = tokenclass.inquiryTest(java.lang.String("%s"% merchantId), java.lang.String("%s"% key),
+											java.lang.String("%s"%iv),java.lang.String("%s"% apiURL),
+											java.lang.String("%s"% merchantTxnId),
+											java.lang.String("%s"% fpTransactionId)) 
+		
+		transactionDetailsData = json.loads(str(transactionDetailsData))   
+		   
+		frappe.db.set_value("OnlinePayment",transactionDetailsData["saleTxnDetail"]["merchantTxnId"],"transactionid",transactionDetailsData["fpTransactionId"])
+		frappe.db.set_value("OnlinePayment",transactionDetailsData["saleTxnDetail"]["merchantTxnId"],"transaction_status",transactionDetailsData["saleTxnDetail"]["transactionStatus"])        
+		frappe.db.set_value("OnlinePayment",transactionDetailsData["saleTxnDetail"]["merchantTxnId"],"transaction_status_description",transactionDetailsData["saleTxnDetail"]["transactionStatusDescription"])         
+		frappe.db.commit() 
+
+		doc.transaction_id=transactionDetailsData["fpTransactionId"] 
+		doc.transaction_status=transactionDetailsData["saleTxnDetail"]["transactionStatus"]
+		doc.transaction_status_description=transactionDetailsData["saleTxnDetail"]["transactionStatusDescription"]
+			   
+	except Exception as err:
+		print(repr(err))
+
+	return str(transactionDetailsData) 
+
+
+@frappe.whitelist()        
+def getSessionToken(name,paying_amount):  
+    
+	getDoc=frappe.get_doc("ICICI Settings")
+	merchantId = getDoc.merchantid
+	key=getDoc.key      
+	iv=getDoc.iv
+	configId= getDoc.configid
+	apiURL="https://test.fdconnect.com/FirstPayL2Services/getToken"     
+	amountValue=paying_amount  	      
+	currencyCode="INR" 
+	merchantTxnId=name  
+	transactionType="sale"    
+	 
+
+	# resultURL="http://10.0.160.184:8000/paymentreturn?id=" + name   #local     
+   
+	resultURL="https://paymentkp.eduleadonline.com/paymentreturn?id=" + name  #server
+
+	try:
+		tokenclass = JClass('TokenClass') 
+		tokenId = tokenclass.getToken(java.lang.String("%s"% merchantId), java.lang.String("%s"% key),
+							java.lang.String("%s"%iv),java.lang.String("%s"% apiURL),
+							java.lang.String("%s"% amountValue),java.lang.String("%s"% currencyCode),java.lang.String("%s"% merchantTxnId),
+							java.lang.String("%s"% transactionType),java.lang.String("%s"% resultURL))
+		
+		if str(tokenId) != None:
+			newURL= "https://test.fdconnect.com/Pay/?sessionToken=" + str(tokenId) + "&configId="+configId;             
+		   
+		else :
+			frappe.throw("Session has expired. Please create new transaction")  
+					
+	except Exception as err:
+		print(repr(err))
+
+	return {"TokenId":str(tokenId),"configId":configId}
+
+
+@frappe.whitelist()
+def getDecryptedData(doc,encData=None,fdcTxnId=None):  
+	getDoc=frappe.get_doc("ICICI Settings")
+	merchantId = getDoc.merchantid
+	apiURL="https://test.fdconnect.com/FirstPayL2Services/decryptMerchantResponse" 
+	try:
+		
+		if encData!=None and fdcTxnId!=None:
+			tokenclass = JClass('TokenClass')
+			decData = tokenclass.getDecryptResponse(java.lang.String("%s"% merchantId), java.lang.String("%s"% encData),
+													java.lang.String("%s"%fdcTxnId),java.lang.String("%s"% apiURL))             
+			decData = json.loads(str(decData))
+		
+			
+			
+			# if decData["merchantTxnId"]!= None:
+			# 	id= frappe.get_doc("OnlinePayment",decData["merchantTxnId"])
+
+			if (decData["transactionStatus"]=="FAILED"):
+				ct = datetime.datetime.now() 
+				               
+			else:
+				ct=decData["transactionDateTime"]
+	except Exception as e: 
+		print(repr(e))
+
+	if decData==None:
+		pass
+	# elif decData["errorCode"] != None:
+	# 	pass			
+	else:
+		return {"transactionid":decData["fpTransactionId"],"transaction_status":decData["transactionStatus"],
+						"transaction_status_description":decData["transactionStatusDescription"],"datetime":ct}
+
+
+# @frappe.whitelist()
+# def submission(doc): 
+#     if doc:
+#         submitDoc= frappe.get_doc("OnlinePayment",doc)
+#         submitDoc.submit()
+
