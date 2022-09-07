@@ -190,28 +190,36 @@
    "reqd": 1
   },
   {
+   "allow_on_submit": 1,
    "description": "ICICI Getaway Details ",
    "fieldname": "transaction_id",
    "fieldtype": "Data",
-   "label": "Transaction ID"
+   "label": "Transaction ID",
+   "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "description": "ICICI Getaway Details ",
    "fieldname": "transaction_status",
    "fieldtype": "Data",
-   "label": "Transaction Status"
+   "label": "Transaction Status",
+   "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "description": "ICICI Getaway Details ",
    "fieldname": "transaction_status_description",
    "fieldtype": "Data",
-   "label": "Transaction Status Description"
+   "label": "Transaction Status Description",
+   "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "description": "ICICI Getaway Details ",
    "fieldname": "date_time_of_transaction",
    "fieldtype": "Data",
-   "label": "Date Time of Transaction"
+   "label": "Date Time of Transaction",
+   "read_only": 1
   },
   {
    "default": "0",
@@ -260,7 +268,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-09-06 17:47:17.310842",
+ "modified": "2022-09-07 15:05:39.183668",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "ICICI Online Payment",
