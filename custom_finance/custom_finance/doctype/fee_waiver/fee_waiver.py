@@ -121,25 +121,27 @@ class FeeWaiver(Document):
 			'against_voucher_type': 'Fees', 
 			'account_currency': 'INR'}) # This gl will be one entry
 			### Fees entry without waiver part
-			fee_gl_entry=get_gl_dict({'company': self.company, 
-			'posting_date':self.posting_date, 
-			'fiscal_year': fiscal_year[0]['name'], 
-			'voucher_type': 'Fees', 
-			'voucher_no':fc['fee_voucher_no'], 
-			'remarks': None, 
-			'debit': 0, 
-			'credit': fc['grand_fee_amount']-fc['total_waiver_amount'], 
-			'debit_in_account_currency': 0, 
-			'credit_in_account_currency': fc['grand_fee_amount']-fc['total_waiver_amount'], 
-			'is_opening': 'No', 
-			'party_type': None, 
-			'party': None, 
-			'project': None, 
-			'post_net_value': None, 
-			'account': fc['income_account'], 
-			'against': self.student, 
-			'cost_center': self.cost_center, 
-			'account_currency': 'INR'}) # one entry 
+			current_amount=fc['grand_fee_amount']-fc['total_waiver_amount']
+			if current_amount!=0:
+				fee_gl_entry=get_gl_dict({'company': self.company, 
+				'posting_date':self.posting_date, 
+				'fiscal_year': fiscal_year[0]['name'], 
+				'voucher_type': 'Fees', 
+				'voucher_no':fc['fee_voucher_no'], 
+				'remarks': None, 
+				'debit': 0, 
+				'credit': fc['grand_fee_amount']-fc['total_waiver_amount'], 
+				'debit_in_account_currency': 0, 
+				'credit_in_account_currency': fc['grand_fee_amount']-fc['total_waiver_amount'], 
+				'is_opening': 'No', 
+				'party_type': None, 
+				'party': None, 
+				'project': None, 
+				'post_net_value': None, 
+				'account': fc['income_account'], 
+				'against': self.student, 
+				'cost_center': self.cost_center, 
+				'account_currency': 'INR'}) # one entry 
 			################### end 
 			waiver_fee_gl_entry=get_gl_dict({'company': self.company, 
 			'posting_date':self.posting_date, 
@@ -161,7 +163,10 @@ class FeeWaiver(Document):
 			'cost_center': self.cost_center, 
 			'account_currency': 'INR'})
 			###########################
-			make_gl_entries([student_gl_entries,waiver_fee_gl_entry, fee_gl_entry], cancel=(self.docstatus == 2),update_outstanding="Yes", merge_entries=False)
+			if current_amount!=0:
+				make_gl_entries([student_gl_entries,waiver_fee_gl_entry, fee_gl_entry], cancel=(self.docstatus == 2),update_outstanding="Yes", merge_entries=False)
+			else:
+				make_gl_entries([student_gl_entries,waiver_fee_gl_entry], cancel=(self.docstatus == 2),update_outstanding="Yes", merge_entries=False)
 
 def update_fee(self):
 	for t in self.get('fee_componemts'):
