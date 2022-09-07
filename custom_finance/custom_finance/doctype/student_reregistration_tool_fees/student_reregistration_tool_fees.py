@@ -83,7 +83,11 @@ def enroll_stud(self):
             prog_enrollment.academic_term = self.new_academic_term
             prog_enrollment.is_provisional_admission="No"
             prog_enrollment.admission_status="Admitted"
-            prog_enrollment.student_batch_name = stud.student_batch_name if stud.student_batch_name else self.new_student_batch
+            # prog_enrollment.student_batch_name = stud.student_batch_name if stud.student_batch_name else self.new_student_batch
+            if self.new_student_batch:
+                prog_enrollment.student_batch_name = self.new_student_batch
+            else:
+                prog_enrollment.student_batch_name = stud.student_batch_name
             if stud.additional_course_1:
                 course_data  = frappe.db.get_value("Course",{'name':stud.additional_course_1},["course_name", "course_code"], as_dict=1)
                 if course_data:
