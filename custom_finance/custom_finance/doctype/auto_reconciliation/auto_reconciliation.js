@@ -27,19 +27,33 @@ frappe.ui.form.on('Auto Reconciliation', {
 				"type_of_transaction":frm.doc.type_of_transaction
 			},
 			callback: function(r) {
-				// alert(r.message)
 				if(r.message){
-					frappe.model.clear_table(frm.doc, 'student_reference');
-					(r.message).forEach(element => {
-						var c = frm.add_child("student_reference")
-						c.student=element.student
-						c.student_name=element.student_name
-						c.utr_no=element.unique_transaction_reference_utr
-						c.amount=element.amount
-						c.outstanding_amount=element.outstanding_amount
-						c.reconciliation_status=element.reconciliation_status
-						c.remarks=element.remarks
-					});
+					if(frm.doc.type_of_transaction !="Online Payment"){
+						frappe.model.clear_table(frm.doc, 'student_reference');
+						(r.message).forEach(element => {
+							var c = frm.add_child("student_reference")
+							c.student=element.student
+							c.student_name=element.student_name
+							c.utr_no=element.unique_transaction_reference_utr
+							c.amount=element.amount
+							c.outstanding_amount=element.outstanding_amount
+							c.reconciliation_status=element.reconciliation_status
+							c.remarks=element.remarks
+						});
+					};
+					if(frm.doc.type_of_transaction=="Online Payment"){
+						frappe.model.clear_table(frm.doc, 'student_reference');
+						(r.message).forEach(element => {
+							var c = frm.add_child("student_reference")
+							c.student=element.party
+							c.student_name=element.party_name
+							c.utr_no=element.transaction_id
+							c.amount=element.paying_amount
+							c.outstanding_amount=element.outstanding_amount
+							c.reconciliation_status=element.payment_status
+							c.remarks=element.remarks
+						});
+					};
 				}
 				frm.refresh();
 				frm.refresh_field("student_reference")
