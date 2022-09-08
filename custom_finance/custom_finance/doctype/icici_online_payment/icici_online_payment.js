@@ -20,13 +20,14 @@ frappe.ui.form.on('ICICI Online Payment', {
 });
 frappe.ui.form.on("ICICI Online Payment", "refresh", function(frm){
 	frm.add_custom_button("Online Payment", function(){
+		
  
 	 frappe.call({		  
-		 method: "custom_finance.custom_finance.doctype.icici_online_payment.icici_online_payment.getSessionToken",		        
-		 args: {
+		method: "custom_finance.custom_finance.doctype.icici_online_payment.icici_online_payment.getSessionToken",	
+		args: {	
 			 
-			 name:frm.doc.name,
-			 paying_amount:frm.doc.paying_amount,
+			name:frm.doc.name,
+			paying_amount:frm.doc.paying_amount,
  
 	   },
 		   
@@ -67,7 +68,7 @@ frappe.ui.form.on("ICICI Online Payment", "refresh", function(frm){
 	 var encData = urlParams.get('encData');
 
 	 frappe.call({		  
-		method: "custom_finance.custom_finance.doctype.icici_online_payment.icici_online_payment.getDecryptedData",		        
+		method: "custom_finance.custom_finance.doctype.icici_online_payment.icici_online_payment.getDecryptedData",	
 		args: {
 			doc:frm.doc,
 			encData:encData,
@@ -112,4 +113,15 @@ frappe.ui.form.on("ICICI Online Payment", "refresh", function(frm){
 
 	
  }); 
-		 
+ frappe.ui.form.on('ICICI Online Payment', {
+    refresh(frm) {  
+		if (frm.is_new()){
+            frappe.msgprint({
+                title: __('Notification'),
+                indicator: 'green',
+                message: __(' <b>Important Points <b> :- <br><b>01. KIIT 0% Processing Fee HDFC payment Gateway. <br>  <b>02. <b>   Students of the KIIT University can make all kinds of payment such as admission fees, examination fees, tuition fees, hostel fees, library fees etc. to the University through the online payment facility. It is available 24x7.<br>  <b>03. <b>   If the payment process is not completed, but the respective amount is debited from the Bank-account of the student, the corresponding amount would be credited back .<br>  <b>04. <b>   Every effort has been made by the University to ensure that the online payment system is accurately and correctly operated through the given system. <br> If due to failure in link, or any error either in the process or in the server of the bank, the online payment fails, the University would not be responsible for the non-payment, in which event the student should prefer to make the payment manually.'
+                )
+            });
+        }    
+	}
+});
