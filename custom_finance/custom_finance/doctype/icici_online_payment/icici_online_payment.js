@@ -125,3 +125,7 @@ frappe.ui.form.on("ICICI Online Payment", "refresh", function(frm){
         }    
 	}
 });
+
+frappe.ui.form.on("ICICI Online Payment", "refresh", function(frm) {
+    frm.set_df_property("paying_amount", "read_only", frm.is_new() ? 0 : 1);
+});
