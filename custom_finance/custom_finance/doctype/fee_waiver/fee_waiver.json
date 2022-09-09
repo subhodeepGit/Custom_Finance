@@ -15,6 +15,7 @@
   "due_date",
   "column_break_7",
   "approval_details",
+  "waiver_type",
   "student_details_section",
   "program_enrollment",
   "programs",
@@ -262,12 +263,19 @@
    "fieldname": "approval_details",
    "fieldtype": "Attach",
    "label": "Approval Details"
+  },
+  {
+   "fieldname": "waiver_type",
+   "fieldtype": "Select",
+   "label": "Waiver Type",
+   "options": "\nDiscount\nExemption",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-08-30 17:38:08.548245",
+ "modified": "2022-09-09 15:37:56.773734",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Fee Waiver",
@@ -298,7 +306,7 @@
   "select": 1,
   "submit": 1,
   "import": 1
- }
+  }
  ],
  "sort_field": "modified",
  "sort_order": "DESC"
