@@ -23,7 +23,8 @@ frappe.ui.form.on("ICICI Online Payment", "refresh", function(frm){
 		
  
 	 frappe.call({		  
-		method: "custom_finance.custom_finance.doctype.icici_online_payment.icici_online_payment.getSessionToken",	
+		method: "icici_integration.icici_integration.doctype.onlinepayment.onlinepayment.getSessionToken",	
+		
 		args: {	
 			 
 			name:frm.doc.name,
@@ -68,7 +69,7 @@ frappe.ui.form.on("ICICI Online Payment", "refresh", function(frm){
 	 var encData = urlParams.get('encData');
 
 	 frappe.call({		  
-		method: "custom_finance.custom_finance.doctype.icici_online_payment.icici_online_payment.getDecryptedData",	
+		method: "icici_integration.icici_integration.doctype.onlinepayment.onlinepayment.getDecryptedData",	
 		args: {
 			doc:frm.doc,
 			encData:encData,
