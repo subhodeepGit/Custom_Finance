@@ -6,14 +6,13 @@ from frappe.model.document import Document
 from jpype import startJVM, shutdownJVM, java, addClassPath, JClass, JInt
 addClassPath("/opt/bench/frappe-bench/apps/custom_finance/custom_finance/custom_finance/doctype/icici_online_payment/Java_Jar_File/TokenClass.jar")
 addClassPath("/opt/bench/frappe-bench/apps/custom_finance/custom_finance/custom_finance/doctype/icici_online_payment/Java_Jar_File/CommerceConnect.jar")
-startJVM(convertStrings=False)
-import webbrowser
-from urllib.request import urlopen
+startJVM(convertStrings=True)
 from urllib.request import urlopen
 import json
 import datetime
 
 class ICICIOnlinePayment(Document):
+	
 	
 	def on_cancel(doc):
 		frappe.throw("Once form is submitted it can't be cancelled")
