@@ -170,6 +170,11 @@ class FeeWaiver(Document):
 
 def update_fee(self):
 	for t in self.get('fee_componemts'):
+		outstanding_fees=frappe.db.sql(""" select sum(outstanding_fees) from `tabFee Component` where parent='%s' """%(t.fee_voucher_no))
+		outstanding_fees=outstanding_fees[0][0]
+		frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",outstanding_fees) 
+
+	for t in self.get('fee_componemts'):
 		data=frappe.get_all("Fee Component",filters=[["parent","=",t.fee_voucher_no],['fees_category','=',t.fees_category]],
 											fields=["name",'outstanding_fees','total_waiver_amount','waiver_amount','percentage'])
 		fee_data=frappe.get_all("Fees",filters=[['name','=',t.fee_voucher_no]],fields=["name","outstanding_amount"])
