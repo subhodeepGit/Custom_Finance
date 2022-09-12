@@ -73332,10 +73332,10 @@
   "write": 1
  },
  {
-  "amend": 1,
-  "cancel": 1,
+  "amend": 0,
+  "cancel": 0,
   "create": 1,
-  "delete": 1,
+  "delete": 0,
   "docstatus": 0,
   "doctype": "Custom DocPerm",
   "email": 1,
