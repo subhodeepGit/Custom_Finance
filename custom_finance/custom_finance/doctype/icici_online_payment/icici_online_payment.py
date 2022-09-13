@@ -7,6 +7,7 @@ from jpype import startJVM, shutdownJVM, java, addClassPath, JClass, JInt
 addClassPath("/opt/bench/frappe-bench/apps/icici_integration/icici_integration/icici_integration/doctype/onlinepayment/TokenClass.jar")
 addClassPath("/opt/bench/frappe-bench/apps/icici_integration/icici_integration/icici_integration/doctype/onlinepayment/CommerceConnect.jar")
 from urllib.request import urlopen
+from custom_finance.custom_finance.notification.custom_notification import online_payment_submit
 
 
 
@@ -15,9 +16,13 @@ class ICICIOnlinePayment(Document):
 	def on_cancel(doc):
 		frappe.throw("Once form is submitted it can't be cancelled")
 	def on_submit(doc): 
+		frappe.msgprint("Your Transaction is completed. Your Transaction Id is " + doc.transaction_id)
+		online_payment_submit(doc)
+
 		def __init__(self):		
 			self.getTransactionDetails(doc,doc.name)  
-			frappe.msgprint("Your Transaction is completed. Your Transaction Id is " + doc.transaction_id)
+			# frappe.msgprint("Your Transaction is completed. Your Transaction Id is " + doc.transaction_id)
+			
 
 @frappe.whitelist()
 def get_outstanding_amount(student):
