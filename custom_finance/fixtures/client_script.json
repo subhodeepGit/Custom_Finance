@@ -4,12 +4,12 @@
   "doctype": "Client Script",
   "dt": "Fees",
   "enabled": 1,
-  "modified": "2022-07-28 11:39:22.022573",
+  "modified": "2022-09-13 13:10:48.100952",
   "name": "Fees-List",
   "parent": null,
   "parentfield": null,
   "parenttype": null,
-  "script": "frappe.listview_settings['Fees'].refresh = function(listview) {\n    if(frappe.user.has_role([\"Education Administrator\"]) && !frappe.user.has_role([\"Administrator\"])){\n\t$('.btn-primary').hide();\n}\n};\n",
+  "script": "frappe.listview_settings['Fees'].refresh = function(listview) {\n    if(frappe.user.has_role([\"Education Administrator\",\"Fee Waiver\"]) && !frappe.user.has_role([\"Administrator\"])){\n\t$('.btn-primary').hide();\n}\n};\n",
   "view": "List"
  }
 ]

@@ -9,7 +9,7 @@
  "filters": [],
  "idx": 0,
  "is_standard": "Yes",
- "modified": "2022-05-13 12:53:47.542267",
+ "modified": "2022-09-13 14:56:06.145441",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Fee General Ledger wth Cancellation",
@@ -27,6 +27,9 @@
   },
   {
    "role": "Accounts Manager"
+  },
+  {
+   "role": "Fee Waiver"
   }
  ]
 }
