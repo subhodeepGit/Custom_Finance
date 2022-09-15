@@ -366,6 +366,15 @@ frappe.ui.form.on("Payment Entry","mode_of_payment", function(frm){
 	}
 
 })
+frappe.ui.form.on('Payment Entry', {
+    onload:function(frm) {
+		if(frappe.user.has_role(["Fee Waiver"]) && !frappe.user.has_role(["Administrator"])){
+  			frm.remove_custom_button('Ledger');
+        }
+	}
+}
 
+
+);
 
 

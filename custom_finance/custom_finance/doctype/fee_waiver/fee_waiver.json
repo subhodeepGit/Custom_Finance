@@ -26,6 +26,7 @@
   "student_category",
   "academic_term",
   "academic_year",
+  "roll_no",
   "section_break_17",
   "currency",
   "grand_total",
@@ -41,6 +42,7 @@
   "print_heading",
   "accounting_dimensions_section",
   "cost_center",
+  "remarks",
   "amended_from"
  ],
  "fields": [
@@ -54,6 +56,7 @@
    "fieldname": "student",
    "fieldtype": "Link",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Student",
    "options": "Student",
    "reqd": 1
@@ -270,12 +273,25 @@
    "label": "Waiver Type",
    "options": "\nDiscount\nExemption",
    "reqd": 1
+  },
+  {
+   "fetch_from": "student.roll_no",
+   "fieldname": "roll_no",
+   "fieldtype": "Data",
+   "label": "Roll No",
+   "read_only": 1
+  },
+  {
+   "description": "Enter the Remarks to be printed on Money Receipt",
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-09-09 15:37:56.773734",
+ "modified": "2022-09-13 11:25:09.757534",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Fee Waiver",
@@ -292,20 +308,6 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
-},
-{
-  "create": 1,
-  "email": 1,
-  "export": 1,
-  "print": 1,
-  "read": 1,
-  "report": 1,
-  "role": "Accounts Manager",
-  "share": 1,
-  "write": 1,
-  "select": 1,
-  "submit": 1,
-  "import": 1
   }
  ],
  "sort_field": "modified",

@@ -10,7 +10,7 @@
  "idx": 0,
  "is_standard": "Yes",
  "letter_head": "Polytechnic Logo",
- "modified": "2022-05-30 15:28:28.988057",
+ "modified": "2022-09-13 13:25:13.839456",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Fee waiver Account Ledger",
@@ -31,6 +31,9 @@
   },
   {
    "role": "Education Administrator"
+  },
+  {
+   "role": "Fee Waiver"
   }
  ]
 }
