@@ -25,12 +25,13 @@ class PaymentRefund(Document):
                 if t.allocated_amount > tot:
                     frappe.throw("Allocated Amount must be less than Refundable Amount")
         elif self.payment_type == "Receive":
-            tot = 0
-            refund_fee_info=frappe.get_all("Fees",filters=[["outstanding_amount",">",0],["student","=",self.party]],fields=['name','outstanding_amount'])
-            if (len(refund_fee_info) != 0):
-                frappe.throw("Outstanding Amount is present for this party. Please clear the Outstanding Amount first!")
-            else:
-                pass
+            pass
+            # tot = 0
+            # refund_fee_info=frappe.get_all("Fees",filters=[["outstanding_amount",">",0],["student","=",self.party]],fields=['name','outstanding_amount'])
+            # if (len(refund_fee_info) != 0):
+            #     frappe.throw("Outstanding Amount is present for this party. Please clear the Outstanding Amount first!")
+            # else:
+            #     pass
         if(self.get("references") == []):
             frappe.throw("Please fill the Payment References table")
         for d in self.get("references"):
