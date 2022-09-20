@@ -72,6 +72,9 @@ def getTransactionDetails(doc,name):
 	return str(transactionDetailsData) 
 
 
+
+
+
 # @frappe.whitelist()        
 # def getSessionToken(name,paying_amount):  
     
