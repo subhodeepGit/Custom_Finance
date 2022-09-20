@@ -1331,21 +1331,47 @@ def get_outstanding_fees(args):
 		filter.append(['valid From','between',[args.get('from_due_date'),args.get('to_due_date')]])
 		filter.append(['valid_to','between',[args.get('from_due_date'),args.get('to_due_date')]])
 
-	fees_info=frappe.db.get_all("Fees",filter,['name','posting_date','program'])
+	fees_info=frappe.db.get_all("Fees",filter,['name','posting_date','program','fee_structure','hostel_fee_structure'],order_by="posting_date asc")
 	######################### end fees
 	fee_component_info=[]
 
 	for t in fees_info:
-		fee_component=frappe.db.get_all("Fee Component", {"parent":t['name']},
-									["name","fees_category","outstanding_fees","receivable_account","income_account","outstanding_fees","amount"])
-		for j in fee_component:
-			if j["outstanding_fees"]>0:	
-				j['posting_date']=t['posting_date']
-				j['Type']='Fees'
-				j['program']=t['program']
-				j['reference_name']=t['name']
-				fee_component_info.append(j)	
+		if t['fee_structure']!=None and t['hostel_fee_structure']==None:
+			fee_component=frappe.db.get_all("Fee Component", {"parent":t['name']},
+									["name","fees_category","outstanding_fees","receivable_account","income_account","outstanding_fees","amount","idx"],order_by="idx asc")
+			for j in fee_component:
+				if j["outstanding_fees"]>0:	
+					j['posting_date']=t['posting_date']
+					j['Type']='Fees'
+					j['program']=t['program']
+					j['reference_name']=t['name']
+					fee_component_info.append(j)
+
+	for t in fees_info:
+		if t['fee_structure']==None and t['hostel_fee_structure']!=None:
+			fee_component=frappe.db.get_all("Fee Component", {"parent":t['name']},
+									["name","fees_category","outstanding_fees","receivable_account","income_account","outstanding_fees","amount","idx"],order_by="idx asc")
+			for j in fee_component:
+				if j["outstanding_fees"]>0:	
+					j['posting_date']=t['posting_date']
+					j['Type']='Fees'
+					j['program']=t['program']
+					j['reference_name']=t['name']
+					fee_component_info.append(j)
+	for t in fees_info:
+		if t['fee_structure']==None and t['hostel_fee_structure']==None:
+			fee_component=frappe.db.get_all("Fee Component", {"parent":t['name']},
+									["name","fees_category","outstanding_fees","receivable_account","income_account","outstanding_fees","amount","idx"],order_by="idx asc")
+			for j in fee_component:
+				if j["outstanding_fees"]>0:	
+					j['posting_date']=t['posting_date']
+					j['Type']='Fees'
+					j['program']=t['program']
+					j['reference_name']=t['name']
+					fee_component_info.append(j)
+
 	data=fee_component_info
+			
 	if not data:
 		frappe.msgprint(_("No outstanding invoices found for the {0} {1} which qualify the filters you have specified.")
 			.format(_(args.get("party_type")).lower(), frappe.bold(args.get("party"))))
