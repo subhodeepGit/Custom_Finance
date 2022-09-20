@@ -24,7 +24,7 @@ class PaymentRefund(Document):
             for t in self.get("references"):
                 if t.allocated_amount > tot:
                     frappe.throw("Allocated Amount must be less than Refundable Amount")
-        elif self.payment_type == "Receive":
+        elif self.payment_type == "Receive" or self.payment_type == "Closing Balance":
             pass
             # tot = 0
             # refund_fee_info=frappe.get_all("Fees",filters=[["outstanding_amount",">",0],["student","=",self.party]],fields=['name','outstanding_amount'])
@@ -42,7 +42,7 @@ class PaymentRefund(Document):
     def on_submit(self):
         if self.payment_type == "Pay":
             je_pay(self)
-        elif self.payment_type == "Receive":
+        elif self.payment_type == "Receive" or self.payment_type == "Closing Balance":
             je_receive(self)
         recon_rtgs_neft_on_submit(self)
         online_payment_on_submit(self)

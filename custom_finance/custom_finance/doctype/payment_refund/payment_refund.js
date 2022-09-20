@@ -38,7 +38,7 @@ frappe.ui.form.on('Payment Refund', {
 		});
 	},
 	payment_type: function(frm) {
-		if (frm.doc.payment_type == "Receive"){
+		if (frm.doc.payment_type == "Receive" || frm.doc.payment_type == "Closing Balance"){
 			frm.doc.mode_of_payment = null;
 			frm.refresh_field("mode_of_payment");	
 			var df = frappe.meta.get_docfield("Payment Entry Reference Refund","account_paid_from", frm.doc.name);
@@ -93,7 +93,7 @@ frappe.ui.form.on('Payment Refund', {
 		}
 	},
 	after_save: function(frm) {
-		if (frm.doc.payment_type == "Receive"){
+		if (frm.doc.payment_type == "Receive" || frm.doc.payment_type == "Closing Balance"){
 			var df = frappe.meta.get_docfield("Payment Entry Reference Refund","account_paid_from", frm.doc.name);
 			df.read_only = 1
 			df.reqd = 0
@@ -173,7 +173,7 @@ frappe.ui.form.on("Payment Refund","mode_of_payment", function(frm){
 					// frm.set_value("paid_from_account_currency",null);
 					frm.set_value("paid_to",res);
 				}
-				else if(frm.doc.payment_type == "Receive"){
+				else if(frm.doc.payment_type == "Receive" || frm.doc.payment_type == "Closing Balance"){
 					frm.set_value("paid_to",null);
 					frm.set_value("paid_to_account_type",null);
 					// frm.set_value("paid_to_account_currency",null);
