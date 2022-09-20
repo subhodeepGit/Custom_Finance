@@ -8,7 +8,7 @@ addClassPath("/opt/bench/frappe-bench/apps/icici_integration/icici_integration/i
 addClassPath("/opt/bench/frappe-bench/apps/icici_integration/icici_integration/icici_integration/doctype/onlinepayment/CommerceConnect.jar")
 from urllib.request import urlopen
 from custom_finance.custom_finance.notification.custom_notification import online_payment_submit
-
+import json
 
 
 class ICICIOnlinePayment(Document):
@@ -16,12 +16,14 @@ class ICICIOnlinePayment(Document):
 	def on_cancel(doc):
 		frappe.throw("Once form is submitted it can't be cancelled")
 	def on_submit(doc): 
+		getTransactionDetails(doc,doc.name)  
 		frappe.msgprint("Your Transaction is completed. Your Transaction Id is " + doc.transaction_id)
 		online_payment_submit(doc)
 
-		def __init__(self):		
-			self.getTransactionDetails(doc,doc.name)  
-			# frappe.msgprint("Your Transaction is completed. Your Transaction Id is " + doc.transaction_id)
+
+		# def __init__(self):		
+		# 	self.getTransactionDetails(doc,doc.name)  
+		# 	# frappe.msgprint("Your Transaction is completed. Your Transaction Id is " + doc.transaction_id)
 			
 
 @frappe.whitelist()
@@ -37,36 +39,37 @@ def get_outstanding_amount(student):
 
 
 
-# def getTransactionDetails(doc,name):   
-# 	getDoc=frappe.get_doc("ICICI Settings")
-# 	merchantId = getDoc.merchantid
-# 	key=getDoc.key
-# 	iv=getDoc.iv
-# 	merchantTxnId=name
-# 	fpTransactionId=""
-# 	apiURL="https://test.fdconnect.com/FirstPayL2Services/getTxnInquiryDetail" 
-# 	try: 
-# 		tokenclass = JClass('TokenClass')
-# 		transactionDetailsData = tokenclass.inquiryTest(java.lang.String("%s"% merchantId), java.lang.String("%s"% key),
-# 											java.lang.String("%s"%iv),java.lang.String("%s"% apiURL),
-# 											java.lang.String("%s"% merchantTxnId),
-# 											java.lang.String("%s"% fpTransactionId)) 
+def getTransactionDetails(doc,name):   
+	getDoc=frappe.get_doc("ICICI Settings")
+	merchantId = getDoc.merchantid
+	key=getDoc.key
+	iv=getDoc.iv
+	merchantTxnId=name
+	fpTransactionId=""
+	apiURL="https://test.fdconnect.com/FirstPayL2Services/getTxnInquiryDetail" 
+	try: 
+		tokenclass = JClass('TokenClass')
+		transactionDetailsData = tokenclass.inquiryTest(java.lang.String("%s"% merchantId), java.lang.String("%s"% key),
+											java.lang.String("%s"%iv),java.lang.String("%s"% apiURL),
+											java.lang.String("%s"% merchantTxnId),
+											java.lang.String("%s"% fpTransactionId)) 
 		
-# 		transactionDetailsData = json.loads(str(transactionDetailsData))   
+		transactionDetailsData = json.loads(str(transactionDetailsData)) 
+		# print("transactionDetailsData-->",transactionDetailsData)  
 		   
-# 		frappe.db.set_value("OnlinePayment",transactionDetailsData["saleTxnDetail"]["merchantTxnId"],"transactionid",transactionDetailsData["fpTransactionId"])
-# 		frappe.db.set_value("OnlinePayment",transactionDetailsData["saleTxnDetail"]["merchantTxnId"],"transaction_status",transactionDetailsData["saleTxnDetail"]["transactionStatus"])        
-# 		frappe.db.set_value("OnlinePayment",transactionDetailsData["saleTxnDetail"]["merchantTxnId"],"transaction_status_description",transactionDetailsData["saleTxnDetail"]["transactionStatusDescription"])         
-# 		frappe.db.commit() 
+		frappe.db.set_value("OnlinePayment",transactionDetailsData["saleTxnDetail"]["merchantTxnId"],"transactionid",transactionDetailsData["fpTransactionId"])
+		frappe.db.set_value("OnlinePayment",transactionDetailsData["saleTxnDetail"]["merchantTxnId"],"transaction_status",transactionDetailsData["saleTxnDetail"]["transactionStatus"])        
+		frappe.db.set_value("OnlinePayment",transactionDetailsData["saleTxnDetail"]["merchantTxnId"],"transaction_status_description",transactionDetailsData["saleTxnDetail"]["transactionStatusDescription"])         
+		frappe.db.commit() 
 
-# 		doc.transaction_id=transactionDetailsData["fpTransactionId"] 
-# 		doc.transaction_status=transactionDetailsData["saleTxnDetail"]["transactionStatus"]
-# 		doc.transaction_status_description=transactionDetailsData["saleTxnDetail"]["transactionStatusDescription"]
+		doc.transaction_id=transactionDetailsData["fpTransactionId"] 
+		doc.transaction_status=transactionDetailsData["saleTxnDetail"]["transactionStatus"]
+		doc.transaction_status_description=transactionDetailsData["saleTxnDetail"]["transactionStatusDescription"]
 			   
-# 	except Exception as err:
-# 		print(repr(err))
+	except Exception as err:
+		print(repr(err))
 
-# 	return str(transactionDetailsData) 
+	return str(transactionDetailsData) 
 
 
 # @frappe.whitelist()        
