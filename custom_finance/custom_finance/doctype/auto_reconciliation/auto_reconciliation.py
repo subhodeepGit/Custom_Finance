@@ -14,9 +14,12 @@ class AutoReconciliation(Document):
 		student_reference=self.get("student_reference")
 		if not student_reference:
 			frappe.throw("No record found in Student Reference Table")
-		mode_of_payment=frappe.get_all("Mode of Payment Account",{"parent":self.type_of_transaction},["name","parent","default_account"])
+		mode_of_payment=frappe.get_all("Mode of Payment Account",{"parent":self.type_of_transaction},["name","parent","default_account","enabled"])
 		if not 	mode_of_payment:
 			frappe.throw("Account not manatained for the mode of payment")
+		if mode_of_payment:
+			if 	mode_of_payment[0]['enabled']!=1:
+				frappe.throw("Mode of payment is Disabled for the mode of payment "+self.type_of_transaction)
 
 	
 	@frappe.whitelist()		
@@ -25,7 +28,7 @@ class AutoReconciliation(Document):
 		frappe.publish_realtime("fee_schedule_progress",
 			{"progress": "0", "reload": 1}, user=frappe.session.user)
 		total_records=len(self.get("student_reference"))
-		if total_records > 100:
+		if total_records > 150:
 			frappe.msgprint(_('''Payment records will be created in the background.
 				In case of any error the error message will be updated in the Schedule.'''))
 			enqueue(generate_payment, queue='default', timeout=6000, event='generate_payment',
