@@ -51,7 +51,31 @@ class FeeWaiver(Document):
 		gl_cancelation(self)
 		self.make_gl_entries_waiver()
 		update_fee(self)
-		
+
+
+
+	def on_cancel(self):
+		gl_cancelation_cancel(self)
+		print("\n\n\n\n\n\n")
+		GL_account_info=[]
+		for t in self.get("fee_componemts"):
+			Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.receivable_account],['is_cancelled',"=",0]],fields=['name', 'creation', 'modified', 'modified_by', 'owner', 
+			'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 'account_currency', 
+			'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 'project', 'remarks', 
+			'is_opening', 'is_advance','fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
+			for j in Gl_entry:
+				GL_account_info.append(j)
+			Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.income_account],['is_cancelled',"=",0]],fields=['name', 'creation', 'modified', 'modified_by', 
+			'owner', 'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 
+			'account_currency', 'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 
+			'project', 'remarks', 'is_opening', 'is_advance', 'fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
+			for j in Gl_entry:
+				GL_account_info.append(j)
+		print(GL_account_info)
+		for t in GL_account_info:
+			print("\n\n\n\n\n")
+			print(t)
+		a.s
 
 
 	def calculate_total(self):
@@ -168,6 +192,44 @@ class FeeWaiver(Document):
 			else:
 				make_gl_entries([student_gl_entries,waiver_fee_gl_entry], cancel=(self.docstatus == 2),update_outstanding="Yes", merge_entries=False)
 
+def gl_cancelation_cancel(self):
+	GL_account_info=[]
+	# for t in self.get("fee_componemts"):
+	# 	Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.receivable_account],['is_cancelled',"=",0]],fields=['name', 'creation', 'modified', 'modified_by', 'owner', 
+	# 	'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 'account_currency', 
+	# 	'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 'project', 'remarks', 
+	# 	'is_opening', 'is_advance','fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
+	# 	GL_account_info.append(Gl_entry[0])
+	# 	Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.income_account],['is_cancelled',"=",0]],fields=['name', 'creation', 'modified', 'modified_by', 
+	# 	'owner', 'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 
+	# 	'account_currency', 'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 
+	# 	'project', 'remarks', 'is_opening', 'is_advance', 'fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
+	# 	GL_account_info.append(Gl_entry[0])
+
+	for t in self.get("fee_componemts"):
+		Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.receivable_account],['is_cancelled',"=",0]],fields=['name', 'creation', 'modified', 'modified_by', 'owner', 
+		'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 'account_currency', 
+		'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 'project', 'remarks', 
+		'is_opening', 'is_advance','fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
+		for j in Gl_entry:
+			GL_account_info.append(j)
+		Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.income_account],['is_cancelled',"=",0]],fields=['name', 'creation', 'modified', 'modified_by', 
+		'owner', 'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 
+		'account_currency', 'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 
+		'project', 'remarks', 'is_opening', 'is_advance', 'fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
+		for j in Gl_entry:
+			GL_account_info.append(j)
+	print(GL_account_info)
+	for t in GL_account_info:
+		print("\n\n\n\n\n")
+		print(t)
+	a.s
+	gl_entries=GL_account_info
+	make_reverse_gl_entries(gl_entries=gl_entries,voucher_type='Fees')
+
+
+
+###############################################################
 def update_fee(self):
 	for t in self.get('fee_componemts'):
 		outstanding_fees=frappe.db.sql(""" select sum(outstanding_fees) from `tabFee Component` where parent='%s' """%(t.fee_voucher_no))
@@ -661,6 +723,8 @@ def check_freezing_date(posting_date, adv_adj=False):
 
 
 def set_as_cancel(voucher_type, voucher_no,gl_name):
+	print("\n\n\n\n\n")
+	print(gl_name)
 	"""
 		Set is_cancelled=1 for perticular gl entries for the voucher
 	"""
@@ -670,7 +734,8 @@ def set_as_cancel(voucher_type, voucher_no,gl_name):
 		frappe.db.sql("""UPDATE `tabGL Entry` SET is_cancelled = 1, remarks="%s", 
 			modified=%s, modified_by=%s
 			where name=%s """,
-			(now(), frappe.session.user,t,remarks))
+			(remarks,now(),frappe.session.user,t))
+	# a.s		
 	# for t in gl_name:
 	# 	frappe.db.sql("""UPDATE `tabGL Entry` SET is_cancelled = 1,
 	# 		modified=%s, modified_by=%s
