@@ -208,6 +208,7 @@
    "options": "Print Heading"
   },
   {
+   "collapsible": 1,
    "fieldname": "accounting_dimensions_section",
    "fieldtype": "Section Break",
    "label": "Accounting Dimensions"
@@ -216,8 +217,7 @@
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
-   "options": "Cost Center",
-   "reqd": 1
+   "options": "Cost Center"
   },
   {
    "fieldname": "fees_voucher_column",
@@ -291,7 +291,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-09-13 11:25:09.757534",
+ "modified": "2022-09-26 16:48:51.887866",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Fee Waiver",

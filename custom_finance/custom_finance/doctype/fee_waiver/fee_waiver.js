@@ -6,10 +6,7 @@ frappe.ui.form.on('Fee Waiver', {
 		frappe.call({
             method: "custom_finance.custom_finance.doctype.fee_waiver.fee_waiver.g_cost_center",
             callback: function(r) { 
-				alert("ok")
-				alert(r.message)
                 if (r.message){
-					alert(r.message)
                     frm.set_value("cost_center",r.message)
                 }
             } 

@@ -219,11 +219,6 @@ def gl_cancelation_cancel(self):
 		'project', 'remarks', 'is_opening', 'is_advance', 'fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
 		for j in Gl_entry:
 			GL_account_info.append(j)
-	print(GL_account_info)
-	for t in GL_account_info:
-		print("\n\n\n\n\n")
-		print(t)
-	a.s
 	gl_entries=GL_account_info
 	make_reverse_gl_entries(gl_entries=gl_entries,voucher_type='Fees')
 
@@ -723,8 +718,6 @@ def check_freezing_date(posting_date, adv_adj=False):
 
 
 def set_as_cancel(voucher_type, voucher_no,gl_name):
-	print("\n\n\n\n\n")
-	print(gl_name)
 	"""
 		Set is_cancelled=1 for perticular gl entries for the voucher
 	"""
@@ -838,8 +831,6 @@ def get_program_enrollment(student):
 def g_cost_center():
 	a=frappe.get_all("Company",['cost_center'])
 	data = a[0]['cost_center']
-	print("\n\n\n\n\n\n\n")
-	print(data)
 	return data
 
 
