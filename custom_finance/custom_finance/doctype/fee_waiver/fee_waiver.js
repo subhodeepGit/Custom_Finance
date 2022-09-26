@@ -2,6 +2,20 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Fee Waiver', {
+	company: function(frm) {
+		frappe.call({
+            method: "custom_finance.custom_finance.doctype.fee_waiver.fee_waiver.g_cost_center",
+            callback: function(r) { 
+				alert("ok")
+				alert(r.message)
+                if (r.message){
+					alert(r.message)
+                    frm.set_value("cost_center",r.message)
+                }
+            } 
+            
+        });
+	},	
 	onload: function(frm) {
 		frm.set_query("academic_term", function() {
 			return{
@@ -118,17 +132,6 @@ frappe.ui.form.on('Fee Waiver', {
 				frappe.set_route("query-report", "Fee Waiver Payment Entry Report");
 			}, "List view");
 	},
-	company: function(frm) {
-		frappe.call({
-            method: "custom_finance.custom_finance.doctype.fee_waiver.fee_waiver.get_cost_center",
-            callback: function(r) { 
-                if (r.message){
-                    frm.set_value("cost_center",r.message)
-                }
-            } 
-            
-        });
-	}
 });
 
 frappe.ui.form.on('Fee Waiver', {

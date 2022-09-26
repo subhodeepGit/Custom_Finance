@@ -835,9 +835,11 @@ def get_program_enrollment(student):
 		return data[0]
 
 @frappe.whitelist()
-def get_cost_center():
+def g_cost_center():
 	a=frappe.get_all("Company",['cost_center'])
 	data = a[0]['cost_center']
+	print("\n\n\n\n\n\n\n")
+	print(data)
 	return data
 
 

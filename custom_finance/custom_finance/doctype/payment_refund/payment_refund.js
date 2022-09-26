@@ -2,6 +2,17 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Payment Refund', {
+	company: function(frm) {
+		frappe.call({
+            method: "custom_finance.custom_finance.doctype.payment_refund.payment_refund.get_cost_center",
+            callback: function(r) { 
+                if (r.message){
+                    frm.set_value("cost_center",r.message)
+                }
+            } 
+            
+        });
+	},
 	onload: function(frm) {
 		// frm.set_df_property('references', 'cannot_add_rows', true);
 		// frm.set_df_property('references', 'cannot_delete_rows', true);
@@ -144,18 +155,7 @@ frappe.ui.form.on('Payment Refund', {
 				}
 			});
 		}
-	},
-	company: function(frm) {
-		frappe.call({
-            method: "custom_finance.custom_finance.doctype.fee_waiver.fee_waiver.get_cost_center",
-            callback: function(r) { 
-                if (r.message){
-                    frm.set_value("cost_center",r.message)
-                }
-            } 
-            
-        });
-	}	
+	},	
 });
 
 frappe.ui.form.on("Payment Refund","mode_of_payment", function(frm){
