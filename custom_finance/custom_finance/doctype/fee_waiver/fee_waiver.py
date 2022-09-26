@@ -56,25 +56,7 @@ class FeeWaiver(Document):
 
 	def on_cancel(self):
 		gl_cancelation_cancel(self)
-		print("\n\n\n\n\n\n")
-		GL_account_info=[]
-		for t in self.get("fee_componemts"):
-			Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.receivable_account],['is_cancelled',"=",0]],fields=['name', 'creation', 'modified', 'modified_by', 'owner', 
-			'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 'account_currency', 
-			'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 'project', 'remarks', 
-			'is_opening', 'is_advance','fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
-			for j in Gl_entry:
-				GL_account_info.append(j)
-			Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.income_account],['is_cancelled',"=",0]],fields=['name', 'creation', 'modified', 'modified_by', 
-			'owner', 'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 
-			'account_currency', 'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 
-			'project', 'remarks', 'is_opening', 'is_advance', 'fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
-			for j in Gl_entry:
-				GL_account_info.append(j)
-		print(GL_account_info)
-		for t in GL_account_info:
-			print("\n\n\n\n\n")
-			print(t)
+		self.make_reverse_entries_waiver()
 		a.s
 
 
@@ -115,6 +97,7 @@ class FeeWaiver(Document):
 			return ", ".join(list(set(student_emails)))
 		else:
 			return None		
+			
 	def make_gl_entries_waiver(self):
 		if not self.grand_total:
 			return
@@ -192,20 +175,66 @@ class FeeWaiver(Document):
 			else:
 				make_gl_entries([student_gl_entries,waiver_fee_gl_entry], cancel=(self.docstatus == 2),update_outstanding="Yes", merge_entries=False)
 
+	def make_reverse_entries_waiver(self):
+		if not self.grand_total:
+			return
+		data = frappe.get_all("Fee Waiver Components",{"parent":self.name},['fees_category','amount','waiver_type','percentage',
+																	'waiver_amount','total_waiver_amount','receivable_account','income_account',
+																	'company','grand_fee_amount','outstanding_fees','waiver_account','fee_voucher_no'
+																])
+		# [{'fees_category': 'Tuition Fees', 'amount': 29000.0, 'waiver_type': 'Amount', 'percentage': 0.0, 'waiver_amount': 1000.0, 
+		# 'total_waiver_amount': 1000.0, 'receivable_account': 'Tuition Fees - KP', 'income_account': 'Tuition Fees Income - KP', 
+		# 'company': 'KiiT Polytechnic', 'grand_fee_amount': 30000.0, 'outstanding_fees': 29000.0, 'waiver_account': 'Tuition Fees Income - KP', 
+		# 'fee_voucher_no': 'EDU-FEE-2022-00940'}]
+
+		fiscal_year=frappe.get_all("Fiscal Year",filters=[["year_start_date","<=",self.posting_date],["year_end_date",">=",self.posting_date]],fields=['name'])																											
+		for fc in data:
+			############################ receivable_account 
+			student_gl_entries=get_gl_dict({'company': self.company, 
+			'posting_date': self.posting_date, 
+			'fiscal_year': fiscal_year[0]['name'], 
+			'voucher_type': 'Fees', 
+			'voucher_no': fc['fee_voucher_no'], 
+			'remarks': None, 
+			'debit': fc['grand_fee_amount'], 
+			'credit': 0, 
+			'debit_in_account_currency':fc['grand_fee_amount'], 
+			'credit_in_account_currency': 0, 
+			'is_opening': 'No', 
+			'party_type': 'Student', 
+			'party': self.student, 
+			'project': None, 
+			'post_net_value': None, 
+			'account': fc['receivable_account'], 
+			'against': fc['income_account'], 
+			'against_voucher':fc['fee_voucher_no'], 
+			'against_voucher_type': 'Fees', 
+			'account_currency': 'INR'}) # This gl will be one entry
+			############################## income_account
+			fee_gl_entry=get_gl_dict({'company': self.company, 
+			'posting_date':self.posting_date, 
+			'fiscal_year': fiscal_year[0]['name'], 
+			'voucher_type': 'Fees', 
+			'voucher_no':fc['fee_voucher_no'], 
+			'remarks': None, 
+			'debit': 0, 
+			'credit': fc['grand_fee_amount'], 
+			'debit_in_account_currency': 0, 
+			'credit_in_account_currency': fc['grand_fee_amount'], 
+			'is_opening': 'No', 
+			'party_type': None, 
+			'party': None, 
+			'project': None, 
+			'post_net_value': None, 
+			'account': fc['income_account'], 
+			'against': self.student, 
+			'cost_center': self.cost_center, 
+			'account_currency': 'INR'}) # one entry 
+			make_gl_entries([student_gl_entries, fee_gl_entry], cancel=(self.docstatus == 2),update_outstanding="Yes", merge_entries=False)
+	
+
 def gl_cancelation_cancel(self):
 	GL_account_info=[]
-	# for t in self.get("fee_componemts"):
-	# 	Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.receivable_account],['is_cancelled',"=",0]],fields=['name', 'creation', 'modified', 'modified_by', 'owner', 
-	# 	'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 'account_currency', 
-	# 	'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 'project', 'remarks', 
-	# 	'is_opening', 'is_advance','fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
-	# 	GL_account_info.append(Gl_entry[0])
-	# 	Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.income_account],['is_cancelled',"=",0]],fields=['name', 'creation', 'modified', 'modified_by', 
-	# 	'owner', 'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 
-	# 	'account_currency', 'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 
-	# 	'project', 'remarks', 'is_opening', 'is_advance', 'fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
-	# 	GL_account_info.append(Gl_entry[0])
-
 	for t in self.get("fee_componemts"):
 		Gl_entry=frappe.db.get_all("GL Entry",filters=[["voucher_no","=",t.fee_voucher_no],["account","=",t.receivable_account],['is_cancelled',"=",0]],fields=['name', 'creation', 'modified', 'modified_by', 'owner', 
 		'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 'account_currency', 
@@ -218,7 +247,7 @@ def gl_cancelation_cancel(self):
 		'account_currency', 'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 
 		'project', 'remarks', 'is_opening', 'is_advance', 'fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
 		for j in Gl_entry:
-			GL_account_info.append(j)
+			GL_account_info.append(j)		
 	gl_entries=GL_account_info
 	make_reverse_gl_entries(gl_entries=gl_entries,voucher_type='Fees')
 
