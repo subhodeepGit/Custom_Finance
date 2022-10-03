@@ -59,7 +59,7 @@ class FeeWaiver(Document):
 		gl_cancelation_cancel(self)
 		self.make_reverse_entries_waiver()
 		update_cancel_fee(self)
-		a.s
+		# a.ss
 
 
 	def calculate_total(self):
