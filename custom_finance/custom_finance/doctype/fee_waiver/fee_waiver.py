@@ -15,6 +15,7 @@ from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import (
 	get_accounting_dimensions,
 )
 from frappe.model.meta import get_field_precision
+from frappe import utils
 
 class ClosedAccountingPeriod(frappe.ValidationError): pass
 
@@ -252,28 +253,27 @@ def update_cancel_fee(self):
 		total_waiver_amount=t.total_waiver_amount
 		frappe.db.set_value("Fee Component",data[0]["name"], "waiver_type","")
 		if waiver_type=="Amount":
-			frappe.db.set_value("Fee Component",data[0]["name"], "waiver_amount","")
+			frappe.db.set_value("Fee Component",data[0]["name"], "waiver_amount",0)
 		if waiver_type=="Percentage":
-			frappe.db.set_value("Fee Component",data[0]["name"], "percentage","")
+			frappe.db.set_value("Fee Component",data[0]["name"], "percentage",0)
 		refundable_amount=t.outstanding_fees_ref-waiver_amount
 		if refundable_amount==0:	
-			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount","")
+			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",0)
 			frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
 			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount+waiver_amount)
 			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]+total_waiver_amount) 
 		elif refundable_amount >0:
-			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount","")
+			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",0)
 			frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
 			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount+waiver_amount)
 			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]+total_waiver_amount) 	
 		elif refundable_amount <0:
 			refundable_cancel_function(self,abs(refundable_amount),t)
 		# 	outsatnding_amount=outsatnding_amount+data[0]['total_waiver_amount']	
-		# 	frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",total_waiver_amount) 	
-		# 	frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount) 
-		# 	frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
-		# 	frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount)
-		# 	frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-t.outstanding_fees_ref)
+			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",0) 	
+			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount+waiver_amount) 
+			frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
+			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]+t.outstanding_fees_ref)
 
 
 def refundable_cancel_function(self,refundable_amount=None,rev_object=None):
@@ -287,68 +287,29 @@ def refundable_cancel_function(self,refundable_amount=None,rev_object=None):
 			'owner', 'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 'account_currency', 
 			'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 'project', 'remarks', 
 			'is_opening', 'is_advance','fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
-			for t in Gl_entry:
-				if t['against_voucher']!=None and i['account_paid_from']==t['account']:
-					amount_adjust=t['credit']-refundable_amount
-					if amount_adjust>0:
+			if Gl_entry:
+				payment_comp=frappe.get_all("Payment Entry Reference",{"parent":paymententry_voucher_no},['name',"parent","allocated_amount",'account_paid_from'])
+				for t in Gl_entry:
+					if t['debit']!=0:
 						new_ref_adj=t.copy()
-						del new_ref_adj['name']
-						new_ref_adj['posting_date']=self.posting_date
-						new_ref_adj['credit']=amount_adjust
+						new_ref_adj['posting_date']=utils.today()
 						new_gl_entry.append(new_ref_adj)
-						ref_adj_acc_gl=t.copy()
-						del ref_adj_acc_gl['name']
-						##########################'Fees Refundable / Adjustable'######################################
-						account=frappe.get_all("Account",fields=[["account_type","=","Income Account"],["name",'like','%Fees Refundable / Adjustable%']])
-						if not account:
-							frappe.throw("Fees Refundable / Adjustable account not maintained for payment reconciliation")
-						################################################################################################	
-						ref_adj_acc_gl['account']=account[0]['name']
-						ref_adj_acc_gl['credit']=refundable_amount
-						new_gl_entry.append(ref_adj_acc_gl)
-						refundable_amount=0
-					elif amount_adjust==0:
-						new_ref_adj=t.copy()
-						del new_ref_adj['name']
-						new_ref_adj['posting_date']=self.posting_date
-						new_ref_adj['credit']=amount_adjust
-						##########################'Fees Refundable / Adjustable'######################################
-						account=frappe.get_all("Account",fields=[["account_type","=","Income Account"],["name",'like','%Fees Refundable / Adjustable%']])
-						if not account:
-							frappe.throw("Fees Refundable / Adjustable account not maintained for payment reconciliation")
-						################################################################################################
-						new_ref_adj['account']=account[0]['name']
-						new_gl_entry.append(new_ref_adj)
-						refundable_amount=0 	
-					elif amount_adjust<0:
-						new_ref_adj=t.copy()
-						del new_ref_adj['name']
-						new_ref_adj['posting_date']=self.posting_date
-						new_ref_adj['credit']=abs(amount_adjust)
-						##########################'Fees Refundable / Adjustable'######################################
-						account=frappe.get_all("Account",fields=[["account_type","=","Income Account"],["name",'like','%Fees Refundable / Adjustable%']])
-						if not account:
-							frappe.throw("Fees Refunget_payment_entrydable / Adjustable account not maintained for payment reconciliation")
-						################################################################################################
-						new_ref_adj['account']=account[0]['name']
-						new_gl_entry.append(new_ref_adj)
-						refundable_amount=refundable_amount-abs(amount_adjust)
-				elif t['against_voucher']!=None and i['account_paid_from']!=t['account']:
-					new_ref_adj=t.copy()
-					del new_ref_adj['name']
-					new_gl_entry.append(new_ref_adj)
-				else:
-					new_ref_adj=t.copy()
-					del new_ref_adj['name']
-					new_gl_entry.append(new_ref_adj)
+					if t['credit']!=0:
+						for j in payment_comp:
+							if j['account_paid_from']==t['account']:
+								new_ref_adj=t.copy()
+								new_ref_adj['posting_date']=utils.today()
+								new_ref_adj['credit']=j["allocated_amount"]
+								new_gl_entry.append(new_ref_adj)
+
 			
-			########################## First Canncelation
-			cancel=1
-			adv_adj=0
-			gl_entries = process_gl_map(Gl_entry)
-			make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
-			########################## New entry
-			make_gl_entries(new_gl_entry)
+				########################## First Canncelation
+				cancel=1
+				adv_adj=0
+				gl_entries = process_gl_map(Gl_entry)
+				make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
+				########################## New entry
+				make_gl_entries(new_gl_entry)
 
 
 
