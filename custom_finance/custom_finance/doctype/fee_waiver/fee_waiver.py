@@ -248,7 +248,7 @@ def update_cancel_fee(self):
 		outsatnding_amount=t.outstanding_fees
 		waiver_type=t.waiver_type
 		percentage=t.percentage
-		amount=t.amount
+		amount=t.grand_fee_amount
 		waiver_amount=t.waiver_amount
 		total_waiver_amount=t.total_waiver_amount
 		frappe.db.set_value("Fee Component",data[0]["name"], "waiver_type","")
@@ -260,18 +260,18 @@ def update_cancel_fee(self):
 		if refundable_amount==0:	
 			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",0)
 			frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
-			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount+waiver_amount)
+			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount+total_waiver_amount)
 			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]+total_waiver_amount) 
 		elif refundable_amount >0:
 			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",0)
 			frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
-			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount+waiver_amount)
+			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount+total_waiver_amount)
 			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]+total_waiver_amount) 	
 		elif refundable_amount <0:
 			refundable_cancel_function(self,abs(refundable_amount),t)
 		# 	outsatnding_amount=outsatnding_amount+data[0]['total_waiver_amount']	
 			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",0) 	
-			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount+waiver_amount) 
+			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount+total_waiver_amount) 
 			frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
 			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]+t.outstanding_fees_ref)
 
