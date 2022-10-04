@@ -59,7 +59,6 @@ class FeeWaiver(Document):
 		gl_cancelation_cancel(self)
 		self.make_reverse_entries_waiver()
 		update_cancel_fee(self)
-		# a.ss
 
 
 	def calculate_total(self):
@@ -232,7 +231,8 @@ class FeeWaiver(Document):
 			'against': self.student, 
 			'cost_center': self.cost_center, 
 			'account_currency': 'INR'}) # one entry 
-			make_gl_entries([student_gl_entries, fee_gl_entry], cancel=(self.docstatus == 2),update_outstanding="Yes", merge_entries=False)
+			# make_gl_entries([student_gl_entries, fee_gl_entry], cancel=(self.docstatus == 2),update_outstanding="Yes", merge_entries=False)
+			make_gl_entries([student_gl_entries, fee_gl_entry], update_outstanding="Yes", merge_entries=False)
 
 ##################################################
 def update_cancel_fee(self):
@@ -466,8 +466,12 @@ def refundable_function(self,refundable_amount=None,rev_object=None):
 ######################################################################################################
 
 def make_gl_entries(gl_map, cancel=False, adv_adj=False, merge_entries=True, update_outstanding='Yes', from_repost=False):
+	print("\n\n\n\n")
+	print("ok")
 	if gl_map:
+		print("ok1")
 		if not cancel:
+			print("ok2")
 			validate_accounting_period(gl_map)
 			gl_map = process_gl_map(gl_map, merge_entries)
 			if gl_map and len(gl_map) > 1:
