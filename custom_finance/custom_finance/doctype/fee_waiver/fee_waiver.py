@@ -52,6 +52,7 @@ class FeeWaiver(Document):
 		gl_cancelation(self)
 		self.make_gl_entries_waiver()
 		update_fee(self)
+		# a.s
 
 
 
@@ -192,7 +193,7 @@ class FeeWaiver(Document):
 		for fc in data:
 			############################ receivable_account 
 			student_gl_entries=get_gl_dict({'company': self.company, 
-			'posting_date': self.posting_date, 
+			'posting_date': self.posting_date,# print(new_gl_entry)
 			'fiscal_year': fiscal_year[0]['name'], 
 			'voucher_type': 'Fees', 
 			'voucher_no': fc['fee_voucher_no'], 
@@ -354,7 +355,8 @@ def update_fee(self):
 		waiver_type=t.waiver_type
 		percentage=t.percentage
 		amount=t.amount
-		waiver_amount=t.waiver_amount
+		# waiver_amount=t.waiver_amount
+		waiver_amount=t.total_waiver_amount
 		total_waiver_amount=t.total_waiver_amount
 		grand_fee_amount=t.grand_fee_amount
 		frappe.db.set_value("Fee Component",data[0]["name"], "waiver_type",str(waiver_type))
@@ -424,7 +426,7 @@ def refundable_function(self,refundable_amount=None,rev_object=None):
 						new_ref_adj=t.copy()
 						del new_ref_adj['name']
 						new_ref_adj['posting_date']=self.posting_date
-						new_ref_adj['credit']=amount_adjust
+						new_ref_adj['credit']=abs(refundable_amount)
 						##########################'Fees Refundable / Adjustable'######################################
 						account=frappe.get_all("Account",fields=[["account_type","=","Income Account"],["name",'like','%Fees Refundable / Adjustable%']])
 						if not account:
@@ -467,12 +469,8 @@ def refundable_function(self,refundable_amount=None,rev_object=None):
 ######################################################################################################
 
 def make_gl_entries(gl_map, cancel=False, adv_adj=False, merge_entries=True, update_outstanding='Yes', from_repost=False):
-	print("\n\n\n\n")
-	print("ok")
 	if gl_map:
-		print("ok1")
 		if not cancel:
-			print("ok2")
 			validate_accounting_period(gl_map)
 			gl_map = process_gl_map(gl_map, merge_entries)
 			if gl_map and len(gl_map) > 1:
