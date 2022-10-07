@@ -116,7 +116,7 @@ frappe.ui.form.on('Fee Waiver', {
 				frappe.set_route("query-report", "Fee waiver Account Ledger");
 			}, "List view");
 		}
-		if(frm.doc.docstatus==1)
+		if(frm.doc.docstatus > 0)
 			frm.add_custom_button(__("Payment Entry Ledger"), function() {
 				frappe.route_options = {
 					voucher_no: frm.doc.name,

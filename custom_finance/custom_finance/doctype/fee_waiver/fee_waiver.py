@@ -194,7 +194,7 @@ class FeeWaiver(Document):
 		for fc in data:
 			############################ receivable_account 
 			student_gl_entries=get_gl_dict({'company': self.company, 
-			'posting_date': self.posting_date,# print(new_gl_entry)
+			'posting_date': self.posting_date,
 			'fiscal_year': fiscal_year[0]['name'], 
 			'voucher_type': 'Fees', 
 			'voucher_no': fc['fee_voucher_no'], 
