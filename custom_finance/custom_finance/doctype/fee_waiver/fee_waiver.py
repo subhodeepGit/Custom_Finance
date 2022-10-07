@@ -44,7 +44,13 @@ class FeeWaiver(Document):
 		fiscal_year=frappe.get_all("Fiscal Year",filters=[["year_start_date","<=",self.posting_date],["year_end_date",">=",self.posting_date]],fields=['name'])	
 		if len(fiscal_year)==0:
 			frappe.throw("Fiscal Year not maintained")
-			
+		for t in self.get('fee_componemts'):
+			Components=frappe.get_all("Fee Waiver Components",{"fees_category":t.fees_category,"fee_voucher_no":t.fee_voucher_no},["parent"])
+			if Components:
+				fee_waiver=frappe.get_all("Fee Waiver",{"name":Components[0]["parent"],"docsatus":1},['name'])
+				if fee_waiver:
+					frappe.throw("Fee Waiver of the fees id "+t.fee_voucher_no+" of fee category "+t.fees_category+" is alredey Waived")
+
 		
 
 
