@@ -47,7 +47,7 @@ class FeeWaiver(Document):
 		for t in self.get('fee_componemts'):
 			Components=frappe.get_all("Fee Waiver Components",{"fees_category":t.fees_category,"fee_voucher_no":t.fee_voucher_no},["parent"])
 			if Components:
-				fee_waiver=frappe.get_all("Fee Waiver",{"name":Components[0]["parent"],"docsatus":1},['name'])
+				fee_waiver=frappe.get_all("Fee Waiver",{"name":Components[0]["parent"],"docstatus":1},['name'])
 				if fee_waiver:
 					frappe.throw("Fee Waiver of the fees id "+t.fee_voucher_no+" of fee category "+t.fees_category+" is alredey Waived")
 
