@@ -60,6 +60,7 @@ class FeeWaiver(Document):
 		gl_cancelation_cancel(self)
 		self.make_reverse_entries_waiver()
 		update_cancel_fee(self)
+		# a.s
 
 
 	def calculate_total(self):
@@ -250,7 +251,8 @@ def update_cancel_fee(self):
 		waiver_type=t.waiver_type
 		percentage=t.percentage
 		amount=t.grand_fee_amount
-		waiver_amount=t.waiver_amount
+		# waiver_amount=t.waiver_amount
+		waiver_amount=t.total_waiver_amount
 		total_waiver_amount=t.total_waiver_amount
 		frappe.db.set_value("Fee Component",data[0]["name"], "waiver_type","")
 		if waiver_type=="Amount":
@@ -289,19 +291,21 @@ def refundable_cancel_function(self,refundable_amount=None,rev_object=None):
 			'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 'project', 'remarks', 
 			'is_opening', 'is_advance','fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
 			if Gl_entry:
-				payment_comp=frappe.get_all("Payment Entry Reference",{"parent":paymententry_voucher_no},['name',"parent","allocated_amount",'account_paid_from'])
 				for t in Gl_entry:
 					if t['debit']!=0:
 						new_ref_adj=t.copy()
 						new_ref_adj['posting_date']=utils.today()
 						new_gl_entry.append(new_ref_adj)
 					if t['credit']!=0:
-						for j in payment_comp:
-							if j['account_paid_from']==t['account']:
-								new_ref_adj=t.copy()
-								new_ref_adj['posting_date']=utils.today()
-								new_ref_adj['credit']=j["allocated_amount"]
-								new_gl_entry.append(new_ref_adj)
+						new_ref_adj_credit=t.copy()
+
+
+				payment_comp=frappe.get_all("Payment Entry Reference",{"parent":paymententry_voucher_no},['name',"parent","allocated_amount",'account_paid_from'])
+				for j in payment_comp:
+					new_ref_adj_credit['posting_date']=utils.today()
+					new_ref_adj_credit['credit']=j["allocated_amount"]
+					new_ref_adj_credit['account']=j['account_paid_from']
+					new_gl_entry.append(new_ref_adj_credit)	
 
 			
 				########################## First Canncelation
@@ -311,13 +315,6 @@ def refundable_cancel_function(self,refundable_amount=None,rev_object=None):
 				make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
 				########################## New entry
 				make_gl_entries(new_gl_entry)
-
-
-
-
-
-
-
 
 
 def gl_cancelation_cancel(self):
