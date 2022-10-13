@@ -301,10 +301,9 @@ def update_cancel_fee(self):
 			fee_voucher_list_dic.append(fee_voucher_dic)
 		refundable_cancel_function(fee_voucher_list_dic)
 
-def refundable_cancel_function(fee_voucher_list_dic):
 
+def refundable_cancel_function(fee_voucher_list_dic):
 	for voucher in fee_voucher_list_dic:
-		print("\n\n\n\n\n")
 		fee_voucher=voucher['fee_voucher_no']
 		waiving_amount=voucher['fee_waiving_amount']
 		payment_ref=frappe.get_all("Payment Entry Reference",{"reference_name":fee_voucher},['parent'])
@@ -335,46 +334,45 @@ def refundable_cancel_function(fee_voucher_list_dic):
 			filter.append(["voucher_no","=",payment_update[0]])
 		else:
 			filter.append(["voucher_no","in",tuple(payment_update)])	
-		new_gl_entry=[]
+		
 
 		Gl_entry=frappe.db.get_all("GL Entry",filters=filter,fields=['name', 'creation', 'modified', 'modified_by', 
 		'owner', 'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 'account_currency', 
 		'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 'project', 'remarks', 
 		'is_opening', 'is_advance','fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
 		
-		print("\n\n\n\n\n")
-		print("Gl_entry",Gl_entry)
-		a.s
 		if Gl_entry:
-			for t in Gl_entry:
-				if t['debit']!=0:
-					new_ref_adj=t.copy()
-					new_ref_adj['posting_date']=utils.today()
-					new_gl_entry.append(new_ref_adj)
-				if t['credit']!=0:
-					new_ref_adj_credit=t.copy()
+			for pay_data_voucher in payment_update:
+				new_gl_entry=[]
+				old_gl_entry=[]
+				new_ref_adj_credit={}
+				for gl in Gl_entry:
+					if gl['voucher_no']==pay_data_voucher:
+						old_gl_entry.append(gl)
+						if gl['debit']!=0:
+							new_ref_adj=gl.copy()
+							new_ref_adj['posting_date']=utils.today()
+							new_gl_entry.append(new_ref_adj)
+						if gl['credit']!=0:
+							new_ref_adj_credit=gl.copy()
 
+				payment_comp=frappe.get_all("Payment Entry Reference",{"parent":pay_data_voucher},['name',"parent","allocated_amount",'account_paid_from'])
+				for j in payment_comp:
+					if j['parent']==gl['voucher_no']:
+						ref_adj_credit=new_ref_adj_credit.copy()
+						ref_adj_credit['posting_date']=utils.today()
+						ref_adj_credit['credit']=j["allocated_amount"]
+						ref_adj_credit['account']=j['account_paid_from']
+						new_gl_entry.append(ref_adj_credit)	
 
-		# 	payment_comp=frappe.get_all("Payment Entry Reference",{"parent":paymententry_voucher_no},['name',"parent","allocated_amount",'account_paid_from'])
-		# 	# print("\n\n\n\n")
-		# 	# print(paymententry_voucher_no)
-		# 	# print(payment_comp)
-		# 	for j in payment_comp:
-		# 		new_ref_adj_credit['posting_date']=utils.today()
-		# 		new_ref_adj_credit['credit']=j["allocated_amount"]
-		# 		new_ref_adj_credit['account']=j['account_paid_from']
-		# 		new_gl_entry.append(new_ref_adj_credit)	
+				########################## First Canncelation
+				cancel=1
+				adv_adj=0
+				gl_entries = process_gl_map(old_gl_entry)
+				make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
+				########################## New entry
+				make_gl_entries(new_gl_entry)
 
-		
-		# 	########################## First Canncelation
-		# 	cancel=1
-		# 	adv_adj=0
-		# 	gl_entries = process_gl_map(Gl_entry)
-		# 	make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
-		# 	########################## New entry
-		# 	# print("\n\n\n\n\n")
-		# 	# print("new_gl_entry",new_gl_entry)
-		# 	make_gl_entries(new_gl_entry)
 
 
 def gl_cancelation_cancel(self):
