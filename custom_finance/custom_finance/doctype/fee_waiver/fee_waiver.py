@@ -401,7 +401,7 @@ def update_fee(self):
 		outstanding_fees=frappe.db.sql(""" select sum(outstanding_fees) from `tabFee Component` where parent='%s' """%(t.fee_voucher_no))
 		outstanding_fees=outstanding_fees[0][0]
 		frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",outstanding_fees) 
-
+	fee_voucher_list=[]
 	for t in self.get('fee_componemts'):
 		data=frappe.get_all("Fee Component",filters=[["parent","=",t.fee_voucher_no],['fees_category','=',t.fees_category]],
 											fields=["name",'outstanding_fees','total_waiver_amount','waiver_amount','percentage'])
@@ -437,17 +437,37 @@ def update_fee(self):
 			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount)
 			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-total_waiver_amount) 	
 		elif refundable_amount <0:
-			refundable_function(self,abs(refundable_amount),t)
+			# refundable_function(self,abs(refundable_amount),t)
+			fee_voucher_list.append(t.fee_voucher_no)
 			outsatnding_amount=outsatnding_amount+data[0]['total_waiver_amount']	
 			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",total_waiver_amount) 	
 			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount) 
 			frappe.db.set_value("Fee Component",data[0]["name"], "amount",grand_fee_amount) 
 			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount)
 			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-t.outstanding_fees_ref)
-
+			
+	if fee_voucher_list:
+		fee_voucher_list=list(set(fee_voucher_list))
+		fee_voucher_list_dic=[]
+		for t in fee_voucher_list:
+			fee_voucher_dic={}
+			waiving_amount=0
+			outstanding_fees_ref=0
+			for j in self.get('fee_componemts'):
+				if t==j.fee_voucher_no:
+					waiving_amount=waiving_amount+j.total_waiver_amount
+					outstanding_fees_ref=outstanding_fees_ref+j.outstanding_fees_ref
+			fee_voucher_dic['fee_voucher_no']=t
+			fee_voucher_dic['fee_waiving_amount']=waiving_amount-outstanding_fees_ref
+			fee_voucher_list_dic.append(fee_voucher_dic)
+		print("\n\n\n\n\n")
+		print(fee_voucher_list_dic)	
+		a.s	
+		refundable_cancel_function(fee_voucher_list_dic)
 
 def refundable_function(self,refundable_amount=None,rev_object=None):
 	fee_voucher_no=rev_object.fee_voucher_no
+	# payment_data=frappe.get_all("Payment Entry Reference",{"reference_name":fee_voucher_no,"fees_category":rev_object.fees_category},['name',"parent","allocated_amount",'account_paid_from'],order_by="modified_by asc")
 	payment_data=frappe.get_all("Payment Entry Reference",{"reference_name":fee_voucher_no,"fees_category":rev_object.fees_category},['name',"parent","allocated_amount",'account_paid_from'])
 	for i in payment_data:
 		if refundable_amount!=0:
