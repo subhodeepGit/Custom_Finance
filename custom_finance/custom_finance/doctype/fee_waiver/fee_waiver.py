@@ -544,8 +544,9 @@ def refundable_function(fee_voucher_list_dic,self):
 									# ################################################################################################	
 									ref_adj_acc_gl['account']=account[0]['name']
 									ref_adj_acc_gl['credit']=waiving_amount_head
-									voucher_data[j['fees_category']]=0
+									ref_adj_acc_gl['posting_date']=utils.today()
 									new_gl_entry.append(ref_adj_acc_gl)
+									voucher_data[j['fees_category']]=0
 								elif amount_adjust==0:
 									new_ref_adj=new_ref_adj_credit.copy()
 									del new_ref_adj['name']
