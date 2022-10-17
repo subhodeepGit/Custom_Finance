@@ -464,9 +464,10 @@ def update_fee(self):
 					fee_voucher_dic[j.fees_category]=j.total_waiver_amount-j.outstanding_fees_ref
 			fee_voucher_list_dic.append(fee_voucher_dic)
 		refundable_function(fee_voucher_list_dic,self)
-		# a.s
 
 def refundable_function(fee_voucher_list_dic,self):	
+	# new_gl_entry=[]
+	# old_gl_entry=[]
 	for voucher in fee_voucher_list_dic:
 		fee_voucher=voucher['fee_voucher_no']
 		waiving_amount=voucher['fee_waiving_amount']
@@ -530,7 +531,7 @@ def refundable_function(fee_voucher_list_dic,self):
 								if amount_adjust>0:
 									new_ref_adj=new_ref_adj_credit.copy()
 									del new_ref_adj['name']
-									new_ref_adj['posting_date']=self.posting_date
+									new_ref_adj['posting_date']=utils.today()
 									new_ref_adj['account']=j['account_paid_from']
 									new_ref_adj['credit']=amount_adjust
 									new_gl_entry.append(new_ref_adj)
@@ -548,7 +549,7 @@ def refundable_function(fee_voucher_list_dic,self):
 								elif amount_adjust==0:
 									new_ref_adj=new_ref_adj_credit.copy()
 									del new_ref_adj['name']
-									new_ref_adj['posting_date']=self.posting_date
+									new_ref_adj['posting_date']=utils.today()
 									new_ref_adj['credit']=waiving_amount_head
 									# ##########################'Fees Refundable / Adjustable'######################################
 									account=frappe.get_all("Account",fields=[["account_type","=","Income Account"],["name",'like','%Fees Refundable / Adjustable%']])
@@ -561,7 +562,7 @@ def refundable_function(fee_voucher_list_dic,self):
 								elif amount_adjust<0:
 									new_ref_adj=new_ref_adj_credit.copy()
 									del new_ref_adj['name']
-									new_ref_adj['posting_date']=self.posting_date
+									new_ref_adj['posting_date']=utils.today()
 									new_ref_adj['credit']=abs(amount_adjust)
 									# ##########################'Fees Refundable / Adjustable'######################################
 									account=frappe.get_all("Account",fields=[["account_type","=","Income Account"],["name",'like','%Fees Refundable / Adjustable%']])
@@ -574,25 +575,24 @@ def refundable_function(fee_voucher_list_dic,self):
 							else:
 								new_ref_adj=new_ref_adj_credit.copy()
 								del new_ref_adj['name']
-								new_ref_adj['posting_date']=self.posting_date
+								new_ref_adj['posting_date']=utils.today()
 								new_ref_adj['account']=j['account_paid_from']
 								new_ref_adj['credit']=j['allocated_amount']
 								new_gl_entry.append(new_ref_adj)
 						except:
 							new_ref_adj=new_ref_adj_credit.copy()
 							del new_ref_adj['name']
-							new_ref_adj['posting_date']=self.posting_date
+							new_ref_adj['posting_date']=utils.today()
 							new_ref_adj['account']=j['account_paid_from']
 							new_ref_adj['credit']=j['allocated_amount']
 							new_gl_entry.append(new_ref_adj)
-			########################## First Canncelation
-			cancel=1
-			adv_adj=0
-			gl_entries = process_gl_map(Gl_entry)
-			make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
-			########################## New entry
-			make_gl_entries(new_gl_entry)
-	# a.s	
+				########################## First Canncelation
+				cancel=1
+				adv_adj=0
+				gl_entries = process_gl_map(Gl_entry)
+				make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
+				########################## New entry
+				make_gl_entries(new_gl_entry)
 
 
 
