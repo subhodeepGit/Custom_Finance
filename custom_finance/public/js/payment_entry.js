@@ -370,7 +370,7 @@ frappe.ui.form.on('Payment Entry', {
     onload:function(frm) {
 		// if(frappe.user.has_role(["Fee Waiver","Administrator"]) && !frappe.user.has_role([""])){
   			frm.remove_custom_button('Ledger');
-				if(frm.doc.docstatus > 0 && frappe.user.has_role(["Fee Waiver"])) {
+				if(frm.doc.docstatus > 0 && !frappe.user.has_role(["Fee Waiver"])) {
 					frm.add_custom_button(__('Ledger'), function() {
 						frappe.route_options = {
 							"voucher_no": frm.doc.name,
