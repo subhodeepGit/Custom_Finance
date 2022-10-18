@@ -1,4 +1,5 @@
 {
+ "_comments": "[{\"comment\": \"<div class=\\\"ql-editor read-mode\\\"><p>Closing Balance</p></div>\", \"by\": \"Administrator\", \"name\": \"1b1c4ba89b\"}]",
  "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
@@ -69,7 +70,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Payment Type",
-   "options": "\nPay\nReceive\nClosing Balance",
+   "options": "\nPay\nReceive",
    "print_hide": 1,
    "reqd": 1
   },
@@ -334,7 +335,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-09-20 18:20:09.007102",
+ "modified": "2022-10-18 16:15:05.646847",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Payment Refund",
