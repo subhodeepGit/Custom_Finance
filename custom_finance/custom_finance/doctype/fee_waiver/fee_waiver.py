@@ -594,10 +594,10 @@ def refundable_function(fee_voucher_list_dic,self):
 	gl_entries = process_gl_map(Gl_entry)
 	make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
 	########################## New entry
-	print("\n\n\n\n\n\n")
-	print(new_gl_entry)
+	# print("\n\n\n\n\n\n")
+	# print(new_gl_entry)
 	make_gl_entries(new_gl_entry)
-	a.s
+	# a.s
 
 
 ######################################################################################################
