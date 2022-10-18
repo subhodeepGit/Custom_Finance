@@ -595,6 +595,7 @@ def refundable_function(fee_voucher_list_dic,self):
 	make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
 	########################## New entry
 	make_gl_entries(new_gl_entry)
+	# a.s
 
 
 ######################################################################################################
