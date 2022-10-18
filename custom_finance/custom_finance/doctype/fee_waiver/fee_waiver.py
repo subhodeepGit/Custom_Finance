@@ -466,8 +466,8 @@ def update_fee(self):
 		refundable_function(fee_voucher_list_dic,self)
 
 def refundable_function(fee_voucher_list_dic,self):	
-	# new_gl_entry=[]
-	# old_gl_entry=[]
+	new_gl_entry=[]
+	old_gl_entry=[]
 	for voucher in fee_voucher_list_dic:
 		fee_voucher=voucher['fee_voucher_no']
 		waiving_amount=voucher['fee_waiving_amount']
@@ -505,8 +505,8 @@ def refundable_function(fee_voucher_list_dic,self):
 		if Gl_entry:
 			voucher_data=voucher.copy()
 			for pay_data_voucher in payment_update:
-				new_gl_entry=[]
-				old_gl_entry=[]
+				# new_gl_entry=[]
+				# old_gl_entry=[]
 				new_ref_adj_credit={}
 				for gl in Gl_entry:
 					if gl['voucher_no']==pay_data_voucher:
@@ -587,13 +587,17 @@ def refundable_function(fee_voucher_list_dic,self):
 							new_ref_adj['account']=j['account_paid_from']
 							new_ref_adj['credit']=j['allocated_amount']
 							new_gl_entry.append(new_ref_adj)
-				########################## First Canncelation
-				cancel=1
-				adv_adj=0
-				gl_entries = process_gl_map(Gl_entry)
-				make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
-				########################## New entry
-				make_gl_entries(new_gl_entry)
+	
+	########################## First Canncelation
+	cancel=1
+	adv_adj=0
+	gl_entries = process_gl_map(Gl_entry)
+	make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
+	########################## New entry
+	print("\n\n\n\n\n\n")
+	print(new_gl_entry)
+	make_gl_entries(new_gl_entry)
+	a.s
 
 
 ######################################################################################################
