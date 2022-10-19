@@ -368,9 +368,11 @@ frappe.ui.form.on("Payment Entry","mode_of_payment", function(frm){
 })
 frappe.ui.form.on('Payment Entry', {
     onload:function(frm) {
+		setTimeout(() => {
 		// if(frappe.user.has_role(["Fee Waiver","Administrator"]) && !frappe.user.has_role([""])){
   			frm.remove_custom_button('Ledger');
-				if(frm.doc.docstatus > 0) {
+
+				if(frm.doc.docstatus > 0 && frappe.user.has_role(["Administrator","Accounts Manager","Accounts User","Education Administrator"])) {
 					frm.add_custom_button(__('Ledger'), function() {
 						frappe.route_options = {
 							"voucher_no": frm.doc.name,
@@ -383,6 +385,8 @@ frappe.ui.form.on('Payment Entry', {
 						frappe.set_route("query-report", "General Ledger");
 					}, "fa fa-table");
 			}
+		}, 0.1);
+		frm.refresh();
         // }
 	}
 });

@@ -394,8 +394,11 @@ frappe.ui.form.on("Fee Component", "percentage", function(frm, cdt, cdn) {
 });
 frappe.ui.form.on('Fees', {
     onload:function(frm) {
+        setTimeout(() => {
 		// if(frm.doc.docstatus===1 && frm.doc.outstanding_amount>0){
   			frm.remove_custom_button('Payment Request','Create');
+            }, 0.1);
+            frm.refresh();
         }
 	}
 
