@@ -465,9 +465,11 @@ def update_fee(self):
 			fee_voucher_list_dic.append(fee_voucher_dic)
 		refundable_function(fee_voucher_list_dic,self)
 
-def refundable_function(fee_voucher_list_dic,self):	
+def refundable_function(fee_voucher_list_dic,self):
+	print("\n\n\n\n\n\n")	
 	new_gl_entry=[]
 	old_gl_entry=[]
+	print(fee_voucher_list_dic)
 	for voucher in fee_voucher_list_dic:
 		fee_voucher=voucher['fee_voucher_no']
 		waiving_amount=voucher['fee_waiving_amount']
@@ -502,6 +504,7 @@ def refundable_function(fee_voucher_list_dic,self):
 		'owner', 'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 'account_currency', 
 		'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 'project', 'remarks', 
 		'is_opening', 'is_advance','fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
+		# print(Gl_entry)
 		if Gl_entry:
 			voucher_data=voucher.copy()
 			for pay_data_voucher in payment_update:
@@ -510,11 +513,24 @@ def refundable_function(fee_voucher_list_dic,self):
 				new_ref_adj_credit={}
 				for gl in Gl_entry:
 					if gl['voucher_no']==pay_data_voucher:
-						old_gl_entry.append(gl)
 						if gl['debit']!=0:
-							new_ref_adj=gl.copy()
-							new_ref_adj['posting_date']=utils.today()
-							new_gl_entry.append(new_ref_adj)
+							if not new_gl_entry:
+								old_gl_entry.append(gl)
+								new_ref_adj=gl.copy()
+								new_ref_adj['posting_date']=utils.today()
+								new_gl_entry.append(new_ref_adj)
+							else:
+								flag="i"
+								for ck in new_gl_entry:
+									if ck["voucher_no"]==gl['voucher_no'] and gl['debit']!=0:
+										flag="No"
+									else:
+										flag="Yes"
+								if flag=="Yes":
+									old_gl_entry.append(gl)
+									new_ref_adj=gl.copy()
+									new_ref_adj['posting_date']=utils.today()
+									new_gl_entry.append(new_ref_adj)	
 						if gl['credit']!=0:
 							new_ref_adj_credit=gl.copy()	
 				
@@ -594,9 +610,10 @@ def refundable_function(fee_voucher_list_dic,self):
 	gl_entries = process_gl_map(Gl_entry)
 	make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
 	########################## New entry
+	# print("\n\n\n\n\n")
+	# print(new_gl_entry)
 	make_gl_entries(new_gl_entry)
-	# a.s
-
+	a.s
 
 ######################################################################################################
 
