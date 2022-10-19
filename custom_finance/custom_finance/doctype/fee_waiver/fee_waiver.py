@@ -550,7 +550,7 @@ def refundable_function(fee_voucher_list_dic,self):
 									ref_adj_acc_gl['account']=account[0]['name']
 									ref_adj_acc_gl['credit']=waiving_amount_head
 									ref_adj_acc_gl['posting_date']=utils.today()
-									# ref_adj_acc_gl['cost_center']="Main - KP"
+									ref_adj_acc_gl['cost_center']=self.cost_center
 									new_gl_entry.append(ref_adj_acc_gl)
 									voucher_data[j['fees_category']]=0
 								elif amount_adjust==0:
@@ -564,6 +564,7 @@ def refundable_function(fee_voucher_list_dic,self):
 										frappe.throw("Fees Refundable / Adjustable account not maintained for payment reconciliation")
 									# ################################################################################################
 									new_ref_adj['account']=account[0]['name']
+									new_ref_adj['cost_center']=self.cost_center
 									new_gl_entry.append(new_ref_adj)
 									voucher_data[j['fees_category']]=0
 								elif amount_adjust<0:
@@ -577,6 +578,7 @@ def refundable_function(fee_voucher_list_dic,self):
 										frappe.throw("Fees Refunget_payment_entrydable / Adjustable account not maintained for payment reconciliation")
 									# ################################################################################################
 									new_ref_adj['account']=account[0]['name']
+									new_ref_adj['cost_center']=self.cost_center
 									new_gl_entry.append(new_ref_adj)
 									voucher_data[j['fees_category']]=amount_adjust
 							else:
@@ -604,83 +606,7 @@ def refundable_function(fee_voucher_list_dic,self):
 			# print("\n\n\n\n\n")
 			# print(new_gl_entry)
 			make_gl_entries(new_gl_entry)								
-
-			# for j in payment_data:
-			# 	if j['reference_name']==fee_voucher_no:
-			# 		try:
-			# 			waiving_amount_head=voucher_data[j['fees_category']]
-			# 			if waiving_amount_head>0:
-			# 				amount_adjust=j['allocated_amount']-waiving_amount_head
-			# 				if amount_adjust>0:
-			# 					new_ref_adj=new_ref_adj_credit.copy()
-			# 					del new_ref_adj['name']
-			# 					new_ref_adj['posting_date']=utils.today()
-			# 					new_ref_adj['account']=j['account_paid_from']
-			# 					new_ref_adj['credit']=amount_adjust
-			# 					new_gl_entry.append(new_ref_adj)
-			# 					ref_adj_acc_gl=new_ref_adj_credit.copy()
-			# 					del ref_adj_acc_gl['name']
-			# 					# ##########################'Fees Refundable / Adjustable'######################################
-			# 					account=frappe.get_all("Account",fields=[["account_type","=","Income Account"],["name",'like','%Fees Refundable / Adjustable%']])
-			# 					if not account:
-			# 						frappe.throw("Fees Refundable / Adjustable account not maintained for payment reconciliation")
-			# 					# ################################################################################################	
-			# 					ref_adj_acc_gl['account']=account[0]['name']
-			# 					ref_adj_acc_gl['credit']=waiving_amount_head
-			# 					ref_adj_acc_gl['posting_date']=utils.today()
-			# 					new_gl_entry.append(ref_adj_acc_gl)
-			# 					voucher_data[j['fees_category']]=0
-			# 				elif amount_adjust==0:
-			# 					new_ref_adj=new_ref_adj_credit.copy()
-			# 					del new_ref_adj['name']
-			# 					new_ref_adj['posting_date']=utils.today()
-			# 					new_ref_adj['credit']=waiving_amount_head
-			# 					# ##########################'Fees Refundable / Adjustable'######################################
-			# 					account=frappe.get_all("Account",fields=[["account_type","=","Income Account"],["name",'like','%Fees Refundable / Adjustable%']])
-			# 					if not account:
-			# 						frappe.throw("Fees Refundable / Adjustable account not maintained for payment reconciliation")
-			# 					# ################################################################################################
-			# 					new_ref_adj['account']=account[0]['name']
-			# 					new_gl_entry.append(new_ref_adj)
-			# 					voucher_data[j['fees_category']]=0
-			# 				elif amount_adjust<0:
-			# 					new_ref_adj=new_ref_adj_credit.copy()
-			# 					del new_ref_adj['name']
-			# 					new_ref_adj['posting_date']=utils.today()
-			# 					new_ref_adj['credit']=abs(amount_adjust)
-			# 					# ##########################'Fees Refundable / Adjustable'######################################
-			# 					account=frappe.get_all("Account",fields=[["account_type","=","Income Account"],["name",'like','%Fees Refundable / Adjustable%']])
-			# 					if not account:
-			# 						frappe.throw("Fees Refunget_payment_entrydable / Adjustable account not maintained for payment reconciliation")
-			# 					# ################################################################################################
-			# 					new_ref_adj['account']=account[0]['name']
-			# 					new_gl_entry.append(new_ref_adj)
-			# 					voucher_data[j['fees_category']]=amount_adjust
-			# 			else:
-			# 				new_ref_adj=new_ref_adj_credit.copy()
-			# 				del new_ref_adj['name']
-			# 				new_ref_adj['posting_date']=utils.today()
-			# 				new_ref_adj['account']=j['account_paid_from']
-			# 				new_ref_adj['credit']=j['allocated_amount']
-			# 				new_gl_entry.append(new_ref_adj)
-			# 		except:
-			# 			new_ref_adj=new_ref_adj_credit.copy()
-			# 			del new_ref_adj['name']
-			# 			new_ref_adj['posting_date']=utils.today()
-			# 			new_ref_adj['account']=j['account_paid_from']
-			# 			new_ref_adj['credit']=j['allocated_amount']
-			# 			new_gl_entry.append(new_ref_adj)
-
-			# ########################## First Canncelation
-			# cancel=1
-			# adv_adj=0
-			# gl_entries = process_gl_map(Gl_entry)
-			# make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
-			# ########################## New entry
-			# print("\n\n\n\n\n")
-			# print(new_gl_entry)
-			# make_gl_entries(new_gl_entry)
-	a.s
+	# a.s
 
 ######################################################################################################
 
