@@ -471,7 +471,6 @@ def refundable_function(fee_voucher_list_dic,self):
 	print("\n\n\n\n\n\n")	
 	payment_update=[]
 	filter=[]
-	# print(fee_voucher_list_dic)
 	for voucher in fee_voucher_list_dic:
 		fee_voucher=voucher['fee_voucher_no']
 		waiving_amount=voucher['fee_waiving_amount']
@@ -505,7 +504,6 @@ def refundable_function(fee_voucher_list_dic,self):
 	'owner', 'docstatus', 'parent', 'parentfield', 'parenttype', 'idx', 'posting_date', 'transaction_date', 'account', 'party_type', 'party', 'cost_center', 'debit', 'credit', 'account_currency', 
 	'debit_in_account_currency', 'credit_in_account_currency', 'against', 'against_voucher_type', 'against_voucher', 'voucher_type', 'voucher_no', 'voucher_detail_no', 'project', 'remarks', 
 	'is_opening', 'is_advance','fiscal_year', 'company', 'finance_book', 'to_rename', 'due_date', 'is_cancelled', '_user_tags', '_comments', '_assign', '_liked_by'])
-	# print(Gl_entry)
 
 	if Gl_entry:
 		payment_update=list(set(payment_update))
@@ -524,8 +522,7 @@ def refundable_function(fee_voucher_list_dic,self):
 						new_ref_adj_credit=gl.copy()	
 			
 			payment_data=frappe.get_all("Payment Entry Reference",{"parent":pay_data_voucher},['name',"parent","allocated_amount",
-									'account_paid_from','reference_name','fees_category'])
-			# print(payment_data)						
+									'account_paid_from','reference_name','fees_category'])						
 			for voucher_data in fee_voucher_list_dic:
 				for j in payment_data:
 					if j['reference_name']==voucher_data['fee_voucher_no']:
@@ -595,8 +592,19 @@ def refundable_function(fee_voucher_list_dic,self):
 							new_ref_adj['account']=j['account_paid_from']
 							new_ref_adj['credit']=j['allocated_amount']
 							new_gl_entry.append(new_ref_adj)	
-
-
+			
+			not_waiving_list=[]
+			for voucher_data in fee_voucher_list_dic:
+				for j in payment_data:
+					if j['reference_name']!=voucher_data['fee_voucher_no']:
+						not_waiving_list.append(j)
+			for t in not_waiving_list:
+				for j in Gl_entry:
+					if t['account_paid_from']==j['account']:
+						new_ref_adj=j.copy()
+						del new_ref_adj['name']
+						new_ref_adj['posting_date']=utils.today()
+						new_gl_entry.append(new_ref_adj)
 			########################## First Canncelation
 			cancel=1
 			adv_adj=0

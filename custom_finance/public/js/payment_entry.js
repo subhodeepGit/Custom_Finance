@@ -73,6 +73,7 @@ frappe.ui.form.on('Payment Entry', {
 			{fieldtype:"Float", label: __("Less Than Amount"), fieldname:"outstanding_amt_less_than"},
 			{fieldtype:"Section Break"},
 			{fieldtype:"Link", label:__("Cost Center"), fieldname:"cost_center", options:"Cost Center",
+			default:frm.doc.cost_center,
 				"get_query": function() {
 					return {
 						"filters": {"company": frm.doc.company}
@@ -83,7 +84,6 @@ frappe.ui.form.on('Payment Entry', {
 			{fieldtype:"Section Break"},
 			{fieldtype:"Check", label: __("Allocate Payment Amount"), fieldname:"allocate_payment_amount", default:1},
 		];
-
 		frappe.prompt(fields, function(filters){
 			frappe.flags.allocate_payment_amount = true;
 			frm.events.validate_filters_data(frm, filters);
