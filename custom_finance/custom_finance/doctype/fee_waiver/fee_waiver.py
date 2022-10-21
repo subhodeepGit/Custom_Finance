@@ -605,6 +605,25 @@ def refundable_function(fee_voucher_list_dic,self):
 						del new_ref_adj['name']
 						new_ref_adj['posting_date']=utils.today()
 						new_gl_entry.append(new_ref_adj)
+			for t in Gl_entry:
+				if ("Fees Refundable / Adjustable" in t['account'])==True and t['debit']==0:
+					gl_credit=t['credit']
+					account=t['account']
+					amount_posted=0
+					for j in payment_data:
+						if j['account_paid_from']==account:
+							amount_posted=amount_posted+j['allocated_amount']
+					print(amount_posted)
+					new_amount=0
+					for i in new_gl_entry:
+						if i['account']==account and i['debit']==0:
+							# pass
+							new_amount=new_amount+i["credit"]
+					print(new_amount)		
+							
+
+
+
 			########################## First Canncelation
 			cancel=1
 			adv_adj=0
