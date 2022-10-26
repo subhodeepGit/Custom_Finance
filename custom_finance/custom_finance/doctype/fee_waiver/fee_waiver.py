@@ -353,7 +353,7 @@ def refundable_cancel_function(fee_voucher_list_dic,self):
 		for pay_data_voucher in payment_update:
 			new_gl_entry=[]
 			old_gl_entry=[]
-			new_ref_adj_credit={}
+			# new_ref_adj_credit={}
 			for gl in Gl_entry:
 				if gl['voucher_no']==pay_data_voucher:
 					if gl['debit']!=0:
@@ -361,17 +361,28 @@ def refundable_cancel_function(fee_voucher_list_dic,self):
 						new_ref_adj=gl.copy()
 						new_ref_adj['posting_date']=utils.today()
 						new_gl_entry.append(new_ref_adj)	
-					if gl['credit']!=0:
-						new_ref_adj_credit=gl.copy()
 
-			# payment_data=frappe.get_all("Payment Entry Reference",{"parent":pay_data_voucher},['name',"parent","allocated_amount",
-			# 						'account_paid_from','reference_name','fees_category'])
-			# print("\n\n\n\n")
-			print(pay_data_voucher)
-			for gl in Gl_entry:
-				if gl['debit']==0:
-					print(gl)
-					pass
+			payment_data=frappe.get_all("Payment Entry Reference",{"parent":pay_data_voucher},['name',"parent","allocated_amount",
+									'account_paid_from','reference_name','fees_category'])
+			print("\n\n\n\n")
+			# print(pay_data_voucher)
+			for voucher in fee_voucher_list_dic:
+				for gl in Gl_entry:
+					if gl['debit']==0 and gl['against_voucher']==voucher['fee_voucher_no'] and gl['voucher_no']==pay_data_voucher:
+						if ("Fees Refundable / Adjustable" in gl['account'])==True and voucher['fee_waiving_amount']>0:
+							allocated_amount=0
+							for t in payment_data:
+								if t['account_paid_from']==gl['account']:
+									allocated_amount=t['allocated_amount']
+							allocated_amount=gl['credit']-allocated_amount	
+							if 	allocated_amount>0:
+								new_ref_adj=gl.copy()
+								del new_ref_adj['name']
+								new_ref_adj['posting_date']=utils.today()
+								new_ref_adj['credit']=gl['credit']-allocated_amount
+								new_gl_entry.append(new_ref_adj)
+								voucher['fee_waiving_amount']=voucher['fee_waiving_amount']-allocated_amount
+			print(fee_voucher_list_dic)
 
 	a.s
 	# for voucher in fee_voucher_list_dic:
