@@ -356,8 +356,8 @@ def refundable_cancel_function(fee_voucher_list_dic,self):
 			# new_ref_adj_credit={}
 			for gl in Gl_entry:
 				if gl['voucher_no']==pay_data_voucher:
+					old_gl_entry.append(gl)
 					if gl['debit']!=0:
-						old_gl_entry.append(gl)
 						new_ref_adj=gl.copy()
 						new_ref_adj['posting_date']=utils.today()
 						new_gl_entry.append(new_ref_adj)	
@@ -382,7 +382,35 @@ def refundable_cancel_function(fee_voucher_list_dic,self):
 								new_ref_adj['credit']=gl['credit']-allocated_amount
 								new_gl_entry.append(new_ref_adj)
 								voucher['fee_waiving_amount']=voucher['fee_waiving_amount']-allocated_amount
-			print(fee_voucher_list_dic)
+					if gl['debit']==0 and gl['against_voucher']==voucher['fee_voucher_no'] and gl['voucher_no']==pay_data_voucher:
+						if ("Fees Refundable / Adjustable" in gl['account'])==False:
+							for t in payment_data:
+								if t['account_paid_from']==gl["account"] and gl['against_voucher']==t['reference_name']:
+									try:
+										waiving_amount_head=voucher[t['fees_category']]
+										if waiving_amount_head>0:
+											limit_addtion=0
+											reduction_amount=0
+											limit_addtion=t["allocated_amount"]-gl['credit']
+											if limit_addtion>=waiving_amount_head:
+												print(limit_addtion)
+												print(waiving_amount_head)
+											print("\n\n\n\n")
+										else:
+											new_ref_adj=gl.copy()
+											del new_ref_adj['name']
+											new_ref_adj['posting_date']=utils.today()
+											new_gl_entry.append(new_ref_adj)
+											
+									except:
+										new_ref_adj=gl.copy()
+										del new_ref_adj['name']
+										new_ref_adj['posting_date']=utils.today()
+										new_gl_entry.append(new_ref_adj)
+
+
+			# print(new_gl_entry)
+			# print(old_gl_entry)
 
 	a.s
 	# for voucher in fee_voucher_list_dic:
