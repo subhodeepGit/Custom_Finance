@@ -66907,7 +66907,7 @@
  },
  {
   "amend": 0,
-  "cancel": 0,
+  "cancel": 1,
   "create": 0,
   "delete": 0,
   "docstatus": 0,
