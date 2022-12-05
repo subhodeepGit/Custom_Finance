@@ -1,14 +1,13 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "naming_series:",
+ "autoname": "ONLINE-TRANSACTION-.YYYY.-.####",
  "creation": "2022-08-14 21:13:17.276284",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
   "type_of_payment_section",
-  "naming_series",
   "payment_type",
   "payment_order_status",
   "column_break_5",
@@ -43,15 +42,6 @@
    "fieldname": "type_of_payment_section",
    "fieldtype": "Section Break",
    "label": "Type of Payment "
-  },
-  {
-   "bold": 1,
-   "fieldname": "naming_series",
-   "fieldtype": "Select",
-   "label": "Series",
-   "options": "ONLINE-PAYMENT-.YYYY.-",
-   "print_hide": 1,
-   "reqd": 1
   },
   {
    "bold": 1,
@@ -268,7 +258,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-09-09 16:15:22.821797",
+ "modified": "2022-12-05 12:20:29.573996",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "ICICI Online Payment",

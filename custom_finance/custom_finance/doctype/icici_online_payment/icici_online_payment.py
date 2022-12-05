@@ -40,13 +40,15 @@ def get_outstanding_amount(student):
 
 
 def getTransactionDetails(doc,name):   
-	getDoc=frappe.get_doc("ICICI Settings")
+	# getDoc=frappe.get_doc("ICICI Settings")
+	getDoc=frappe.get_doc("ICICI settings Production")
 	merchantId = getDoc.merchantid
 	key=getDoc.key
 	iv=getDoc.iv
 	merchantTxnId=name
 	fpTransactionId=""
-	apiURL="https://test.fdconnect.com/FirstPayL2Services/getTxnInquiryDetail" 
+	# apiURL="https://test.fdconnect.com/FirstPayL2Services/getTxnInquiryDetail"    #Test Api
+	apiURL="https://www.fdconnect.com/FDConnectL3Services/getTxnInquiryDetail"       #Production Api
 	try: 
 		tokenclass = JClass('TokenClass')
 		transactionDetailsData = tokenclass.inquiryTest(java.lang.String("%s"% merchantId), java.lang.String("%s"% key),

@@ -35,7 +35,9 @@ frappe.ui.form.on("ICICI Online Payment", "refresh", function(frm){
 		 callback: function(r) {
 			 var sessionId=r.message["TokenId"]
 			 var configId=r.message["configId"]				
-			 window.open("https://test.fdconnect.com/Pay/?sessionToken=" + sessionId + "&configId="+ configId,"_self")
+			//  window.open("https://test.fdconnect.com/Pay/?sessionToken=" + sessionId + "&configId="+ configId,"_self")  //Test Api
+			
+			 window.open("https://www.fdconnect.com/Pay/?sessionToken=" + sessionId + "&configId="+ configId,"_self")   // Production Api   
 			  
 		   }
 	   });
