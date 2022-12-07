@@ -14,11 +14,12 @@ class AutoReconciliation(Document):
 		student_reference=self.get("student_reference")
 		if not student_reference:
 			frappe.throw("No record found in Student Reference Table")
-		mode_of_payment=frappe.get_all("Mode of Payment Account",{"parent":self.type_of_transaction},["name","parent","default_account","enabled"])
+		mode_of_payment=frappe.get_all("Mode of Payment Account",{"parent":self.type_of_transaction},["name","parent","default_account"])
 		if not 	mode_of_payment:
 			frappe.throw("Account not manatained for the mode of payment")
 		if mode_of_payment:
-			if 	mode_of_payment[0]['enabled']!=1:
+			mode_of_parent=frappe.get_all("Mode of Payment",{"name":self.type_of_transaction},['enabled'])
+			if 	mode_of_parent[0]['enabled']!=1:
 				frappe.throw("Mode of payment is Disabled for the mode of payment "+self.type_of_transaction)
 
 	
