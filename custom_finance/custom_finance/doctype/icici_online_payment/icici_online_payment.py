@@ -17,7 +17,7 @@ class ICICIOnlinePayment(Document):
 		frappe.throw("Once form is submitted it can't be cancelled")
 	def on_submit(doc): 
 		getTransactionDetails(doc,doc.name)  
-		frappe.msgprint("Your Transaction is completed. Your Transaction Id is " + doc.transaction_id)
+		frappe.msgprint("Your Transaction is completed. Your Transaction Id is " + doc.transaction_id +"."  " Status is "+ frappe.bold(doc.transaction_status))
 		online_payment_submit(doc)
 
 
@@ -34,7 +34,7 @@ def get_outstanding_amount(student):
 	outstanding_amount=0
 	for t in fee_voucher_list:
 		outstanding_amount=t['outstanding_amount']+outstanding_amount
-		print("outstanding_amount",outstanding_amount)
+		# print("outstanding_amount",outstanding_amount)
 	return outstanding_amount
 
 
