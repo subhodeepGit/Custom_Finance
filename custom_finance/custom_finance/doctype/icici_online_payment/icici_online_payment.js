@@ -23,12 +23,18 @@ frappe.ui.form.on("ICICI Online Payment", "refresh", function(frm){
 		
  
 	 frappe.call({		  
-		method: "icici_integration.icici_integration.doctype.onlinepayment.onlinepayment.getSessionToken",	
+		// method: "icici_integration.icici_integration.doctype.onlinepayment.onlinepayment.getSessionToken",
+		method: "icici_integration.icici_integration.doctype.onlinepayment.onlinepayment.getTokenNew",	
 		
 		args: {	
 			 
 			name:frm.doc.name,
 			paying_amount:frm.doc.paying_amount,
+			partyNo:frm.doc.party,
+			partyName:frm.doc.party_name,
+			rollNo:frm.doc.roll_no,
+			SamsPortalId:frm.doc.sams_portal_id,
+			
  
 	   },
 		   
