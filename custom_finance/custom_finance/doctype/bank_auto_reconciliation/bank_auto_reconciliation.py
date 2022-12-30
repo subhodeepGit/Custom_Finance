@@ -45,7 +45,6 @@ class BankAutoReconciliation(Document):
 			generate_payment(self.name,self)
 
 def generate_payment(payment_schedule,self):
-	print('\n\n\n\n\n')
 	doc = frappe.get_doc("Bank Auto Reconciliation", payment_schedule)
 	data_of_clearing=doc.data_of_clearing
 	error = False
@@ -226,7 +225,6 @@ def generate_payment(payment_schedule,self):
 				###################### end
 			except Exception as e:
 				error = True
-				print(e)
 				err_msg = frappe.local.message_log and "\n\n".join(frappe.local.message_log) or cstr(e)
  
 		elif outstanding_amount==0: ##### testing correction
@@ -530,8 +528,8 @@ def get_fees(date=None,type_of_transaction=None):
 		paying_fees_refundable__adjustable=0
 
 		allocated_amount=t['amount']
-		print("\n\n\n")
-		print(allocated_amount)
+		# print("\n\n\n")
+		# print(allocated_amount)
 		# {'name': 'ACC-PMD-2022-00006', 'student': 'EDU-STU-2022-00896', 'unique_transaction_reference_utr': 'aaccddee11', 
 		# 'amount': 80000.0, 'remarks': None, 'reconciliation_status': 1, 'student_name': 'ASHISH KUMAR DAS', 'outstanding_amount': 191750.0, 're_admission_fees': 0, 
 		# 'arrear_dues': 0, 'tuition_fees': 56850.0, 'development_fees': 15900.0, 'hostel_admission_fees': 0, 'counselling_fees': 0, 'examination_fees': 1400.0, 'transportation_fees': 0, 
@@ -586,7 +584,7 @@ def get_fees(date=None,type_of_transaction=None):
 							allocated_amount=allocated_amount-k['outstanding_fees']
 							paying_tuition_fees=paying_tuition_fees+k['outstanding_fees']
 						elif fee_head_cal<0:
-							reducing_amount=t['tuition_fees_cal']
+							reducing_amount=allocated_amount
 							t['tuition_fees_cal']=t['tuition_fees_cal']-reducing_amount
 							allocated_amount=allocated_amount-reducing_amount
 							paying_tuition_fees=paying_tuition_fees+reducing_amount
@@ -635,7 +633,7 @@ def get_fees(date=None,type_of_transaction=None):
 							allocated_amount=allocated_amount-k['outstanding_fees']
 							paying_development_fees=paying_development_fees+k['outstanding_fees']
 						elif fee_head_cal<0:
-							reducing_amount=t['development_fees_cal']
+							reducing_amount=allocated_amount
 							t['development_fees_cal']=t['development_fees_cal']-reducing_amount
 							allocated_amount=allocated_amount-reducing_amount
 							paying_development_fees=paying_development_fees+reducing_amount
@@ -684,7 +682,7 @@ def get_fees(date=None,type_of_transaction=None):
 							allocated_amount=allocated_amount-k['outstanding_fees']
 							paying_re_admission_fees=paying_re_admission_fees+k['outstanding_fees']
 						elif fee_head_cal<0:
-							reducing_amount=t['re_admission_fees_cal']
+							reducing_amount=allocated_amount
 							t['re_admission_fees_cal']=t['re_admission_fees_cal']-reducing_amount
 							allocated_amount=allocated_amount-reducing_amount
 							paying_re_admission_fees=paying_re_admission_fees+reducing_amount
@@ -731,7 +729,7 @@ def get_fees(date=None,type_of_transaction=None):
 							allocated_amount=allocated_amount-k['outstanding_fees']
 							paying_arrear_dues=paying_arrear_dues+k['outstanding_fees']
 						elif fee_head_cal<0:
-							reducing_amount=t['arrear_dues_cal']
+							reducing_amount=allocated_amount
 							t['arrear_dues_cal']=t['arrear_dues_cal']-reducing_amount
 							allocated_amount=allocated_amount-reducing_amount
 							paying_arrear_dues=paying_arrear_dues+reducing_amount
@@ -780,7 +778,7 @@ def get_fees(date=None,type_of_transaction=None):
 							allocated_amount=allocated_amount-k['outstanding_fees']
 							paying_hostel_admission_fees=paying_hostel_admission_fees+k['outstanding_fees']
 						elif fee_head_cal<0:
-							reducing_amount=t['hostel_admission_fees_cal']
+							reducing_amount=allocated_amount
 							t['hostel_admission_fees_cal']=t['hostel_admission_fees_cal']-reducing_amount
 							allocated_amount=allocated_amount-reducing_amount
 							paying_hostel_admission_fees=paying_hostel_admission_fees+reducing_amount
@@ -829,7 +827,7 @@ def get_fees(date=None,type_of_transaction=None):
 							allocated_amount=allocated_amount-k['outstanding_fees']
 							paying_counselling_fees=paying_counselling_fees+k['outstanding_fees']
 						elif fee_head_cal<0:
-							reducing_amount=t['counselling_fees_cal']
+							reducing_amount=allocated_amount
 							t['counselling_fees_cal']=t['counselling_fees_cal']-reducing_amount
 							allocated_amount=allocated_amount-reducing_amount
 							paying_counselling_fees=paying_counselling_fees+reducing_amount
@@ -878,7 +876,7 @@ def get_fees(date=None,type_of_transaction=None):
 							allocated_amount=allocated_amount-k['outstanding_fees']
 							paying_examination_fees=paying_examination_fees+k['outstanding_fees']
 						elif fee_head_cal<0:
-							reducing_amount=t['examination_fees_cal']
+							reducing_amount=allocated_amount
 							t['examination_fees_cal']=t['examination_fees_cal']-reducing_amount
 							allocated_amount=allocated_amount-reducing_amount
 							paying_examination_fees=paying_examination_fees+reducing_amount
@@ -927,7 +925,7 @@ def get_fees(date=None,type_of_transaction=None):
 							allocated_amount=allocated_amount-k['outstanding_fees']
 							paying_transportation_fees=paying_transportation_fees+k['outstanding_fees']
 						elif fee_head_cal<0:
-							reducing_amount=t['transportation_fees_cal']
+							reducing_amount=allocated_amount
 							t['transportation_fees_cal']=t['transportation_fees_cal']-reducing_amount
 							allocated_amount=allocated_amount-reducing_amount
 							paying_transportation_fees=paying_transportation_fees+reducing_amount
@@ -976,7 +974,7 @@ def get_fees(date=None,type_of_transaction=None):
 							allocated_amount=allocated_amount-k['outstanding_fees']
 							paying_mess_fees=paying_mess_fees+k['outstanding_fees']
 						elif fee_head_cal<0:
-							reducing_amount=t['mess_fees_cal']
+							reducing_amount=allocated_amount
 							t['mess_fees_cal']=t['mess_fees_cal']-reducing_amount
 							allocated_amount=allocated_amount-reducing_amount
 							paying_mess_fees=paying_mess_fees+reducing_amount
@@ -1025,7 +1023,7 @@ def get_fees(date=None,type_of_transaction=None):
 							allocated_amount=allocated_amount-k['outstanding_fees']
 							paying_miscellaneous_fees=paying_miscellaneous_fees+k['outstanding_fees']
 						elif fee_head_cal<0:
-							reducing_amount=t['miscellaneous_fees_cal']
+							reducing_amount=allocated_amount
 							t['miscellaneous_fees_cal']=t['miscellaneous_fees_cal']-reducing_amount
 							allocated_amount=allocated_amount-reducing_amount
 							paying_miscellaneous_fees=paying_miscellaneous_fees+reducing_amount
@@ -1074,14 +1072,13 @@ def get_fees(date=None,type_of_transaction=None):
 							allocated_amount=allocated_amount-k['outstanding_fees']
 							paying_hostel_fees=paying_hostel_fees+k['outstanding_fees']
 						elif fee_head_cal<0:
-							reducing_amount=t['hostel_fees_cal']
+							reducing_amount=allocated_amount
 							t['hostel_fees_cal']=t['hostel_fees_cal']-reducing_amount
 							allocated_amount=allocated_amount-reducing_amount
 							paying_hostel_fees=paying_hostel_fees+reducing_amount
 
 				##Other Institutional Fees
 				elif k['fees_category']=='Other Institutional Fees' and t['other_institutional_fees_cal']>0 and k['outstanding_fees']>0:
-					print("\n\n\n")
 					cal_fee=allocated_amount-t['other_institutional_fees_cal']
 					if cal_fee>0:
 						fee_head_cal=k['outstanding_fees']-t['other_institutional_fees_cal']
@@ -1129,9 +1126,10 @@ def get_fees(date=None,type_of_transaction=None):
 							allocated_amount=allocated_amount-reducing_amount
 							paying_other_institutional_fees=paying_other_institutional_fees+reducing_amount
 				
-				##Fees Refundable / Adjustable
-				else:
-					paying_fees_refundable__adjustable=allocated_amount
+		##Fees Refundable / Adjustable
+		if allocated_amount!=0:
+			paying_fees_refundable__adjustable=allocated_amount
+
 
 		t['paying_re_admission_fees']=paying_re_admission_fees
 		t['paying_arrear_dues']=paying_arrear_dues
@@ -1147,5 +1145,4 @@ def get_fees(date=None,type_of_transaction=None):
 		t['paying_other_institutional_fees']=paying_other_institutional_fees
 		t['paying_fees_refundable__adjustable']=paying_fees_refundable__adjustable
 
-	# print(stud_payment_upload)
 	return stud_payment_upload
