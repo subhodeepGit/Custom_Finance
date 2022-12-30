@@ -40,7 +40,7 @@ class PaymentDetailsUpload(Document):
 				frappe.db.set_value("Payment Details Upload",self.name,'brs_name','')
 				frappe.msgprint("paid amount does not match with Bank Data")
 		
-		pay_info=frappe.db.get_all("Bank Reconciliation Statement",{'docstatus':1,'unique_transaction_reference_utr':self.unique_transaction_reference_utr},['name','amount'])	
+		pay_info=frappe.db.get_all("Bank Reconciliation Statement",{'docstatus':1,'unique_transaction_reference_utr':self.unique_transaction_reference_utr},['name','amount','unique_transaction_reference_utr'])	
 		if len(pay_info)>0:															
 			if pay_info[0]['amount']==self.amount or pay_info[0]['unique_transaction_reference_utr']==self.unique_transaction_reference_utr:
 				frappe.db.set_value("Bank Reconciliation Statement",pay_info[0]['name'],'type_of_transaction',self.type_of_transaction)	
