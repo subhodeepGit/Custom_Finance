@@ -45,7 +45,6 @@ class BankAutoReconciliation(Document):
 			generate_payment(self.name,self)
 
 def generate_payment(payment_schedule,self):
-	print("\n\n\n")
 	doc = frappe.get_doc("Bank Auto Reconciliation", payment_schedule)
 	data_of_clearing=doc.data_of_clearing
 	error = False
@@ -66,9 +65,10 @@ def generate_payment(payment_schedule,self):
 		fees_refundable_adjustable=t.paying_fees_refundable__adjustable
 		amount=t.amount
 
-		if re_admission_fees!=0 or arrear_dues!=0 or tuition_fees!=0 or development_fees!=0 or hostel_admission_fees!=0 or \
-			counselling_fees!=0 or examination_fees!=0 or transportation_fees!=0 or mess_fees!=0 or miscellaneous_fees!=0 or \
-			hostel_fees!=0 or other_institutional_fees!=0:
+		# if re_admission_fees!=0 or arrear_dues!=0 or tuition_fees!=0 or development_fees!=0 or hostel_admission_fees!=0 or \
+		# 	counselling_fees!=0 or examination_fees!=0 or transportation_fees!=0 or mess_fees!=0 or miscellaneous_fees!=0 or \
+		# 	hostel_fees!=0 or other_institutional_fees!=0:
+		if outstanding_amount!=0:	
 			try:
 				############################################### Data entry in Payment entry
 				payment_entry=frappe.new_doc("Payment Entry")
@@ -99,104 +99,84 @@ def generate_payment(payment_schedule,self):
 				payment_entry.received_amount = amount
 				"""Reference"""
 				#################################
+				final_list=[]
 				if re_admission_fees!=0:
 					fee_catagory="Re-Admission Fees"
-					calcultion_fees_and_name(fee_catagory,t,amount,re_admission_fees)
+					data=calcultion_fees_and_name(fee_catagory,t,amount,re_admission_fees)
+					for l in data:
+						final_list.append(l)
 				if arrear_dues!=0:
 					fee_catagory="Arrear Dues"
-					calcultion_fees_and_name(fee_catagory,t,amount,arrear_dues)
+					data=calcultion_fees_and_name(fee_catagory,t,amount,arrear_dues)
+					for l in data:
+						final_list.append(l)
 				if tuition_fees!=0:
 					fee_catagory="Tuition Fees"
-					calcultion_fees_and_name(fee_catagory,t,amount,tuition_fees)
+					data=calcultion_fees_and_name(fee_catagory,t,amount,tuition_fees)
+					for l in data:
+						final_list.append(l)
 				if development_fees!=0:
 					fee_catagory="Development Fees"
-					calcultion_fees_and_name(fee_catagory,t,amount,development_fees)
+					data=calcultion_fees_and_name(fee_catagory,t,amount,development_fees)
+					for l in data:
+						final_list.append(l)
 				if hostel_admission_fees!=0:
 					fee_catagory="Hostel Admission Fees"
-					calcultion_fees_and_name(fee_catagory,t,amount,hostel_admission_fees)
+					data=calcultion_fees_and_name(fee_catagory,t,amount,hostel_admission_fees)
+					for l in data:
+						final_list.append(l)
 				if counselling_fees!=0:
 					fee_catagory="Counselling Fees"
-					calcultion_fees_and_name(fee_catagory,t,amount,counselling_fees)
+					data=calcultion_fees_and_name(fee_catagory,t,amount,counselling_fees)
+					for l in data:
+						final_list.append(l)
 				if examination_fees!=0:
 					fee_catagory="Examination Fees"
-					calcultion_fees_and_name(fee_catagory,t,amount,examination_fees)
+					data=calcultion_fees_and_name(fee_catagory,t,amount,examination_fees)
+					for l in data:
+						final_list.append(l)
 				if transportation_fees!=0:
 					fee_catagory="Transportation Fees"
-					calcultion_fees_and_name(fee_catagory,t,amount,transportation_fees)
+					data=calcultion_fees_and_name(fee_catagory,t,amount,transportation_fees)
+					for l in data:
+						final_list.append(l)
 				if mess_fees!=0:
 					fee_catagory="Mess Fees"
-					calcultion_fees_and_name(fee_catagory,t,amount,mess_fees)
+					data=calcultion_fees_and_name(fee_catagory,t,amount,mess_fees)
+					for l in data:
+						final_list.append(l)
 				if miscellaneous_fees!=0:
 					fee_catagory="Miscellaneous Fees"
-					calcultion_fees_and_name(fee_catagory,t,amount,miscellaneous_fees)
+					data=calcultion_fees_and_name(fee_catagory,t,amount,miscellaneous_fees)
+					for l in data:
+						final_list.append(l)
 				if hostel_fees!=0:
 					fee_catagory="Hostel Fees"
-					calcultion_fees_and_name(fee_catagory,t,amount,hostel_fees)
-					pass
+					data=calcultion_fees_and_name(fee_catagory,t,amount,hostel_fees)
+					for l in data:
+						final_list.append(l)
 				if other_institutional_fees!=0:
 					fee_catagory="Other Institutional Fees"
-					calcultion_fees_and_name(fee_catagory,t,amount,other_institutional_fees)
-				a.s
-
-				allocate_amount=amount
-				for t1 in structured_fees:
-					for t in self.get("student_reference"):
-						# print(t.paying_tuition_fees)
-						if t1['fees_category']=="Re-Admission Fees":
-							allocated_amount=t.paying_re_admission_fees							
-						if t1['fees_category']=="Arrear Dues":
-							allocated_amount=t.paying_arrear_dues							
-						if t1['fees_category']=="Tuition Fees":
-							allocated_amount=t.paying_tuition_fees							
-						if t1['fees_category']=="Development Fees":
-							allocated_amount=t.paying_development_fees							
-						if t1['fees_category']=="Hostel Admission Fees":
-							allocated_amount=t.paying_hostel_admission_fees							
-						if t1['fees_category']=="Counselling Fees":
-							allocated_amount=t.paying_counselling_fees							
-						if t1['fees_category']=="Examination Fees":
-							allocated_amount=t.paying_examination_fees							
-						if t1['fees_category']=="Transportation Fees":
-							allocated_amount=t.paying_transportation_fees							
-						if t1['fees_category']=="Mess Fees":
-							allocated_amount=t.paying_mess_fees							
-						if t1['fees_category']=="Miscellaneous Fees":
-							allocated_amount=t.paying_miscellaneous_fees							
-						if t1['fees_category']=="Hostel Fees":
-							allocated_amount=t.paying_hostel_fees							
-						if t1['fees_category']=="Other Institutional Fees":
-							allocated_amount=t.paying_other_institutional_fees
-
-					outstanding_fees_allocation=allocate_amount-t1['outstanding_fees']
-					print(allocated_amount)
-					if outstanding_fees_allocation>0:
-						allocate_amount=outstanding_fees_allocation
-						payment_entry.append("references", {
-								'reference_doctype': "Fees",
-								'reference_name': t1['parent'],
-								"bill_no": "",
-								"due_date":t1['due_date'],
-								'total_amount': t1["outstanding_fees"],
-								'allocated_amount': allocated_amount,
-								'outstanding_amount': t1["outstanding_fees"]-allocated_amount,
-								'program':t1["program"],
-								'fees_category':t1['fees_category'],
-								'account_paid_from':t1['receivable_account'],
-							})
-					elif outstanding_fees_allocation<=0:
-						payment_entry.append("references", {
-								'reference_doctype': "Fees",
-								'reference_name': t1['parent'],
-								"bill_no": "",
-								"due_date":t1['due_date'],
-								'total_amount': t1["outstanding_fees"],
-								'allocated_amount': allocated_amount,
-								'outstanding_amount': t1["outstanding_fees"]-allocated_amount,								
-								'program':t1["program"],
-								'fees_category':t1['fees_category'],
-								'account_paid_from':t1['receivable_account'],
-							})
-						break
+					data=calcultion_fees_and_name(fee_catagory,t,amount,other_institutional_fees)
+					for l in data:
+						final_list.append(l)
+				# {'name': 'b642d5af9d', 'idx': 1, 'parent': 'EDU-FEE-2022-00939', 'fees_category': 'Tuition Fees', 'description': None, 'amount': 30000.0, 'waiver_type': '', 
+				# 'percentage': 0.0, 'waiver_amount': 0.0, 'total_waiver_amount': 0.0, 'receivable_account': 'Tuition Fees - KP', 'income_account': 'Tuition Fees Income - KP', 
+				# 'company': 'KiiT Polytechnic', 'grand_fee_amount': 30000.0, 'outstanding_fees': 30000.0, 'due_date': datetime.date(2022, 9, 30), 
+				# 'program': 'Metallurgical Engineering Semester V'}
+				for fee_line_item in final_list:
+					payment_entry.append("references", {
+							'reference_doctype': "Fees",
+							'reference_name': fee_line_item['parent'],
+							"bill_no": "",
+							"due_date":fee_line_item['due_date'],
+							'total_amount': fee_line_item["grand_fee_amount"],
+							'allocated_amount': fee_line_item['outstanding_fees'],
+							'outstanding_amount': fee_line_item["outstanding_fees"],#
+							'program':fee_line_item["program"],
+							'fees_category':fee_line_item['fees_category'],
+							'account_paid_from':fee_line_item['receivable_account'],
+						})
 
 
 				# "references"-- table name	 Payment Entry Reference		
@@ -213,14 +193,14 @@ def generate_payment(payment_schedule,self):
 				cost_cente=frappe.get_all("Company",['cost_center'])
 				payment_entry.cost_center=cost_cente[0]['cost_center']
 				payment_entry.save()
-				# payment_entry.submit()
+				payment_entry.submit()
 				frappe.db.set_value("Bank Auto Reconciliation Child",t.name,"payment_voucher",payment_entry.name)
 				###################### end
 			except Exception as e:
 				error = True
 				err_msg = frappe.local.message_log and "\n\n".join(frappe.local.message_log) or cstr(e)
  
-		elif fees_refundable_adjustable!=0: ##### testing correction
+		elif outstanding_amount==0: ##### testing correction
 			try:
 				############################# data entry in payment Refund Entry 
 				payment_refund=frappe.new_doc("Payment Refund")
@@ -246,8 +226,8 @@ def generate_payment(payment_schedule,self):
 				payment_refund.append("references",{
 					"fees_category":"Fees Refundable / Adjustable",
 					"account_paid_to":account[0]['name'],
-					"allocated_amount":amount,
-					"total_amount":amount
+					"allocated_amount":fees_refundable_adjustable,
+					"total_amount":fees_refundable_adjustable
 				})
 				"""Accounting Dimensions"""
 				cost_cente=frappe.get_all("Company",['cost_center'])
@@ -256,12 +236,11 @@ def generate_payment(payment_schedule,self):
 				payment_refund.reference_no=t.utr_no
 				payment_refund.reference_date=data_of_clearing
 				payment_refund.save()
-				# payment_refund.submit()
+				payment_refund.submit()
 				frappe.db.set_value("Bank Auto Reconciliation Child",t.name,"payment_voucher",payment_refund.name)
 				############################## End 
 			except Exception as e:
 				error = True
-				print(e)
 				err_msg = frappe.local.message_log and "\n\n".join(frappe.local.message_log) or cstr(e)
 
 	if error:
@@ -276,9 +255,9 @@ def generate_payment(payment_schedule,self):
 	frappe.publish_realtime("fee_schedule_progress",
 		{"progress": "100", "reload": 1}, user=frappe.session.user)
 
-def calcultion_fees_and_name(fee_catagory,for_t,paying_amount,head_allocation_amount):
+def calcultion_fees_and_name(fee_catagory,for_t,total_paying_amount,head_allocation_amount):
 		############### structured fees
-		fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t.student],["outstanding_amount","!=",0],
+		fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",for_t.student],["outstanding_amount","!=",0],
 													["fee_structure","!=",""],["hostel_fee_structure","=",""],["docstatus","=",1]],
 													fields=['name','due_date','program','company'],
 													order_by="due_date asc")																		
@@ -286,7 +265,7 @@ def calcultion_fees_and_name(fee_catagory,for_t,paying_amount,head_allocation_am
 		for t1 in fee_voucher_list:
 			due_date=t1['due_date']
 			program=t1['program']
-			fee_comp=frappe.get_all("Fee Component",filters=[["parent","=",t1['name']],["outstanding_fees","!=",0]],
+			fee_comp=frappe.get_all("Fee Component",filters=[["parent","=",t1['name']],["outstanding_fees","!=",0],['fees_category',"=",fee_catagory]],
 									fields=['name','idx','parent','fees_category','description','amount','waiver_type',
 											'percentage','waiver_amount','total_waiver_amount','receivable_account','income_account',
 											'company','grand_fee_amount','outstanding_fees'])
@@ -297,13 +276,13 @@ def calcultion_fees_and_name(fee_catagory,for_t,paying_amount,head_allocation_am
 		if fee_voucher_list:		
 			structured_fees = sorted(structured_fees , key=lambda elem: "%02d %s" % (elem['idx'], elem['due_date']))		
 		structured_fees_hostel=[]
-		hostel_fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t.student],["outstanding_amount","!=",0],
+		hostel_fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",for_t.student],["outstanding_amount","!=",0],
 													["hostel_fee_structure","!=",""],["fee_structure","=",""],["docstatus","=",1]],
 													fields=['name','due_date','program'],order_by="due_date asc")										
 		for t1 in hostel_fee_voucher_list:
 			due_date=t1['due_date']
 			program=t1['program']
-			fee_comp=frappe.get_all("Fee Component",filters=[["parent","=",t1['name']],["outstanding_fees","!=",0]],
+			fee_comp=frappe.get_all("Fee Component",filters=[["parent","=",t1['name']],["outstanding_fees","!=",0],['fees_category',"=",fee_catagory]],
 									fields=['name','idx','parent','fees_category','description','amount','waiver_type',
 											'percentage','waiver_amount','total_waiver_amount','receivable_account','income_account',
 											'company','grand_fee_amount','outstanding_fees'])
@@ -319,13 +298,13 @@ def calcultion_fees_and_name(fee_catagory,for_t,paying_amount,head_allocation_am
 		########################################## end of structured fees
 		#################### unstructured fees hostel
 		unstructured_fees_hostel=[]
-		unstructured_fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t.student],["outstanding_amount","!=",0],
+		unstructured_fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",for_t.student],["outstanding_amount","!=",0],
 													["hostel_fee_structure","=",""],["fee_structure","=",""],["docstatus","=",1]],
 													fields=['name','due_date','program'],order_by="due_date asc")											
 		for t1 in unstructured_fee_voucher_list:
 			due_date=t1['due_date']
 			program=t1['program']
-			fee_comp=frappe.get_all("Fee Component",filters=[["parent","=",t1['name']],["outstanding_fees","!=",0]],
+			fee_comp=frappe.get_all("Fee Component",filters=[["parent","=",t1['name']],["outstanding_fees","!=",0],['fees_category',"=",fee_catagory]],
 									fields=['name','idx','parent','fees_category','description','amount','waiver_type',
 											'percentage','waiver_amount','total_waiver_amount','receivable_account','income_account',
 											'company','grand_fee_amount','outstanding_fees'])
@@ -338,6 +317,24 @@ def calcultion_fees_and_name(fee_catagory,for_t,paying_amount,head_allocation_am
 		structured_fees=structured_fees+unstructured_fees_hostel
 
 		########################################## end unstructured fees hostel
+		returning_list=[]
+		allocated_amount=head_allocation_amount
+		for t in structured_fees:
+			if allocated_amount>0 and fee_catagory==t['fees_category']:
+				cal_fees=allocated_amount-t['outstanding_fees']
+				if cal_fees>0:
+					allocated_amount=allocated_amount-t['outstanding_fees']
+					returning_list.append(t)
+				elif cal_fees==0:
+					allocated_amount=allocated_amount-t['outstanding_fees']
+					returning_list.append(t)
+				elif cal_fees<0:
+					allocated_amount=allocated_amount-allocated_amount
+					t['outstanding_fees']=allocated_amount
+					returning_list.append(t)
+		return	returning_list	
+
+		
 
 
 @frappe.whitelist()
@@ -508,8 +505,6 @@ def get_fees(date=None,type_of_transaction=None):
 					y['hostel_fees_cal']=hostel_fees
 					y['other_institutional_fees_cal']=other_institutional_fees
 		stud_payment_upload=stud_payment_upload_1
-	# print("\n\n\n")
-	# print(stud_payment_upload)
 	for t in stud_payment_upload:
 		"""Reference"""
 		############### structured fees
@@ -585,8 +580,6 @@ def get_fees(date=None,type_of_transaction=None):
 		paying_fees_refundable__adjustable=0
 
 		allocated_amount=t['amount']
-		# print("\n\n\n")
-		# print(allocated_amount)
 		# {'name': 'ACC-PMD-2022-00006', 'student': 'EDU-STU-2022-00896', 'unique_transaction_reference_utr': 'aaccddee11', 
 		# 'amount': 80000.0, 'remarks': None, 'reconciliation_status': 1, 'student_name': 'ASHISH KUMAR DAS', 'outstanding_amount': 191750.0, 're_admission_fees': 0, 
 		# 'arrear_dues': 0, 'tuition_fees': 56850.0, 'development_fees': 15900.0, 'hostel_admission_fees': 0, 'counselling_fees': 0, 'examination_fees': 1400.0, 'transportation_fees': 0, 
