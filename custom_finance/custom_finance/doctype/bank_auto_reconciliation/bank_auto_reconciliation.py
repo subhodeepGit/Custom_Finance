@@ -171,8 +171,8 @@ def generate_payment(payment_schedule,self):
 							"bill_no": "",
 							"due_date":fee_line_item['due_date'],
 							'total_amount': fee_line_item["grand_fee_amount"],
-							'allocated_amount': fee_line_item['outstanding_fees'],
-							'outstanding_amount': fee_line_item["outstanding_fees"],#
+							'allocated_amount': fee_line_item['allocated_amount'],
+							'outstanding_amount': fee_line_item['outstanding_fees'],#
 							'program':fee_line_item["program"],
 							'fees_category':fee_line_item['fees_category'],
 							'account_paid_from':fee_line_item['receivable_account'],
@@ -324,14 +324,16 @@ def calcultion_fees_and_name(fee_catagory,for_t,total_paying_amount,head_allocat
 				cal_fees=allocated_amount-t['outstanding_fees']
 				if cal_fees>0:
 					allocated_amount=allocated_amount-t['outstanding_fees']
+					t['allocated_amount']=t['outstanding_fees']
 					returning_list.append(t)
 				elif cal_fees==0:
 					allocated_amount=allocated_amount-t['outstanding_fees']
+					t['allocated_amount']=t['outstanding_fees']
 					returning_list.append(t)
 				elif cal_fees<0:
-					allocated_amount=allocated_amount-allocated_amount
-					t['outstanding_fees']=allocated_amount
+					t['allocated_amount']=allocated_amount
 					returning_list.append(t)
+					allocated_amount=allocated_amount-allocated_amount
 		return	returning_list	
 
 		
