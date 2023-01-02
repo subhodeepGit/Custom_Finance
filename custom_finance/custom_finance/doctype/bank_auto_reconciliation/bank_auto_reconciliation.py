@@ -10,7 +10,15 @@ from frappe.utils import cstr
 from frappe import utils
 
 class BankAutoReconciliation(Document):
+	def before_validate(self):
+		print("\n\n")
+		print("before_validate")
+		for t in self.get("Bank Auto Reconciliation Child"):
+			print(t)
+		# a.s
 	def validate(self):
+		print("\n\n")
+		print("validate")
 		student_reference=self.get("student_reference")
 		for t in student_reference:
 			if t.amount != t.total_paying_amount:
@@ -69,136 +77,183 @@ def generate_payment(payment_schedule,self):
 		# 	counselling_fees!=0 or examination_fees!=0 or transportation_fees!=0 or mess_fees!=0 or miscellaneous_fees!=0 or \
 		# 	hostel_fees!=0 or other_institutional_fees!=0:
 		if outstanding_amount!=0:	
-			try:
-				############################################### Data entry in Payment entry
-				payment_entry=frappe.new_doc("Payment Entry")
-				"""Type of Payment"""
-				payment_entry.payment_type="Receive"
-				payment_entry.posting_date=utils.today()
-				payment_entry.mode_of_payment=doc.type_of_transaction
-				"""Payment From / To"""
-				payment_entry.party_type="Student"
-				payment_entry.party=t.student
-				payment_entry.party_name=t.student_name
-				"""Accounts"""
-				mode_of_payment=frappe.get_all("Mode of Payment Account",{"parent":doc.type_of_transaction},["name","parent","default_account"])
-				account_cur=frappe.get_all("Account",{"name":mode_of_payment[0]["default_account"]},['account_currency',"account_type"])
-				payment_entry.paid_to=mode_of_payment[0]['default_account']
-				payment_entry.paid_to_account_currency=account_cur[0]['account_currency']
-				payment_entry.paid_to_account_type=account_cur[0]['account_type']
-				payment_entry.source_exchange_rate=1
-				# Cash - KP  paid_from_account_type
-				paid_from="Cash - KP"
-				account_cur=frappe.get_all("Account",{"name":paid_from},['account_currency',"account_type"])
-				payment_entry.paid_from=paid_from
-				payment_entry.paid_from_account_type=account_cur[0]['account_type']
-				payment_entry.paid_from_account_currency=account_cur[0]['account_currency']
-				payment_entry.target_exchange_rate=1
-				"""Amount"""
-				payment_entry.paid_amount=amount
-				payment_entry.received_amount = amount
-				"""Reference"""
-				#################################
-				final_list=[]
-				if re_admission_fees!=0:
-					fee_catagory="Re-Admission Fees"
-					data=calcultion_fees_and_name(fee_catagory,t,amount,re_admission_fees)
-					for l in data:
-						final_list.append(l)
-				if arrear_dues!=0:
-					fee_catagory="Arrear Dues"
-					data=calcultion_fees_and_name(fee_catagory,t,amount,arrear_dues)
-					for l in data:
-						final_list.append(l)
-				if tuition_fees!=0:
-					fee_catagory="Tuition Fees"
-					data=calcultion_fees_and_name(fee_catagory,t,amount,tuition_fees)
-					for l in data:
-						final_list.append(l)
-				if development_fees!=0:
-					fee_catagory="Development Fees"
-					data=calcultion_fees_and_name(fee_catagory,t,amount,development_fees)
-					for l in data:
-						final_list.append(l)
-				if hostel_admission_fees!=0:
-					fee_catagory="Hostel Admission Fees"
-					data=calcultion_fees_and_name(fee_catagory,t,amount,hostel_admission_fees)
-					for l in data:
-						final_list.append(l)
-				if counselling_fees!=0:
-					fee_catagory="Counselling Fees"
-					data=calcultion_fees_and_name(fee_catagory,t,amount,counselling_fees)
-					for l in data:
-						final_list.append(l)
-				if examination_fees!=0:
-					fee_catagory="Examination Fees"
-					data=calcultion_fees_and_name(fee_catagory,t,amount,examination_fees)
-					for l in data:
-						final_list.append(l)
-				if transportation_fees!=0:
-					fee_catagory="Transportation Fees"
-					data=calcultion_fees_and_name(fee_catagory,t,amount,transportation_fees)
-					for l in data:
-						final_list.append(l)
-				if mess_fees!=0:
-					fee_catagory="Mess Fees"
-					data=calcultion_fees_and_name(fee_catagory,t,amount,mess_fees)
-					for l in data:
-						final_list.append(l)
-				if miscellaneous_fees!=0:
-					fee_catagory="Miscellaneous Fees"
-					data=calcultion_fees_and_name(fee_catagory,t,amount,miscellaneous_fees)
-					for l in data:
-						final_list.append(l)
-				if hostel_fees!=0:
-					fee_catagory="Hostel Fees"
-					data=calcultion_fees_and_name(fee_catagory,t,amount,hostel_fees)
-					for l in data:
-						final_list.append(l)
-				if other_institutional_fees!=0:
-					fee_catagory="Other Institutional Fees"
-					data=calcultion_fees_and_name(fee_catagory,t,amount,other_institutional_fees)
-					for l in data:
-						final_list.append(l)
-				# {'name': 'b642d5af9d', 'idx': 1, 'parent': 'EDU-FEE-2022-00939', 'fees_category': 'Tuition Fees', 'description': None, 'amount': 30000.0, 'waiver_type': '', 
-				# 'percentage': 0.0, 'waiver_amount': 0.0, 'total_waiver_amount': 0.0, 'receivable_account': 'Tuition Fees - KP', 'income_account': 'Tuition Fees Income - KP', 
-				# 'company': 'KiiT Polytechnic', 'grand_fee_amount': 30000.0, 'outstanding_fees': 30000.0, 'due_date': datetime.date(2022, 9, 30), 
-				# 'program': 'Metallurgical Engineering Semester V'}
-				for fee_line_item in final_list:
-					payment_entry.append("references", {
-							'reference_doctype': "Fees",
-							'reference_name': fee_line_item['parent'],
-							"bill_no": "",
-							"due_date":fee_line_item['due_date'],
-							'total_amount': fee_line_item["grand_fee_amount"],
-							'allocated_amount': fee_line_item['allocated_amount'],
-							'outstanding_amount': fee_line_item['outstanding_fees'],#
-							'program':fee_line_item["program"],
-							'fees_category':fee_line_item['fees_category'],
-							'account_paid_from':fee_line_item['receivable_account'],
-						})
+			if re_admission_fees!=0 or arrear_dues!=0 or tuition_fees!=0 or development_fees!=0 or hostel_admission_fees!=0 or \
+			counselling_fees!=0 or examination_fees!=0 or transportation_fees!=0 or mess_fees!=0 or miscellaneous_fees!=0 or \
+			hostel_fees!=0 or other_institutional_fees!=0:
+				try:
+					############################################### Data entry in Payment entry
+					payment_entry=frappe.new_doc("Payment Entry")
+					"""Type of Payment"""
+					payment_entry.payment_type="Receive"
+					payment_entry.posting_date=utils.today()
+					payment_entry.mode_of_payment=doc.type_of_transaction
+					"""Payment From / To"""
+					payment_entry.party_type="Student"
+					payment_entry.party=t.student
+					payment_entry.party_name=t.student_name
+					"""Accounts"""
+					mode_of_payment=frappe.get_all("Mode of Payment Account",{"parent":doc.type_of_transaction},["name","parent","default_account"])
+					account_cur=frappe.get_all("Account",{"name":mode_of_payment[0]["default_account"]},['account_currency',"account_type"])
+					payment_entry.paid_to=mode_of_payment[0]['default_account']
+					payment_entry.paid_to_account_currency=account_cur[0]['account_currency']
+					payment_entry.paid_to_account_type=account_cur[0]['account_type']
+					payment_entry.source_exchange_rate=1
+					# Cash - KP  paid_from_account_type
+					paid_from="Cash - KP"
+					account_cur=frappe.get_all("Account",{"name":paid_from},['account_currency',"account_type"])
+					payment_entry.paid_from=paid_from
+					payment_entry.paid_from_account_type=account_cur[0]['account_type']
+					payment_entry.paid_from_account_currency=account_cur[0]['account_currency']
+					payment_entry.target_exchange_rate=1
+					"""Amount"""
+					payment_entry.paid_amount=amount
+					payment_entry.received_amount = amount
+					"""Reference"""
+					#################################
+					final_list=[]
+					if tuition_fees!=0:
+						fee_catagory="Tuition Fees"
+						data=calcultion_fees_and_name(fee_catagory,t,amount,tuition_fees)
+						for l in data:
+							final_list.append(l)
+					if development_fees!=0:
+						fee_catagory="Development Fees"
+						data=calcultion_fees_and_name(fee_catagory,t,amount,development_fees)
+						for l in data:
+							final_list.append(l)	
+					if other_institutional_fees!=0:
+						fee_catagory="Other Institutional Fees"
+						data=calcultion_fees_and_name(fee_catagory,t,amount,other_institutional_fees)
+						for l in data:
+							final_list.append(l)	
+					if examination_fees!=0:
+						fee_catagory="Examination Fees"
+						data=calcultion_fees_and_name(fee_catagory,t,amount,examination_fees)
+						for l in data:
+							final_list.append(l)
+					if hostel_admission_fees!=0:
+						fee_catagory="Hostel Admission Fees"
+						data=calcultion_fees_and_name(fee_catagory,t,amount,hostel_admission_fees)
+						for l in data:
+							final_list.append(l)	
+					if hostel_fees!=0:
+						fee_catagory="Hostel Fees"
+						data=calcultion_fees_and_name(fee_catagory,t,amount,hostel_fees)
+						for l in data:
+							final_list.append(l)
+					if mess_fees!=0:
+						fee_catagory="Mess Fees"
+						data=calcultion_fees_and_name(fee_catagory,t,amount,mess_fees)
+						for l in data:
+							final_list.append(l)
+					if transportation_fees!=0:
+						fee_catagory="Transportation Fees"
+						data=calcultion_fees_and_name(fee_catagory,t,amount,transportation_fees)
+						for l in data:
+							final_list.append(l)
+					if miscellaneous_fees!=0:
+						fee_catagory="Miscellaneous Fees"
+						data=calcultion_fees_and_name(fee_catagory,t,amount,miscellaneous_fees)
+						for l in data:
+							final_list.append(l)
+					if arrear_dues!=0:
+						fee_catagory="Arrear Dues"
+						data=calcultion_fees_and_name(fee_catagory,t,amount,arrear_dues)
+						for l in data:
+							final_list.append(l)
+					if re_admission_fees!=0:
+						fee_catagory="Re-Admission Fees"
+						data=calcultion_fees_and_name(fee_catagory,t,amount,re_admission_fees)
+						for l in data:
+							final_list.append(l)
+					if counselling_fees!=0:
+						fee_catagory="Counselling Fees"
+						data=calcultion_fees_and_name(fee_catagory,t,amount,counselling_fees)
+						for l in data:
+							final_list.append(l)
+
+					# {'name': 'b642d5af9d', 'idx': 1, 'parent': 'EDU-FEE-2022-00939', 'fees_category': 'Tuition Fees', 'description': None, 'amount': 30000.0, 'waiver_type': '', 
+					# 'percentage': 0.0, 'waiver_amount': 0.0, 'total_waiver_amount': 0.0, 'receivable_account': 'Tuition Fees - KP', 'income_account': 'Tuition Fees Income - KP', 
+					# 'company': 'KiiT Polytechnic', 'grand_fee_amount': 30000.0, 'outstanding_fees': 30000.0, 'due_date': datetime.date(2022, 9, 30), 
+					# 'program': 'Metallurgical Engineering Semester V'}
+					for fee_line_item in final_list:
+						payment_entry.append("references", {
+								'reference_doctype': "Fees",
+								'reference_name': fee_line_item['parent'],
+								"bill_no": "",
+								"due_date":fee_line_item['due_date'],
+								'total_amount': fee_line_item["grand_fee_amount"],
+								'allocated_amount': fee_line_item['allocated_amount'],
+								'outstanding_amount': fee_line_item['outstanding_fees'],#
+								'program':fee_line_item["program"],
+								'fees_category':fee_line_item['fees_category'],
+								'account_paid_from':fee_line_item['receivable_account'],
+							})
 
 
-				# "references"-- table name	 Payment Entry Reference		
+					# "references"-- table name	 Payment Entry Reference		
 
-				"""Writeoff"""
-				payment_entry.total_allocated_amount=amount
-				payment_entry.unallocated_amount=0
-				payment_entry.difference_amount=0
-				payment_entry.base_total_taxes_and_charges=0
-				"""Transaction ID"""
-				payment_entry.reference_no=t.utr_no
-				payment_entry.reference_date=data_of_clearing
-				"""Cost Center"""
-				cost_cente=frappe.get_all("Company",['cost_center'])
-				payment_entry.cost_center=cost_cente[0]['cost_center']
-				payment_entry.save()
-				payment_entry.submit()
-				frappe.db.set_value("Bank Auto Reconciliation Child",t.name,"payment_voucher",payment_entry.name)
-				###################### end
-			except Exception as e:
-				error = True
-				err_msg = frappe.local.message_log and "\n\n".join(frappe.local.message_log) or cstr(e)
+					"""Writeoff"""
+					payment_entry.total_allocated_amount=amount
+					payment_entry.unallocated_amount=0
+					payment_entry.difference_amount=0
+					payment_entry.base_total_taxes_and_charges=0
+					"""Transaction ID"""
+					payment_entry.reference_no=t.utr_no
+					payment_entry.reference_date=data_of_clearing
+					"""Cost Center"""
+					cost_cente=frappe.get_all("Company",['cost_center'])
+					payment_entry.cost_center=cost_cente[0]['cost_center']
+					payment_entry.save()
+					payment_entry.submit()
+					frappe.db.set_value("Bank Auto Reconciliation Child",t.name,"payment_voucher",payment_entry.name)
+					###################### end
+				except Exception as e:
+					error = True
+					err_msg = frappe.local.message_log and "\n\n".join(frappe.local.message_log) or cstr(e)
+			elif fees_refundable_adjustable!=0:
+				try:
+					############################# data entry in payment Refund Entry 
+					payment_refund=frappe.new_doc("Payment Refund")
+					"""Type of Payment"""
+					payment_refund.payment_type="Receive"
+					payment_refund.posting_date=utils.today()
+					payment_refund.mode_of_payment=doc.type_of_transaction
+					"""Payment From / To"""
+					payment_refund.party_type="Student"
+					payment_refund.party=t.student
+					payment_refund.party_name=t.student_name
+					student_email_id=frappe.get_all("Student",{"name":t.student},["student_email_id","sams_portal_id"])
+					payment_refund.student_email=student_email_id[0]["student_email_id"]
+					payment_refund.sams_portal_id=student_email_id[0]["sams_portal_id"]
+					"""Accounts"""
+					mode_of_payment=frappe.get_all("Mode of Payment Account",{"parent":doc.type_of_transaction},["name","parent","default_account"])
+					account_cur=frappe.get_all("Account",{"name":mode_of_payment[0]["default_account"]},['account_currency'])
+					payment_refund.paid_from=mode_of_payment[0]['default_account']
+					payment_refund.paid_from_account_type=account_cur[0]['account_currency']
+					"""Reference"""
+					account=frappe.get_all("Account",filters=[["name","like","%Fees Refundable / Adjustable%"],
+																["account_type","=","Income Account"]],fields=['name'])										
+					payment_refund.append("references",{
+						"fees_category":"Fees Refundable / Adjustable",
+						"account_paid_to":account[0]['name'],
+						"allocated_amount":fees_refundable_adjustable,
+						"total_amount":fees_refundable_adjustable
+					})
+					"""Accounting Dimensions"""
+					cost_cente=frappe.get_all("Company",['cost_center'])
+					payment_refund.cost_center=cost_cente[0]['cost_center']
+					"""Transaction ID"""
+					payment_refund.reference_no=t.utr_no
+					payment_refund.reference_date=data_of_clearing
+					payment_refund.save()
+					payment_refund.submit()
+					frappe.db.set_value("Bank Auto Reconciliation Child",t.name,"payment_voucher",payment_refund.name)
+					############################## End 
+				except Exception as e:
+					error = True
+					err_msg = frappe.local.message_log and "\n\n".join(frappe.local.message_log) or cstr(e)
+					pass
  
 		elif outstanding_amount==0: ##### testing correction
 			try:
