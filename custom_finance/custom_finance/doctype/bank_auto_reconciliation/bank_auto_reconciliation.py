@@ -10,15 +10,13 @@ from frappe.utils import cstr
 from frappe import utils
 
 class BankAutoReconciliation(Document):
-	def before_validate(self):
-		print("\n\n")
-		print("before_validate")
-		for t in self.get("Bank Auto Reconciliation Child"):
-			print(t)
-		# a.s
+	# def before_validate(self):
+	# 	print("\n\n")
+	# 	print("before_validate")
+	# 	for t in self.get("student_reference"):
+	# 		print(t.student)
+	# 	a.s
 	def validate(self):
-		print("\n\n")
-		print("validate")
 		student_reference=self.get("student_reference")
 		for t in student_reference:
 			if t.amount != t.total_paying_amount:
@@ -562,6 +560,14 @@ def get_fees(date=None,type_of_transaction=None):
 					y['hostel_fees_cal']=hostel_fees
 					y['other_institutional_fees_cal']=other_institutional_fees
 		stud_payment_upload=stud_payment_upload_1
+	# print("\n\n\n")
+	# print(stud_payment_upload)
+	# ############################# Duplicacy studnet and changing outstanding amount 
+	# dupli_data=[]
+	# for t in stud_payment_upload:
+	# 	flag={""}
+	# 	print(t)
+	# ################################
 	for t in stud_payment_upload:
 		"""Reference"""
 		############### structured fees
