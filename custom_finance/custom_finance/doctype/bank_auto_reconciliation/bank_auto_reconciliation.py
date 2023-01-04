@@ -10,12 +10,6 @@ from frappe.utils import cstr
 from frappe import utils
 
 class BankAutoReconciliation(Document):
-	# def before_validate(self):
-	# 	print("\n\n")
-	# 	print("before_validate")
-	# 	for t in self.get("student_reference"):
-	# 		print(t.student)
-	# 	a.s
 	def validate(self):
 		student_reference=self.get("student_reference")
 		for t in student_reference:
@@ -397,6 +391,16 @@ def get_fees(date=None,type_of_transaction=None):
 	stud_payment_upload=frappe.get_all("Payment Details Upload",filters=[["date_of_transaction","=",date],['type_of_transaction','=',type_of_transaction],
 											["reconciliation_status","=",1],["reconciliation_status","=",1],["payment_status","=",0],['docstatus',"=",1]],
 											fields=['name','student','unique_transaction_reference_utr','amount',"remarks","reconciliation_status", "student_name"])
+	student_list_dup=[]  
+	for t in stud_payment_upload:
+		flag="No"
+		for j in student_list_dup:
+			if t["student"]==j['student']:
+				flag="Yes"
+		if flag=="No":
+			student_list_dup.append(t)
+	
+	stud_payment_upload=student_list_dup
 	stu_info=[]
 
 	for t in stud_payment_upload:
@@ -481,10 +485,21 @@ def get_fees(date=None,type_of_transaction=None):
 		stud_payment_upload_1=frappe.get_all("ICICI Online Payment",filters=[["posting_date","=",date],["transaction_status","=","SUCCESS"],
 													["transaction_status","=","SUCCESS"],["payment_status","=",0]],
 												fields=["name","party","transaction_id","paying_amount","payment_status","party_name","remarks"])
+		student_list_dup=[]  
+		for t in stud_payment_upload:
+			flag="No"
+			for j in student_list_dup:
+				if t["student"]==j['student']:
+					flag="Yes"
+			if flag=="No":
+				student_list_dup.append(t)
+		
+		stud_payment_upload=student_list_dup	
+
 		stu_info=[]
 		for t in stud_payment_upload_1:
 			stu_info.append(t['party'])
-			# paying_amount=t['paying_amount']							
+									
 		stu_info = list(set(stu_info))
 		
 		for t in stu_info:
