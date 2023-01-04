@@ -499,7 +499,7 @@ def get_fees(date=None,type_of_transaction=None):
 		stu_info=[]
 		for t in stud_payment_upload_1:
 			stu_info.append(t['party'])
-									
+
 		stu_info = list(set(stu_info))
 		
 		for t in stu_info:
@@ -575,14 +575,8 @@ def get_fees(date=None,type_of_transaction=None):
 					y['hostel_fees_cal']=hostel_fees
 					y['other_institutional_fees_cal']=other_institutional_fees
 		stud_payment_upload=stud_payment_upload_1
-	# print("\n\n\n")
-	# print(stud_payment_upload)
-	# ############################# Duplicacy studnet and changing outstanding amount 
-	# dupli_data=[]
-	# for t in stud_payment_upload:
-	# 	flag={""}
-	# 	print(t)
-	# ################################
+
+
 	for t in stud_payment_upload:
 		"""Reference"""
 		############### structured fees
