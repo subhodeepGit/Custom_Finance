@@ -42,6 +42,7 @@
    "reqd": 1
   },
   {
+   "depends_on": "eval:doc.docstatus==0",
    "fieldname": "get_studnet",
    "fieldtype": "Button",
    "label": "Get Students"
@@ -90,7 +91,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-12-22 11:08:05.401051",
+ "modified": "2023-01-05 12:43:03.705310",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Bank Auto Reconciliation",

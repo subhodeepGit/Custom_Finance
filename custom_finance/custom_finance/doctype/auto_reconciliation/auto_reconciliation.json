@@ -33,6 +33,7 @@
    "options": "Auto Reconciliation child"
   },
   {
+   "depends_on": "eval:doc.docstatus==0",
    "fieldname": "get_studnet",
    "fieldtype": "Button",
    "label": "Get Students"
@@ -84,7 +85,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-09-05 17:22:09.522493",
+ "modified": "2023-01-05 12:45:03.120658",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Auto Reconciliation",
