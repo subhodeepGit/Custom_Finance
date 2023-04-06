@@ -1334,7 +1334,8 @@ def get_outstanding_fees(args):
 	fee_component_info=[]
 
 	for t in fees_info:
-		if (t['fee_structure']!=None or t['fee_structure']!="") and (t['hostel_fee_structure']==None or t['hostel_fee_structure']==""):
+		# if (t['fee_structure']!=None or t['fee_structure']!="") and (t['hostel_fee_structure']==None or t['hostel_fee_structure']==""):
+		if t['fee_structure']!=None and t['hostel_fee_structure']==None:
 			fee_component=frappe.db.get_all("Fee Component", {"parent":t['name']},
 									["name","fees_category","outstanding_fees","receivable_account","income_account","outstanding_fees","amount","idx"],order_by="idx asc")					
 			for j in fee_component:
@@ -1346,7 +1347,8 @@ def get_outstanding_fees(args):
 					fee_component_info.append(j)
 
 	for t in fees_info:
-		if (t['fee_structure']==None or t['fee_structure']=="") and (t['hostel_fee_structure']!=None or t['hostel_fee_structure']!=""):
+		# if (t['fee_structure']==None or t['fee_structure']=="") and (t['hostel_fee_structure']!=None or t['hostel_fee_structure']!=""):
+		if t['fee_structure']==None and t['hostel_fee_structure']!=None:	
 			fee_component=frappe.db.get_all("Fee Component", {"parent":t['name']},
 									["name","fees_category","outstanding_fees","receivable_account","income_account","outstanding_fees","amount","idx"],order_by="idx asc")
 			for j in fee_component:
@@ -1357,7 +1359,8 @@ def get_outstanding_fees(args):
 					j['reference_name']=t['name']
 					fee_component_info.append(j)
 	for t in fees_info:
-		if (t['fee_structure']==None or t['fee_structure']=="") and (t['hostel_fee_structure']==None or t['hostel_fee_structure']==""):
+		# if (t['fee_structure']==None or t['fee_structure']=="") and (t['hostel_fee_structure']==None or t['hostel_fee_structure']==""):
+		if t['fee_structure']==None and t['hostel_fee_structure']==None:	
 			fee_component=frappe.db.get_all("Fee Component", {"parent":t['name']},
 									["name","fees_category","outstanding_fees","receivable_account","income_account","outstanding_fees","amount","idx"],order_by="idx asc")
 			for j in fee_component:

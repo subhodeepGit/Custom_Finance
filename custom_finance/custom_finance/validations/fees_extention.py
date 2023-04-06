@@ -288,7 +288,8 @@ def child_table_fees_outsatnding(self):
                     if t['fees_category']==d.fees_category:
                         Outstanding_amount.append(d.outstanding_amount)
                         frappe.db.set_value("Fee Component",t['name'], "outstanding_fees",d.outstanding_amount) 
-        ref_details=frappe.get_all("Fee Component",filters=[["parent", "=",v], ["fees_category", "NOT IN", tuple(payment_referance_fees_category)]],fields=["name","grand_fee_amount","outstanding_fees","fees_category"])
+        ref_details=frappe.get_all("Fee Component",filters=[["parent", "=",v], ["fees_category", "NOT IN", tuple(payment_referance_fees_category)]],
+                                   fields=["name","grand_fee_amount","outstanding_fees","fees_category"])
         for t in ref_details:
             Outstanding_amount.append(t["outstanding_fees"])             
         frappe.db.set_value("Fees",v, "outstanding_amount",sum(Outstanding_amount))
