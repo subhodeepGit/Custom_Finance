@@ -1,0 +1,536 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-12-22 10:59:12.908049",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "student",
+  "student_name",
+  "utr_no",
+  "amount",
+  "outstanding_amount",
+  "column_break_4",
+  "total_paying_amount",
+  "reconciliation_status",
+  "remarks",
+  "payment_voucher",
+  "tuition_fees_section",
+  "total_outstanding_tuition_fees",
+  "paying_tuition_fees",
+  "column_break_7",
+  "current_oustanding_tuition_fees",
+  "section_break_7",
+  "total_outstanding_development_fees",
+  "paying_development_fees",
+  "column_break_12",
+  "current_outstanding_development_fees",
+  "section_break_11",
+  "total_outstanding_other_institutional_fees",
+  "paying_other_institutional_fees",
+  "column_break_17",
+  "current_outstanding_other_institutional_fees",
+  "section_break_20",
+  "paying_fees_refundable__adjustable",
+  "miscellaneous_fees_section",
+  "total_outstanding_miscellaneous_fees",
+  "paying_miscellaneous_fees",
+  "column_break_22",
+  "current_outstanding_miscellaneous_fees",
+  "section_break_28",
+  "total_outstanding_examination_fees",
+  "paying_examination_fees",
+  "column_break_32",
+  "current_outstanding_examination_fees",
+  "section_break_34",
+  "total_outstanding_transportation_fees",
+  "paying_transportation_fees",
+  "column_break_37",
+  "current_outstanding_transportation_fees",
+  "section_break_39",
+  "total_outstanding_counselling_fees",
+  "paying_counselling_fees",
+  "column_break_42",
+  "current_outstanding_counselling_fees",
+  "re_admission_fees_section",
+  "total_outstanding_re_admission_fees",
+  "paying_re_admission_fees",
+  "column_break_47",
+  "current_outstanding_re_admission_fees",
+  "section_break_49",
+  "total_outstanding_arrear_dues",
+  "paying_arrear_dues",
+  "column_break_52",
+  "current_outstanding_arrear_dues",
+  "section_break_54",
+  "total_outstanding_hostel_admission_fees",
+  "paying_hostel_admission_fees",
+  "column_break_57",
+  "current_outstanding_hostel_admission_fees",
+  "hostel_fees_section",
+  "total_outstanding_hostel_fees",
+  "paying_hostel_fees",
+  "column_break_62",
+  "current_outstanding_hostel_fees",
+  "mess_fees_section",
+  "total_outstanding_mess_fees",
+  "paying_mess_fees",
+  "column_break_67",
+  "current_outstanding_mess_fees"
+ ],
+ "fields": [
+  {
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Student",
+   "options": "Student",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fetch_from": "student.title",
+   "fieldname": "student_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Student Name",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "utr_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "UTR No",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "outstanding_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Outstanding Amount",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "reconciliation_status",
+   "fieldtype": "Check",
+   "label": "Reconciliation Status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Data",
+   "label": "Remarks",
+   "read_only": 1
+  },
+  {
+   "fieldname": "payment_voucher",
+   "fieldtype": "Data",
+   "label": "Payment Voucher",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "paying_tuition_fees",
+   "fieldtype": "Currency",
+   "label": "Paying Tuition Fees",
+   "read_only_depends_on": "eval:doc.total_outstanding_tuition_fees == 0"
+  },
+  {
+   "default": "0",
+   "fieldname": "current_oustanding_tuition_fees",
+   "fieldtype": "Currency",
+   "label": "Current Oustanding Tuition Fees",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_7",
+   "fieldtype": "Section Break",
+   "label": "Development Fees"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_outstanding_tuition_fees",
+   "fieldtype": "Currency",
+   "label": "Total Outstanding Tuition Fees",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_outstanding_development_fees",
+   "fieldtype": "Currency",
+   "label": "Total Outstanding Development Fees",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "paying_development_fees",
+   "fieldtype": "Currency",
+   "label": "Paying Development Fees",
+   "read_only_depends_on": "eval.doc.total_outstanding_development_fees == 0"
+  },
+  {
+   "default": "0",
+   "fieldname": "current_outstanding_development_fees",
+   "fieldtype": "Currency",
+   "label": "Current Outstanding Development Fees",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_11",
+   "fieldtype": "Section Break",
+   "label": "Other Institutional Fees"
+  },
+  {
+   "fieldname": "tuition_fees_section",
+   "fieldtype": "Section Break",
+   "label": "Tuition Fees"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_outstanding_other_institutional_fees",
+   "fieldtype": "Currency",
+   "label": "Total Outstanding Other Institutional Fees",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "paying_other_institutional_fees",
+   "fieldtype": "Currency",
+   "label": "Paying Other Institutional Fees",
+   "read_only_depends_on": "eval:doc.total_outstanding_other_institutional_fees == 0"
+  },
+  {
+   "fieldname": "miscellaneous_fees_section",
+   "fieldtype": "Section Break",
+   "label": "Miscellaneous Fees"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_outstanding_miscellaneous_fees",
+   "fieldtype": "Currency",
+   "label": "Total Outstanding Miscellaneous Fees",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "paying_miscellaneous_fees",
+   "fieldtype": "Currency",
+   "label": "Paying Miscellaneous Fees",
+   "read_only_depends_on": "eval:doc.total_outstanding_miscellaneous_fees == 0"
+  },
+  {
+   "default": "0",
+   "fieldname": "current_outstanding_miscellaneous_fees",
+   "fieldtype": "Currency",
+   "label": "Current Outstanding Miscellaneous Fees",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_20",
+   "fieldtype": "Section Break",
+   "label": "Fees Refundable / Adjustable"
+  },
+  {
+   "fieldname": "column_break_7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_17",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_22",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "paying_fees_refundable__adjustable",
+   "fieldtype": "Currency",
+   "label": "Paying Fees Refundable / Adjustable"
+  },
+  {
+   "fieldname": "section_break_28",
+   "fieldtype": "Section Break",
+   "label": "Examination Fees"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_outstanding_examination_fees",
+   "fieldtype": "Currency",
+   "label": "Total Outstanding Examination Fees",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "paying_examination_fees",
+   "fieldtype": "Currency",
+   "label": "Paying Examination Fees",
+   "read_only_depends_on": "eval:doc.total_outstanding_examination_fees == 0"
+  },
+  {
+   "fieldname": "column_break_32",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "current_outstanding_examination_fees",
+   "fieldtype": "Currency",
+   "label": "Current Outstanding Examination Fees",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_34",
+   "fieldtype": "Section Break",
+   "label": "Transportation Fees"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_outstanding_transportation_fees",
+   "fieldtype": "Currency",
+   "label": "Total Outstanding Transportation Fees",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "paying_transportation_fees",
+   "fieldtype": "Currency",
+   "label": "Paying Transportation Fees",
+   "read_only_depends_on": "eval:doc.total_outstanding_transportation_fees == 0"
+  },
+  {
+   "fieldname": "column_break_37",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "current_outstanding_transportation_fees",
+   "fieldtype": "Currency",
+   "label": "Current Outstanding Transportation Fees",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_39",
+   "fieldtype": "Section Break",
+   "label": "Counselling Fees"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_outstanding_counselling_fees",
+   "fieldtype": "Currency",
+   "label": "Total Outstanding Counselling Fees",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "paying_counselling_fees",
+   "fieldtype": "Currency",
+   "label": "Paying Counselling Fees",
+   "read_only_depends_on": "eval:doc.total_outstanding_counselling_fees == 0"
+  },
+  {
+   "fieldname": "column_break_42",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "current_outstanding_counselling_fees",
+   "fieldtype": "Currency",
+   "label": "Current Outstanding Counselling Fees",
+   "read_only": 1
+  },
+  {
+   "fieldname": "re_admission_fees_section",
+   "fieldtype": "Section Break",
+   "label": "Re Admission Fees"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_outstanding_re_admission_fees",
+   "fieldtype": "Currency",
+   "label": "Total Outstanding Re Admission Fees",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "paying_re_admission_fees",
+   "fieldtype": "Currency",
+   "label": "Paying Re Admission Fees",
+   "read_only_depends_on": "eval:doc.total_outstanding_re_admission_fees == 0"
+  },
+  {
+   "fieldname": "column_break_47",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "current_outstanding_re_admission_fees",
+   "fieldtype": "Currency",
+   "label": "Current Outstanding Re Admission Fees",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_49",
+   "fieldtype": "Section Break",
+   "label": "Arrear Dues"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_outstanding_arrear_dues",
+   "fieldtype": "Currency",
+   "label": "Total Outstanding Arrear Dues",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "paying_arrear_dues",
+   "fieldtype": "Currency",
+   "label": "Paying Arrear Dues",
+   "read_only_depends_on": "eval:doc.total_outstanding_arrear_dues == 0"
+  },
+  {
+   "fieldname": "column_break_52",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "current_outstanding_arrear_dues",
+   "fieldtype": "Currency",
+   "label": "Current Outstanding Arrear Dues",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_54",
+   "fieldtype": "Section Break",
+   "label": "Hostel Admission Fees"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_outstanding_hostel_admission_fees",
+   "fieldtype": "Currency",
+   "label": "Total Outstanding Hostel Admission Fees",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "paying_hostel_admission_fees",
+   "fieldtype": "Currency",
+   "label": "Paying Hostel Admission Fees",
+   "read_only_depends_on": "eval:doc.total_outstanding_hostel_admission_fees == 0"
+  },
+  {
+   "fieldname": "column_break_57",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "current_outstanding_hostel_admission_fees",
+   "fieldtype": "Currency",
+   "label": "Current Outstanding Hostel Admission Fees",
+   "read_only": 1
+  },
+  {
+   "fieldname": "hostel_fees_section",
+   "fieldtype": "Section Break",
+   "label": "Hostel Fees"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_outstanding_hostel_fees",
+   "fieldtype": "Currency",
+   "label": "Total Outstanding Hostel Fees",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "paying_hostel_fees",
+   "fieldtype": "Currency",
+   "label": "Paying Hostel Fees",
+   "read_only_depends_on": "eval:doc.total_outstanding_hostel_fees == 0"
+  },
+  {
+   "fieldname": "column_break_62",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "current_outstanding_hostel_fees",
+   "fieldtype": "Currency",
+   "label": "Current Outstanding Hostel Fees",
+   "read_only": 1
+  },
+  {
+   "fieldname": "mess_fees_section",
+   "fieldtype": "Section Break",
+   "label": "Mess Fees"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_outstanding_mess_fees",
+   "fieldtype": "Currency",
+   "label": "Total Outstanding Mess Fees",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "paying_mess_fees",
+   "fieldtype": "Currency",
+   "label": "Paying Mess Fees",
+   "read_only_depends_on": "eval:doc.total_outstanding_mess_fees == 0"
+  },
+  {
+   "fieldname": "column_break_67",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "current_outstanding_mess_fees",
+   "fieldtype": "Currency",
+   "label": "Current Outstanding Mess Fees",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_paying_amount",
+   "fieldtype": "Currency",
+   "label": "Total Paying Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "current_outstanding_other_institutional_fees",
+   "fieldtype": "Currency",
+   "label": "Current Outstanding Other Institutional Fees",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2022-12-28 12:11:06.788576",
+ "modified_by": "Administrator",
+ "module": "Custom Finance",
+ "name": "Bank Auto Reconciliation Child",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}
