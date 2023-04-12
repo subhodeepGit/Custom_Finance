@@ -39,8 +39,7 @@ def get_outstanding_amount(student):
 
 
 
-def getTransactionDetails(doc,name):   
-	# getDoc=frappe.get_doc("ICICI Settings")
+def getTransactionDetails(doc,name): 
 	getDoc=frappe.get_doc("ICICI settings Production")
 	merchantId = getDoc.merchantid
 	key=getDoc.key
