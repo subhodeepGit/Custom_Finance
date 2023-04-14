@@ -23,19 +23,25 @@ frappe.ui.form.on("ICICI Online Payment", "refresh", function(frm){
 		
  
 	 frappe.call({		  
-		method: "icici_integration.icici_integration.doctype.onlinepayment.onlinepayment.getSessionToken",	
+		// method: "icici_integration.icici_integration.doctype.onlinepayment.onlinepayment.getSessionToken",
+		method: "icici_integration.icici_integration.doctype.onlinepayment.onlinepayment.getTokenNew",	
 		
 		args: {	
 			 
 			name:frm.doc.name,
 			paying_amount:frm.doc.paying_amount,
+			partyNo:frm.doc.party,
+			partyName:frm.doc.party_name,
+			rollNo:frm.doc.roll_no,
+			SamsPortalId:frm.doc.sams_portal_id,
+			
  
 	   },
 		   
 		 callback: function(r) {
 			 var sessionId=r.message["TokenId"]
 			 var configId=r.message["configId"]				
-			 window.open("https://test.fdconnect.com/Pay/?sessionToken=" + sessionId + "&configId="+ configId,"_self")
+			 window.open("https://www.fdconnect.com/Pay/?sessionToken=" + sessionId + "&configId="+ configId,"_self")   // Production Api   
 			  
 		   }
 	   });
@@ -120,7 +126,7 @@ frappe.ui.form.on("ICICI Online Payment", "refresh", function(frm){
             frappe.msgprint({
                 title: __('Notification'),
                 indicator: 'green',
-                message: __(' <b>Important Points <b> :- <br><b>01. KIIT 0% Processing Fee ICICI payment Gateway. <br>  <b>02. <b>   Students of the KIIT University can make all kinds of payment such as admission fees, examination fees, tuition fees, hostel fees, library fees etc. to the University through the online payment facility. It is available 24x7.<br>  <b>03. <b>   If the payment process is not completed, but the respective amount is debited from the Bank-account of the student, the corresponding amount would be credited back .<br>  <b>04. <b>   Every effort has been made by the University to ensure that the online payment system is accurately and correctly operated through the given system. <br> If due to failure in link, or any error either in the process or in the server of the bank, the online payment fails, the University would not be responsible for the non-payment, in which event the student should prefer to make the payment manually.'
+                message: __(' <b>Important Points <b> :- <br><b>01. KIIT Polytechnic 0% Processing Fee ICICI payment Gateway. <br>  <b>02. <b>   Students of the KIIT Polytechnic can make all kinds of payment such as admission fees, examination fees, tuition fees, hostel fees, library fees etc. to the KIIT Polytechnic through the online payment facility. It is available 24x7.<br>  <b>03. <b>   If the payment process is not completed, but the respective amount is debited from the Bank-account of the student, the corresponding amount would be credited back .<br>  <b>04. <b>   Every effort has been made by the University to ensure that the online payment system is accurately and correctly operated through the given system. <br> If due to failure in link, or any error either in the process or in the server of the bank, the online payment fails, the KIIT Polytechnic would not be responsible for the non-payment, in which event the student should prefer to make the payment manually.'
                 )
             });
         }    

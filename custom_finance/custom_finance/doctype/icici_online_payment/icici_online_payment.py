@@ -9,22 +9,25 @@ addClassPath("/opt/bench/frappe-bench/apps/icici_integration/icici_integration/i
 from urllib.request import urlopen
 from custom_finance.custom_finance.notification.custom_notification import online_payment_submit
 import json
+from kp_edtec.kp_edtec.doctype.user_permission import add_user_permission
 
 
 class ICICIOnlinePayment(Document):
-	
+	def after_insert(doc):
+		set_user_permission(doc)
+		
 	def on_cancel(doc):
 		frappe.throw("Once form is submitted it can't be cancelled")
+
 	def on_submit(doc): 
 		getTransactionDetails(doc,doc.name)  
-		frappe.msgprint("Your Transaction is completed. Your Transaction Id is " + doc.transaction_id)
+		frappe.msgprint("Your Transaction is completed. Your Transaction Id is " + doc.transaction_id +"."  " Status is "+ frappe.bold(doc.transaction_status))
 		online_payment_submit(doc)
 
 
 		# def __init__(self):		
 		# 	self.getTransactionDetails(doc,doc.name)  
 		# 	# frappe.msgprint("Your Transaction is completed. Your Transaction Id is " + doc.transaction_id)
-			
 
 @frappe.whitelist()
 def get_outstanding_amount(student):
@@ -34,19 +37,22 @@ def get_outstanding_amount(student):
 	outstanding_amount=0
 	for t in fee_voucher_list:
 		outstanding_amount=t['outstanding_amount']+outstanding_amount
-		print("outstanding_amount",outstanding_amount)
+		# print("outstanding_amount",outstanding_amount)
 	return outstanding_amount
 
+def set_user_permission(doc):
+    for stu in frappe.get_all("Student",{"name":doc.party},['student_email_id']):
+        add_user_permission("ICICI Online Payment",doc.name, stu.student_email_id, doc)
 
-
-def getTransactionDetails(doc,name):   
-	getDoc=frappe.get_doc("ICICI Settings")
+def getTransactionDetails(doc,name): 
+	getDoc=frappe.get_doc("ICICI settings Production")
 	merchantId = getDoc.merchantid
 	key=getDoc.key
 	iv=getDoc.iv
 	merchantTxnId=name
 	fpTransactionId=""
-	apiURL="https://test.fdconnect.com/FirstPayL2Services/getTxnInquiryDetail" 
+	# apiURL="https://test.fdconnect.com/FirstPayL2Services/getTxnInquiryDetail"    #Test Api
+	apiURL="https://www.fdconnect.com/FDConnectL3Services/getTxnInquiryDetail"       #Production Api
 	try: 
 		tokenclass = JClass('TokenClass')
 		transactionDetailsData = tokenclass.inquiryTest(java.lang.String("%s"% merchantId), java.lang.String("%s"% key),

@@ -1199,22 +1199,56 @@ def get_outstanding_fees(args):
 		filter.append(['valid_to','between',[args.get('from_due_date'),args.get('to_due_date')]])
 
 
-	fees_info=frappe.db.get_all("Fees",filter,['name','posting_date'])
+	fees_info=frappe.db.get_all("Fees",filter,['name','posting_date','program','fee_structure','hostel_fee_structure'],order_by="posting_date asc")
 	######################### end fees
 	fee_component_info=[]
+	# for t in fees_info:
+	# 	fee_component=frappe.db.get_all("Fee Component", {"parent":t['name']},
+	# 								["name","fees_category","outstanding_fees","receivable_account","income_account","amount","description",
+	# 								'grand_fee_amount','percentage','total_waiver_amount','waiver_type','waiver_amount'])
+	# 	for j in fee_component:
+	# 		# if j["outstanding_fees"]>0:	
+	# 		j['posting_date']=t['posting_date']
+	# 		j['Type']='Fees'
+	# 		j['fee_voucher_no']=t['name']
+			# fee_component_info.append(j)	
 	for t in fees_info:
-		fee_component=frappe.db.get_all("Fee Component", {"parent":t['name']},
+		if (t['fee_structure']!=None or t['fee_structure']!="") and (t['hostel_fee_structure']==None or t['hostel_fee_structure']==""):
+			fee_component=frappe.db.get_all("Fee Component", {"parent":t['name']},
 									["name","fees_category","outstanding_fees","receivable_account","income_account","amount","description",
-									'grand_fee_amount','percentage','total_waiver_amount','waiver_type','waiver_amount'])
-		for j in fee_component:
-			# if j["outstanding_fees"]>0:	
-			j['posting_date']=t['posting_date']
-			j['Type']='Fees'
-			j['fee_voucher_no']=t['name']
-			fee_component_info.append(j)	
+									'grand_fee_amount','percentage','total_waiver_amount','waiver_type','waiver_amount',"idx"],order_by="idx asc")					
+			for j in fee_component:
+				if j["outstanding_fees"]>0:	
+					j['posting_date']=t['posting_date']
+					j['Type']='Fees'
+					j['program']=t['program']
+					j['fee_voucher_no']=t['name']
+					fee_component_info.append(j)
+	for t in fees_info:
+		if (t['fee_structure']==None or t['fee_structure']=="") and (t['hostel_fee_structure']!=None or t['hostel_fee_structure']!=""):
+			fee_component=frappe.db.get_all("Fee Component", {"parent":t['name']},
+									["name","fees_category","outstanding_fees","receivable_account","income_account","amount","description",
+									'grand_fee_amount','percentage','total_waiver_amount','waiver_type','waiver_amount',"idx"],order_by="idx asc")
+			for j in fee_component:
+				if j["outstanding_fees"]>0:	
+					j['posting_date']=t['posting_date']
+					j['Type']='Fees'
+					j['program']=t['program']
+					j['fee_voucher_no']=t['name']
+					fee_component_info.append(j)
+	for t in fees_info:
+		if (t['fee_structure']==None or t['fee_structure']=="") and (t['hostel_fee_structure']==None or t['hostel_fee_structure']==""):
+			fee_component=frappe.db.get_all("Fee Component", {"parent":t['name']},
+									["name","fees_category","outstanding_fees","receivable_account","income_account","amount","description",
+									'grand_fee_amount','percentage','total_waiver_amount','waiver_type','waiver_amount',"idx"],order_by="idx asc")
+			for j in fee_component:
+				if j["outstanding_fees"]>0:	
+					j['posting_date']=t['posting_date']
+					j['Type']='Fees'
+					j['program']=t['program']
+					j['fee_voucher_no']=t['name']
+					fee_component_info.append(j)										
 	data=fee_component_info
-	# fee_component_info [{'name': '46914acb77', 'fees_category': 'Development Fees', 'outstanding_fees': 5800.0, 'receivable_account': 'Development Fees - KP', 'income_account': 'Development Fees Income - KP', 'amount': 5800.0, 'posting_date': datetime.date(2022, 4, 27), 'Type': 'Fees', 'reference_name': 'EDU-FEE-2022-00051'}, {'name': '21f7da294d', 'fees_category': 'Development Fees', 'outstanding_fees': 5800.0, 'receivable_account': 'Development Fees - KP', 'income_account': 'Development Fees Income - KP', 'amount': 5800.0, 'posting_date': datetime.date(2022, 4, 21), 'Type': 'Fees', 'reference_name': 'EDU-FEE-2022-00010'}]
-
 	if not data:
 		frappe.msgprint(_("No outstanding invoices found for the {0} {1} which qualify the filters you have specified.")
 			.format(_(args.get("party_type")), frappe.bold(args.get("party"))))

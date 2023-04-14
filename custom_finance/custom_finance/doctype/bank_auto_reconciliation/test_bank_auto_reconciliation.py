@@ -4,5 +4,5 @@
 # import frappe
 import unittest
 
-class TestICICISettings(unittest.TestCase):
+class TestBankAutoReconciliation(unittest.TestCase):
 	pass
