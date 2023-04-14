@@ -733,7 +733,7 @@
    "columns": 0,
    "creation": "2022-05-12 10:51:44.986003",
    "default": null,
-   "depends_on": "eval:doc.payment_type==\"Receive\"",
+   "depends_on": "eval:doc.payment_type==\"Receive\" && doc.docstatus==0",
    "description": null,
    "docstatus": 0,
    "dt": "Payment Entry",
