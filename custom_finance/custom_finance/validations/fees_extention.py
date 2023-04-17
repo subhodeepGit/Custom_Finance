@@ -282,17 +282,24 @@ def child_table_fees_outsatnding(self):
         payment_referance_fees_category=[]
         for d in self.get("references"):
             if d.allocated_amount:
-                payment_referance_fees_category.append(d.fees_category)
-                ref_details=frappe.get_all("Fee Component",{"parent":v,"fees_category":d.fees_category},["name","grand_fee_amount","outstanding_fees","fees_category"])
+                ref_details=frappe.get_all("Fee Component",{"parent":v,"fees_category":d.fees_category},["name","grand_fee_amount","outstanding_fees","fees_category","parent"])####
                 for t in ref_details:
-                    if t['fees_category']==d.fees_category:
+                    if t['fees_category']==d.fees_category and d.reference_name==t["parent"]:####
+                        payment_referance_fees_category.append(d.fees_category)####
                         Outstanding_amount.append(d.outstanding_amount)
                         frappe.db.set_value("Fee Component",t['name'], "outstanding_fees",d.outstanding_amount) 
-        ref_details=frappe.get_all("Fee Component",filters=[["parent", "=",v], ["fees_category", "NOT IN", tuple(payment_referance_fees_category)]],
-                                   fields=["name","grand_fee_amount","outstanding_fees","fees_category"])
-        for t in ref_details:
-            Outstanding_amount.append(t["outstanding_fees"])             
-        frappe.db.set_value("Fees",v, "outstanding_amount",sum(Outstanding_amount))
+        # ref_details=frappe.get_all("Fee Component",filters=[["parent", "=",v], ["fees_category", "NOT IN", tuple(payment_referance_fees_category)]],
+        #                            fields=["name","grand_fee_amount","outstanding_fees","fees_category"])
+        # for t in ref_details:
+        #     Outstanding_amount.append(t["outstanding_fees"])             
+        # frappe.db.set_value("Fees",v, "outstanding_amount",sum(Outstanding_amount))
+    for t in reference_name:
+        Outstanding_amount=[]
+        ref_details=frappe.get_all("Fee Component",filters=[["parent", "=",t]],fields=["name","outstanding_fees"])
+        for t1 in ref_details:
+            Outstanding_amount.append(t1["outstanding_fees"])     
+        amount=sum(Outstanding_amount)      
+        frappe.db.set_value("Fees",t, "outstanding_amount",amount)
 
 def calucate_total(self):
     allocated_amount1=[]
