@@ -84562,5 +84562,32 @@
   "share": 0,
   "submit": 0,
   "write": 0
+ },
+{
+  "amend": 1,
+  "cancel": 1,
+  "create": 1,
+  "delete": 0,
+  "docstatus": 0,
+  "doctype": "Custom DocPerm",
+  "email": 0,
+  "export": 1,
+  "if_owner": 0,
+  "import": 0,
+  "modified": "2023-04-17 15:27:02.111330",
+  "name": "ff1627ece6",
+  "parent": "Exam Declaration",
+  "parentfield": "permissions",
+  "parenttype": "DocType",
+  "permlevel": 0,
+  "print": 0,
+  "read": 1,
+  "report": 0,
+  "role": "Accounts Manager",
+  "select": 1,
+  "set_user_permissions": 0,
+  "share": 0,
+  "submit": 1,
+  "write": 1
  }
 ]
