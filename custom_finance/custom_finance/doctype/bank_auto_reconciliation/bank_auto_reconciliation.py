@@ -580,7 +580,7 @@ def get_fees(date=None,type_of_transaction=None):
 	for t in stud_payment_upload:
 		"""Reference"""
 		############### structured fees
-		fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t['student']],["outstanding_amount","!=",0],
+		fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t.student],["outstanding_amount","!=",0],
 											["fee_structure","!=",""],["hostel_fee_structure","=",""],["docstatus","=",1]],
 											fields=['name','due_date','program','company'],
 											order_by="due_date asc")	
@@ -651,7 +651,7 @@ def get_fees(date=None,type_of_transaction=None):
 		paying_mess_fees=0
 		paying_fees_refundable__adjustable=0
 
-		allocated_amount=t['amount']
+		allocated_amount=t.amount
 		# {'name': 'ACC-PMD-2022-00006', 'student': 'EDU-STU-2022-00896', 'unique_transaction_reference_utr': 'aaccddee11', 
 		# 'amount': 80000.0, 'remarks': None, 'reconciliation_status': 1, 'student_name': 'ASHISH KUMAR DAS', 'outstanding_amount': 191750.0, 're_admission_fees': 0, 
 		# 'arrear_dues': 0, 'tuition_fees': 56850.0, 'development_fees': 15900.0, 'hostel_admission_fees': 0, 'counselling_fees': 0, 'examination_fees': 1400.0, 'transportation_fees': 0, 
