@@ -17,6 +17,7 @@
   "payment_from__to_section",
   "party_type",
   "party",
+  "student",
   "party_name",
   "roll_no",
   "column_break_14",
@@ -253,12 +254,21 @@
    "options": "ICICI Online Payment",
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "fetch_from": "party.name",
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Student",
+   "options": "Student",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-12-05 12:20:29.573996",
+ "modified": "2023-04-19 12:31:09.268362",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "ICICI Online Payment",

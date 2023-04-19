@@ -9,12 +9,12 @@ addClassPath("/opt/bench/frappe-bench/apps/icici_integration/icici_integration/i
 from urllib.request import urlopen
 from custom_finance.custom_finance.notification.custom_notification import online_payment_submit
 import json
-from kp_edtec.kp_edtec.doctype.user_permission import add_user_permission
+# from kp_edtec.kp_edtec.doctype.user_permission import add_user_permission
 
 
 class ICICIOnlinePayment(Document):
-	def after_insert(doc):
-		set_user_permission(doc)
+	# def after_insert(doc):
+	# 	set_user_permission(doc)
 		
 	def on_cancel(doc):
 		frappe.throw("Once form is submitted it can't be cancelled")
@@ -40,9 +40,9 @@ def get_outstanding_amount(student):
 		# print("outstanding_amount",outstanding_amount)
 	return outstanding_amount
 
-def set_user_permission(doc):
-    for stu in frappe.get_all("Student",{"name":doc.party},['student_email_id']):
-        add_user_permission("ICICI Online Payment",doc.name, stu.student_email_id, doc)
+# def set_user_permission(doc):
+#     for stu in frappe.get_all("Student",{"name":doc.party},['student_email_id']):
+#         add_user_permission("ICICI Online Payment",doc.name, stu.student_email_id, doc)
 
 def getTransactionDetails(doc,name): 
 	getDoc=frappe.get_doc("ICICI settings Production")

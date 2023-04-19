@@ -17,7 +17,7 @@
  ],
  "idx": 0,
  "is_standard": "Yes",
- "modified": "2023-01-05 12:28:02.782609",
+ "modified": "2023-04-19 12:35:36.139748",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Payment Detail Upload report",
@@ -36,9 +36,6 @@
   },
   {
    "role": "Academics User"
-  },
-  {
-   "role": "Student"
   },
   {
    "role": "Accounts User"
