@@ -580,7 +580,7 @@ def get_fees(date=None,type_of_transaction=None):
 	for t in stud_payment_upload:
 		"""Reference"""
 		############### structured fees
-		fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t['student']],["outstanding_amount","!=",0],
+		fee_voucher_list=frappe.get_all("Fees",filters=[["student","=",t.student],["outstanding_amount","!=",0],
 											["fee_structure","!=",""],["hostel_fee_structure","=",""],["docstatus","=",1]],
 											fields=['name','due_date','program','company'],
 											order_by="due_date asc")	
