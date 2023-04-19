@@ -234,13 +234,11 @@ user_data_fields = [
 # ]
 
 # fixtures = [
-# 	{"dt": "Custom DocPerm", "filters": [
-# 		[
-# 			"parent", "not in", [
-# 				"DocType"
-# 			]
-# 		]
-# 	]},
+	# {"dt": "Custom DocPerm", "filters": [
+	# 	["parent", "not in", ["DocType"]],
+    #     ["parent","=","Bank Auto Reconciliation"],
+    #     ["Role","=","Accounts Manager"]
+	# ]},
 	# {"dt": "Translation"},
 #     {"dt": "Role"},
 #     {"dt": "Role Profile"},
