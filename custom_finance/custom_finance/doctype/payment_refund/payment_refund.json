@@ -19,6 +19,7 @@
   "payment_from__to_section",
   "party_type",
   "party",
+  "student",
   "party_name",
   "roll_no",
   "permanent_registration_number",
@@ -329,12 +330,21 @@
    "fieldtype": "Data",
    "label": "Permanent Registration Number",
    "read_only": 1
+  },
+  {
+   "fetch_from": "party.name",
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Student",
+   "options": "Student",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-04-19 12:33:20.113537",
+ "modified": "2023-04-20 17:30:20.840333",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Payment Refund",
