@@ -370,6 +370,13 @@ frappe.ui.form.on("Payment Entry","mode_of_payment", function(frm){
 
 })
 frappe.ui.form.on('Payment Entry', {
+	refresh(frm){
+		if (!frappe.boot.desk_settings.form_sidebar) {
+			cur_page.page.page.add_action_icon("printer", function() {
+				cur_frm.print_doc();
+			}, '', __("Print"));
+		}
+	},
     onload:function(frm) {
 		setTimeout(() => {
 		// if(frappe.user.has_role(["Fee Waiver","Administrator"]) && !frappe.user.has_role([""])){

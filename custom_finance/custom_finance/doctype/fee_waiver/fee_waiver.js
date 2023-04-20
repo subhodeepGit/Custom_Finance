@@ -26,6 +26,11 @@ frappe.ui.form.on('Fee Waiver', {
 		}
 	},
 	refresh: function(frm) {
+		if (!frappe.boot.desk_settings.form_sidebar) {
+			cur_page.page.page.add_action_icon("printer", function() {
+				cur_frm.print_doc();
+			}, '', __("Print"));
+		}
 		if(frm.doc.docstatus == 0 && frm.doc.set_posting_time) {
 			frm.set_df_property('posting_date', 'read_only', 0);
 			frm.set_df_property('posting_time', 'read_only', 0);

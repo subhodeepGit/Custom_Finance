@@ -123,6 +123,11 @@ frappe.ui.form.on('Payment Refund', {
 	},
 	refresh: function(frm) {
 		erpnext.toggle_naming_series();
+		if (!frappe.boot.desk_settings.form_sidebar) {
+			cur_page.page.page.add_action_icon("printer", function() {
+				cur_frm.print_doc();
+			}, '', __("Print"));
+		}
 
 		if(frm.doc.docstatus > 0) {
 			frm.add_custom_button(__('Ledger'), function() {
