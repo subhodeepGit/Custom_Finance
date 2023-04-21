@@ -395,11 +395,11 @@ def bank_draft_amount(self):
         total_amount=0    
         for d in self.get("bank_draft_references"):
                 total_amount=total_amount+ d.bank_draft_amount   
-        if total_amount == self.paid_amount:
+        if total_amount == self.total_allocated_amount:
             pass
-        elif total_amount < self.paid_amount:
+        elif total_amount < self.total_allocated_amount:
             frappe.throw("Bank Draft Amount is less than Paid Amount")
-        elif total_amount > self.paid_amount:
+        elif total_amount > self.total_allocated_amount:
             flag="pass"
             for t in self.get('references'):
                 if t.fees_category=="Fees Refundable / Adjustable":
