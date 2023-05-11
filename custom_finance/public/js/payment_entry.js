@@ -59,7 +59,7 @@ frappe.ui.form.on('Payment Entry', {
 		const fields = [
 			{fieldtype:"Section Break", label: __("Posting Date")},
 			{fieldtype:"Date", label: __("From Date"),
-				fieldname:"from_posting_date", default:frappe.datetime.add_days(today, -30)},
+				fieldname:"from_posting_date", default:'2000-01-01'}, //default:frappe.datetime.add_days(today, -30)
 			{fieldtype:"Column Break"},
 			{fieldtype:"Date", label: __("To Date"), fieldname:"to_posting_date", default:today},
 			{fieldtype:"Section Break", label: __("Due Date")},
@@ -169,6 +169,7 @@ frappe.ui.form.on('Payment Entry', {
 						c.total_amount=element.outstanding_fees
 						c.outstanding_amount=element.outstanding_fees
 						c.account_paid_from=element.receivable_account
+						// c.description=element.description
                     });
 					frm.set_value("total_allocated_amount",amount)
                     frm.refresh_field("references")
@@ -371,10 +372,12 @@ frappe.ui.form.on("Payment Entry","mode_of_payment", function(frm){
 })
 frappe.ui.form.on('Payment Entry', {
 	refresh(frm){
-		if (!frappe.boot.desk_settings.form_sidebar) {
-			cur_page.page.page.add_action_icon("printer", function() {
-				cur_frm.print_doc();
-			}, '', __("Print"));
+		if(frm.doc.docstatus == 1){
+			if (!frappe.boot.desk_settings.form_sidebar) {
+				cur_page.page.page.add_action_icon("printer", function() {
+					cur_frm.print_doc();
+				}, '', __("Print"));
+			}
 		}
 	},
     onload:function(frm) {
