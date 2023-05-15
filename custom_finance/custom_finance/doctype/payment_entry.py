@@ -1337,38 +1337,44 @@ def get_outstanding_fees(args):
 		# if (t['fee_structure']!=None or t['fee_structure']!="") and (t['hostel_fee_structure']==None or t['hostel_fee_structure']==""):
 		if t['fee_structure']!=None and t['hostel_fee_structure']==None:
 			fee_component=frappe.db.get_all("Fee Component", {"parent":t['name']},
-									["name","fees_category","outstanding_fees","receivable_account","income_account","outstanding_fees","amount","idx"],order_by="idx asc")					
+									["name","fees_category","description","outstanding_fees","receivable_account","income_account","outstanding_fees","amount","idx"],order_by="idx asc")					
 			for j in fee_component:
 				if j["outstanding_fees"]>0:	
 					j['posting_date']=t['posting_date']
 					j['Type']='Fees'
 					j['program']=t['program']
 					j['reference_name']=t['name']
+					j['fee_structure']=t['fee_structure']
+					j['hostel_fee_structure']=t['hostel_fee_structure']
 					fee_component_info.append(j)
 
 	for t in fees_info:
 		# if (t['fee_structure']==None or t['fee_structure']=="") and (t['hostel_fee_structure']!=None or t['hostel_fee_structure']!=""):
 		if t['fee_structure']==None and t['hostel_fee_structure']!=None:	
 			fee_component=frappe.db.get_all("Fee Component", {"parent":t['name']},
-									["name","fees_category","outstanding_fees","receivable_account","income_account","outstanding_fees","amount","idx"],order_by="idx asc")
+									["name","fees_category","description","outstanding_fees","receivable_account","income_account","outstanding_fees","amount","idx"],order_by="idx asc")
 			for j in fee_component:
 				if j["outstanding_fees"]>0:	
 					j['posting_date']=t['posting_date']
 					j['Type']='Fees'
 					j['program']=t['program']
 					j['reference_name']=t['name']
+					j['fee_structure']=t['fee_structure']
+					j['hostel_fee_structure']=t['hostel_fee_structure']
 					fee_component_info.append(j)
 	for t in fees_info:
 		# if (t['fee_structure']==None or t['fee_structure']=="") and (t['hostel_fee_structure']==None or t['hostel_fee_structure']==""):
 		if t['fee_structure']==None and t['hostel_fee_structure']==None:	
 			fee_component=frappe.db.get_all("Fee Component", {"parent":t['name']},
-									["name","fees_category","outstanding_fees","receivable_account","income_account","outstanding_fees","amount","idx"],order_by="idx asc")
+									["name","fees_category","description","outstanding_fees","receivable_account","income_account","outstanding_fees","amount","idx"],order_by="idx asc")
 			for j in fee_component:
 				if j["outstanding_fees"]>0:	
 					j['posting_date']=t['posting_date']
 					j['Type']='Fees'
 					j['program']=t['program']
 					j['reference_name']=t['name']
+					j['fee_structure']=t['fee_structure']
+					j['hostel_fee_structure']=t['hostel_fee_structure']
 					fee_component_info.append(j)
 
 	data=fee_component_info	
@@ -1879,6 +1885,10 @@ def get_payment_entry(dt, dn, party_amount=None, bank_account=None, bank_amount=
 							# 'account_paid_from':t['receivable_account']
 							'program':doc.get("program"),
 							'account_paid_to':t['receivable_account'],
+							'description':t['description'],
+							'fee_structure':doc.fee_structure,
+							'hostel_fee_structure':doc.hostel_fee_structure
+
 						})
 				
 					else: 
@@ -1898,6 +1908,9 @@ def get_payment_entry(dt, dn, party_amount=None, bank_account=None, bank_amount=
 							'program':doc.get("program"),
 							'fees_category':t['fees_category'],
 							'account_paid_from':t['receivable_account'],
+							'description':t['description'],
+							'fee_structure':doc.fee_structure,
+							'hostel_fee_structure':doc.hostel_fee_structure
 						})
 
 
@@ -1954,7 +1967,7 @@ def set_party_account(dt, dn, doc, party_type):
 	elif dt == "Fees":
 	###########################################################################	1st change
 		# data = frappe.get_all("Fee Component",{"parent":self.name},["fees_category","receivable_account","income_account","amount"])
-		receivable_account=frappe.get_all("Fee Component",{"parent":doc.name},["receivable_account","fees_category","outstanding_fees","grand_fee_amount"],order_by="idx asc")
+		receivable_account=frappe.get_all("Fee Component",{"parent":doc.name},["receivable_account","fees_category","outstanding_fees","grand_fee_amount","description"],order_by="idx asc")
 		# receivable_account=frappe.get_all("Fee Component",{"parent":doc.name},["receivable_account","fees_category"])
 		party_account = receivable_account
 	############################################################################	

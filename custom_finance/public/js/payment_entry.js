@@ -169,7 +169,9 @@ frappe.ui.form.on('Payment Entry', {
 						c.total_amount=element.outstanding_fees
 						c.outstanding_amount=element.outstanding_fees
 						c.account_paid_from=element.receivable_account
-						// c.description=element.description
+						c.description=element.description
+						c.fee_structure=element.fee_structure
+						c.hostel_fee_structure=element.hostel_fee_structure
                     });
 					frm.set_value("total_allocated_amount",amount)
                     frm.refresh_field("references")
