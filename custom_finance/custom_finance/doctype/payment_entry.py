@@ -81,6 +81,7 @@ class PaymentEntry(AccountsController):
 		self.validate_paid_invoices()
 		self.ensure_supplier_is_not_blocked()
 		self.set_status()
+		frappe.msgprint("Mode Of Payment <b>%s</b> and Paid Amount <b>Rs. %s</b>"%(self.mode_of_payment,self.total_allocated_amount))
 
 	def on_submit(self):
 		if self.difference_amount:
