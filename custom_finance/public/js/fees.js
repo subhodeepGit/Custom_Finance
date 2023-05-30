@@ -77,7 +77,7 @@ frappe.ui.form.on('Fees', {
         else if(frm.doc.docstatus===1 && frm.doc.outstanding_amount==0) {
 			frm.add_custom_button(__("Return/Refund"), function() {
                 frappe.model.open_mapped_doc({
-					method: "ed_tec.ed_tec.doctype.fees.make_refund_fees",
+					method: "kp_edtec.kp_edtec.doctype.fees.make_refund_fees",
 					frm: frm,
 				});
 			});

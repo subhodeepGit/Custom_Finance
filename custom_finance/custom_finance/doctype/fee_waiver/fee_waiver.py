@@ -189,8 +189,7 @@ class FeeWaiver(Document):
 			return
 		data = frappe.get_all("Fee Waiver Components",{"parent":self.name},['fees_category','amount','waiver_type','percentage',
 																	'waiver_amount','total_waiver_amount','receivable_account','income_account',
-																	'company','grand_fee_amount','outstanding_fees','waiver_account','fee_voucher_no'
-																])
+																	'company','grand_fee_amount','outstanding_fees','waiver_account','fee_voucher_no'])
 		# [{'fees_category': 'Tuition Fees', 'amount': 29000.0, 'waiver_type': 'Amount', 'percentage': 0.0, 'waiver_amount': 1000.0, 
 		# 'total_waiver_amount': 1000.0, 'receivable_account': 'Tuition Fees - KP', 'income_account': 'Tuition Fees Income - KP', 
 		# 'company': 'KiiT Polytechnic', 'grand_fee_amount': 30000.0, 'outstanding_fees': 29000.0, 'waiver_account': 'Tuition Fees Income - KP', 
@@ -282,7 +281,7 @@ def update_cancel_fee(self):
 		# 	outsatnding_amount=outsatnding_amount+data[0]['total_waiver_amount']
 			fee_voucher_list.append(t.fee_voucher_no)	
 			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",0) 	
-			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount+total_waiver_amount) 
+			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",t.outstanding_fees_ref) 
 			frappe.db.set_value("Fee Component",data[0]["name"], "amount",amount) 
 			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]+t.outstanding_fees_ref)
 
@@ -485,18 +484,17 @@ def update_fee(self):
 			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",total_waiver_amount) 	
 			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount) 
 			frappe.db.set_value("Fee Component",data[0]["name"], "amount",grand_fee_amount) 
-			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount)
 			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-total_waiver_amount) 	
 		elif refundable_amount <0:
 			# refundable_function(self,abs(refundable_amount),t)
 			fee_voucher_list.append(t.fee_voucher_no)
-			outsatnding_amount=outsatnding_amount+data[0]['total_waiver_amount']	
+			outsatnding_amount=outsatnding_amount+data[0]['total_waiver_amount'] 
 			frappe.db.set_value("Fee Component",data[0]["name"], "total_waiver_amount",total_waiver_amount) 	
 			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount) 
 			frappe.db.set_value("Fee Component",data[0]["name"], "amount",grand_fee_amount) 
-			frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount)
+			# frappe.db.set_value("Fee Component",data[0]["name"], "outstanding_fees",outsatnding_amount)
 			frappe.db.set_value("Fees",t.fee_voucher_no, "outstanding_amount",fee_data[0]["outstanding_amount"]-t.outstanding_fees_ref)
-			
+
 	if fee_voucher_list:
 		fee_voucher_list=list(set(fee_voucher_list))
 		fee_voucher_list_dic=[]
@@ -1213,36 +1211,36 @@ def get_outstanding_fees(args):
 	# 		j['fee_voucher_no']=t['name']
 			# fee_component_info.append(j)	
 	for t in fees_info:
-		if (t['fee_structure']!=None or t['fee_structure']!="") and (t['hostel_fee_structure']==None or t['hostel_fee_structure']==""):
+		if (t['fee_structure']!=None) and (t['hostel_fee_structure']==None):
 			fee_component=frappe.db.get_all("Fee Component", {"parent":t['name']},
 									["name","fees_category","outstanding_fees","receivable_account","income_account","amount","description",
 									'grand_fee_amount','percentage','total_waiver_amount','waiver_type','waiver_amount',"idx"],order_by="idx asc")					
 			for j in fee_component:
-				if j["outstanding_fees"]>0:	
+				# if j["outstanding_fees"]>0:	
 					j['posting_date']=t['posting_date']
 					j['Type']='Fees'
 					j['program']=t['program']
 					j['fee_voucher_no']=t['name']
 					fee_component_info.append(j)
 	for t in fees_info:
-		if (t['fee_structure']==None or t['fee_structure']=="") and (t['hostel_fee_structure']!=None or t['hostel_fee_structure']!=""):
+		if (t['fee_structure']==None) and (t['hostel_fee_structure']!=None):
 			fee_component=frappe.db.get_all("Fee Component", {"parent":t['name']},
 									["name","fees_category","outstanding_fees","receivable_account","income_account","amount","description",
 									'grand_fee_amount','percentage','total_waiver_amount','waiver_type','waiver_amount',"idx"],order_by="idx asc")
 			for j in fee_component:
-				if j["outstanding_fees"]>0:	
+				# if j["outstanding_fees"]>0:	
 					j['posting_date']=t['posting_date']
 					j['Type']='Fees'
 					j['program']=t['program']
 					j['fee_voucher_no']=t['name']
 					fee_component_info.append(j)
 	for t in fees_info:
-		if (t['fee_structure']==None or t['fee_structure']=="") and (t['hostel_fee_structure']==None or t['hostel_fee_structure']==""):
+		if (t['fee_structure']==None) and (t['hostel_fee_structure']==None):
 			fee_component=frappe.db.get_all("Fee Component", {"parent":t['name']},
 									["name","fees_category","outstanding_fees","receivable_account","income_account","amount","description",
 									'grand_fee_amount','percentage','total_waiver_amount','waiver_type','waiver_amount',"idx"],order_by="idx asc")
 			for j in fee_component:
-				if j["outstanding_fees"]>0:	
+				# if j["outstanding_fees"]>0:	
 					j['posting_date']=t['posting_date']
 					j['Type']='Fees'
 					j['program']=t['program']
