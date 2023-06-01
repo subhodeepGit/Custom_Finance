@@ -8,7 +8,7 @@ from erpnext.accounts.doctype.payment_request.payment_request import make_paymen
 from erpnext.accounts.general_ledger import make_reverse_gl_entries
 from erpnext.controllers.accounts_controller import AccountsController
 from datetime import date, timedelta, datetime
-
+import json
 
 class Fees(AccountsController):
 	def set_indicator(self):
@@ -139,3 +139,26 @@ def get_list_context(context=None):
 		"get_list": get_fee_list,
 		"row_template": "templates/includes/fee/fee_row.html"
 	}
+
+@frappe.whitelist()
+def make_fees(frm):
+    args = json.loads(frm)
+    fees = frappe.new_doc("Fees")
+    fees.student= args["party"]
+    fees.student_name= args["party_name"]
+    fees.roll_no= frappe.get_all("Student",{"name":args["party"]},["roll_no"])[0]['roll_no']
+    fees.registration_number= frappe.get_all("Student",{"name":args["party"]},["permanant_registration_number"])[0]['permanant_registration_number']
+    fees.vidyarthi_portal_id= frappe.get_all("Student",{"name":args["party"]},["vidyarthi_portal_id"])[0]['vidyarthi_portal_id']
+    fees.sams_portal_id= frappe.get_all("Student",{"name":args["party"]},["sams_portal_id"])[0]['sams_portal_id']
+    fees.student_category= frappe.get_all("Student",{"name":args["party"]},["student_category"])[0]['student_category']
+    fees.student_email= frappe.get_all("Student",{"name":args["party"]},["student_email_id"])[0]['student_email_id']
+    data=frappe.get_all("Program Enrollment",{'student':args["party"],'docstatus':1},['name','program','programs','student_batch_name','academic_year','academic_term'],
+    order_by= "name desc")
+    if len(data)>0:
+        fees.program_enrollment= data[0]["name"]
+        fees.programs= data[0]["programs"]
+        fees.program= data[0]["program"]
+        fees.student_batch= data[0]["student_batch_name"]
+        fees.academic_term= data[0]["academic_term"]
+        fees.academic_year= data[0]["academic_year"]
+    return fees

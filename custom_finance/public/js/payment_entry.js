@@ -381,7 +381,14 @@ frappe.ui.form.on('Payment Entry', {
 				}, '', __("Print"));
 			}
 		}
+		if(frm.doc.docstatus===0) {
+			frm.add_custom_button(__("Create Fees"), function() {
+				frm.events.make_fees(frm);
+			}).addClass("btn-primary");
+		}
+
 	},
+
     onload:function(frm) {
 		setTimeout(() => {
 		// if(frappe.user.has_role(["Fee Waiver","Administrator"]) && !frappe.user.has_role([""])){
@@ -403,7 +410,21 @@ frappe.ui.form.on('Payment Entry', {
 		}, 0.1);
 		frm.refresh();
         // }
-	}
+	},
+
+	make_fees: function(frm) {
+	return frappe.call({
+		method: "custom_finance.custom_finance.doctype.fees.make_fees",
+		args: {
+			frm:frm.doc
+		},
+		callback: function(r) {
+			var doc = frappe.model.sync(r.message);
+			frappe.set_route("Form", doc[0].doctype, doc[0].name);
+		}
+	});
+	},
+
 });
 
 
