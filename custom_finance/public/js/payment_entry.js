@@ -386,7 +386,12 @@ frappe.ui.form.on('Payment Entry', {
 				frm.events.make_fees(frm);
 			}).addClass("btn-primary");
 		}
-
+		if(frm.doc.payment_status === "Dishonoured"){
+			cur_frm.page.btn_primary.hide();
+		}
+		else{
+			cur_frm.page.btn_primary.show();
+		}
 	},
 
     onload:function(frm) {
@@ -409,7 +414,7 @@ frappe.ui.form.on('Payment Entry', {
 			}
 		}, 0.1);
 		frm.refresh();
-        // }
+        // }	
 	},
 
 	make_fees: function(frm) {
