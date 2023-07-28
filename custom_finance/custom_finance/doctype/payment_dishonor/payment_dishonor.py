@@ -32,7 +32,7 @@ def get_payment_entry_child(payment_entry):
 	
 @frappe.whitelist()
 def get_payment_entry_record(student):
-	payment_entry = frappe.get_all('Payment Entry' ,{'party':student,'docstatus':1}, ['name'])	
+	payment_entry = frappe.get_all('Payment Entry' ,[['party','=',student],['docstatus','=',1],["mode_of_payment","!=","Fees Refundable / Adjustable"]], ['name'])	
 	return payment_entry
 
 @frappe.whitelist()
