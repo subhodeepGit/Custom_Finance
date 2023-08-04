@@ -12,6 +12,7 @@
   "posting_date",
   "column_break_1brmk",
   "company",
+  "dishonour_date",
   "mode_of_payment",
   "payment_from__to_section",
   "students",
@@ -148,12 +149,19 @@
    "label": "Student",
    "options": "Student",
    "read_only": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "dishonour_date",
+   "fieldtype": "Date",
+   "label": "Dishonour Date",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-07-18 17:29:10.047642",
+ "modified": "2023-08-04 16:55:58.532824",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Payment Dishonor",
