@@ -22,6 +22,13 @@ frappe.ui.form.on('Payment Dishonor', {
 				}
 			})
 		}
+		if(frm.doc.docstatus == 1){
+			if (!frappe.boot.desk_settings.form_sidebar) {
+				cur_page.page.page.add_action_icon("printer", function() {
+					cur_frm.print_doc();
+				}, '', __("Print"));
+			}
+		}
 	},
 	payment_entry: function(frm) {
 		frm.trigger("payment_entry_data")
@@ -54,6 +61,26 @@ frappe.ui.form.on('Payment Dishonor', {
 							row.allocated_amount=d.allocated_amount;
 						});
 						frm.refresh_field("payment_references")
+					}
+				}
+			});
+			frm.set_value("bank_draft_references" ,"");
+			frappe.call({
+				method: "custom_finance.custom_finance.doctype.payment_dishonor.payment_dishonor.get_bank_draft_references",
+				args: {
+					"payment_entry": frm.doc.payment_entry
+				},
+				callback: function(r) {
+					if (r.message) {
+						frappe.model.clear_table(frm.doc, 'bank_draft_references');
+						(r.message).forEach(d => {
+							var row = frm.add_child("bank_draft_references")
+							row.chequereference_no = d.chequereference_no;
+							row.chequereference_date=d.chequereference_date;
+							row.bank_draft_amount = d.bank_draft_amount;
+							row.bank_name = d.bank_name;
+						});
+						frm.refresh_field("bank_draft_references")
 					}
 				}
 			});
@@ -97,6 +124,8 @@ frappe.ui.form.on('Payment Dishonor', {
 						frm.doc.permanent_registration_number=info[0].permanent_registration_number
 						frm.doc.student_email=info[0].student_email
 						frm.doc.paid_amount=info[0].paid_amount
+						frm.doc.reference_no=info[0].reference_no
+						frm.doc.reference_date=info[0].reference_date
 						frm.refresh();
 					}
 				}

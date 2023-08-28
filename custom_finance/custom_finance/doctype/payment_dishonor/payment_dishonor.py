@@ -31,6 +31,12 @@ def get_payment_entry_child(payment_entry):
 		return payment_entry_child
 	
 @frappe.whitelist()
+def get_bank_draft_references(payment_entry):
+	if payment_entry:
+		bank_draft_references = frappe.get_all("Bank Draft Reference", fields=["chequereference_no", "chequereference_date", "bank_draft_amount","bank_name"] ,filters={"parent": payment_entry}, order_by= "idx asc")
+		return bank_draft_references
+	
+@frappe.whitelist()
 def get_payment_entry_record(student):
 	payment_entry = frappe.get_all('Payment Entry' ,[['party','=',student],['docstatus','=',1],["mode_of_payment","!=","Fees Refundable / Adjustable"]], ['name'])	
 	return payment_entry
@@ -38,6 +44,7 @@ def get_payment_entry_record(student):
 @frappe.whitelist()
 def get_payment_entry(payment_entry):
 		if payment_entry:
-			payment_entry = frappe.get_all('Payment Entry' ,{'name':payment_entry,'docstatus':1}, ["posting_date","company","mode_of_payment","student","party_name","roll_no","sams_portal_id","permanent_registration_number","student_email","paid_amount"])	
+			payment_entry = frappe.get_all('Payment Entry' ,{'name':payment_entry,'docstatus':1}, ["posting_date","company","mode_of_payment","student","party_name","roll_no","sams_portal_id","permanent_registration_number","student_email","paid_amount",
+											  "reference_no","reference_date"])	
 			return payment_entry
 		

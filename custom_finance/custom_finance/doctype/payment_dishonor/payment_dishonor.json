@@ -26,6 +26,12 @@
   "paid_amount",
   "reference_section",
   "payment_references",
+  "bank_draft_id",
+  "bank_draft_references",
+  "transaction_id_section",
+  "reference_no",
+  "column_break_vzhim",
+  "reference_date",
   "remarks_section",
   "remarks",
   "amended_from"
@@ -156,12 +162,46 @@
    "fieldtype": "Date",
    "label": "Dishonour Date",
    "reqd": 1
+  },
+  {
+   "fieldname": "transaction_id_section",
+   "fieldtype": "Section Break",
+   "label": "Transaction ID "
+  },
+  {
+   "fetch_from": "payment_entry.reference_no",
+   "fieldname": "reference_no",
+   "fieldtype": "Data",
+   "label": "Cheque/Reference No"
+  },
+  {
+   "fetch_from": "payment_entry.reference_date",
+   "fieldname": "reference_date",
+   "fieldtype": "Date",
+   "label": "Cheque/Reference Date"
+  },
+  {
+   "fieldname": "column_break_vzhim",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.mode_of_payment=='Bank Draft'",
+   "fieldname": "bank_draft_id",
+   "fieldtype": "Section Break",
+   "label": "Bank Draft ID"
+  },
+  {
+   "fieldname": "bank_draft_references",
+   "fieldtype": "Table",
+   "label": "Bank Draft References",
+   "options": "Bank Draft Reference",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-08-04 16:55:58.532824",
+ "modified": "2023-08-28 16:54:16.610572",
  "modified_by": "Administrator",
  "module": "Custom Finance",
  "name": "Payment Dishonor",
